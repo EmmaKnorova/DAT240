@@ -1,0 +1,49 @@
+version: "1"
+
+services:
+  web:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: campus-eats-web
+    ports:
+      - "8080:8080"            # app reachable at http://localhost:8080
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      # Connection string injected via env for clean config separation
+      ConnectionStrings__Default: >
+        Host=db;Port=5432;
+        Database=${POSTGRES_DB};
+        Username=${POSTGRES_USER};
+        Password=${POSTGRES_PASSWORD};
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - campus_eats_net
+
+  db:
+    image: postgres:16-alpine
+    container_name: campus-eats-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-campuseats}
+      POSTGRES_USER: ${POSTGRES_USER:-campus}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-campus_pw}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    networks:
+      - campus_eats_net
+    ports:
+      - "5432:5432"
+
+networks:
+  campus_eats_net:
+
+volumes:
+  db_data:
