@@ -1,9 +1,7 @@
-version: "1"
-
 services:
   web:
     build:
-      context: ./src
+      context: ./webapp
       dockerfile: Dockerfile
     container_name: campus-eats-web
     ports:

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TarlBreuJacoBaraKnor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+83f37fe0b42b7bd8a808aa256ca6d9734e81e80f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ddeeb81cbd3257b817e4c3ae0770da695448699")]
 [assembly: System.Reflection.AssemblyProductAttribute("TarlBreuJacoBaraKnor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TarlBreuJacoBaraKnor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
