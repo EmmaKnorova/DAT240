@@ -3,6 +3,8 @@
 
 # Custom
 
+obj/
+*.db
 
 # User-specific files
 *.suo

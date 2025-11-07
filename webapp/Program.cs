@@ -1,7 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using UiS.Dat240.Lab3.Infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddDbContext<ShopContext>(options =>
+{
+    options.UseNpgsql($"Data Source={Path.Combine("Infrastructure", "Data", "shop.db")}");
+});
 
 var app = builder.Build();
 
