@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using UiS.Dat240.Lab3.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,13 @@ builder.Services.AddDbContext<ShopContext>(options =>
 {
     options.UseNpgsql($"Data Source={Path.Combine("Infrastructure", "Data", "shop.db")}");
 });
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblies(
+        typeof(Program).Assembly,
+        typeof(ShopContext).Assembly
+    )
+);
 
 var app = builder.Build();
 
