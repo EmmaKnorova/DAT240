@@ -9,7 +9,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<ShopContext>(options =>
 {
-    options.UseNpgsql($"Data Source={Path.Combine("Infrastructure", "Data", "shop.db")}");
+    options.UseNpgsql("Host=localhost;Port=5432;Database=shop;Username=campus;Password=campus_pw");
 });
 
 builder.Services.AddMediatR(cfg =>

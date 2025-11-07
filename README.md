@@ -1,10 +1,14 @@
 # Start the project
 
+
+
+## For Developers
+
+### Docker
+
 ```bash
 docker compose up --build
 ```
-
-## For Developers
 
 ### Commit Structure
 
