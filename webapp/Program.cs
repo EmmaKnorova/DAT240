@@ -7,10 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddDbContext<ShopContext>(options =>
-{
-    options.UseNpgsql($"Data Source={Path.Combine("Infrastructure", "Data", "shop.db")}");
-});
+var connectionString = builder.Configuration.GetConnectionString("Default");
+
+builder.Services.AddDbContext<ShopContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<ShopContext>(options => options.UseSnakeCaseNamingConvention());
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(
@@ -20,6 +20,12 @@ builder.Services.AddMediatR(cfg =>
 );
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ShopContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
