@@ -12,8 +12,8 @@ using UiS.Dat240.Lab3.Infrastructure.Data;
 namespace TarlBreuJacoBaraKnor.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    [Migration("20251107152224_Init")]
-    partial class Init
+    [Migration("20251111073556_UpdateSchema")]
+    partial class UpdateSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
