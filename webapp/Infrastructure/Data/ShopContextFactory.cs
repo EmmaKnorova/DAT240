@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace UiS.Dat240.Lab3.Infrastructure.Data;
+namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 public class ShopContextFactory : IDesignTimeDbContextFactory<ShopContext>
 {

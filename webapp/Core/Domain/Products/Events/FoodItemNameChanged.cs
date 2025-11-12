@@ -1,6 +1,7 @@
-﻿using UiS.Dat240.Lab3.SharedKernel;
+﻿using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
-namespace UiS.Dat240.Lab3.Core.Domain.Products.Events;
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Events;
+
 
 public record FoodItemNameChanged : BaseDomainEvent
 {
