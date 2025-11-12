@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Identity;
-using UiS.Dat240.Lab3.SharedKernel;
+using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
-namespace TarlBreuJacoBaraKnor.Core.Domain.Users;
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 public class User : BaseEntity
 {

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using UiS.Dat240.Lab3.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +9,9 @@ builder.Services.AddRazorPages();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 
-builder.Services.AddDbContext<ShopContext>(options => options.UseNpgsql(connectionString));
-builder.Services.AddDbContext<ShopContext>(options => options.UseSnakeCaseNamingConvention());
+builder.Services.AddDbContext<ShopContext>(options =>
+    options.UseNpgsql(connectionString)
+           .UseSnakeCaseNamingConvention());
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(
@@ -24,7 +25,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ShopContext>();
-    db.Database.Migrate();
+    //db.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.

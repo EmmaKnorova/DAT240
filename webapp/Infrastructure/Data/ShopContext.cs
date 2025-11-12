@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using UiS.Dat240.Lab3.Core.Domain.Cart;
-using UiS.Dat240.Lab3.Core.Domain.Products;
-using UiS.Dat240.Lab3.SharedKernel;
-using TarlBreuJacoBaraKnor.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Events;
+using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
-namespace UiS.Dat240.Lab3.Infrastructure.Data;
+namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 public class ShopContext : DbContext
 {
