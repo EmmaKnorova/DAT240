@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using TarlBreuJacoBaraKnor.Core.Domain.Identity.Services;
 using TarlBreuJacoBaraKnor.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.Infrastructure.Data;
 using UiS.Dat240.Lab3.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +52,8 @@ builder.Services.AddAuthentication(options =>
     }
 );
 
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -76,5 +80,7 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+await DbSeeder.SeedData(app);
 
 app.Run();
