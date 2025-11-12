@@ -92,6 +92,14 @@ public class ShopContext : DbContext
 
             e.HasIndex(x => x.Email).IsUnique();
         });
+
+        b.Entity<TokenInfo>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Username).IsRequired().HasMaxLength(30);
+            e.Property(x => x.RefreshToken).IsRequired().HasMaxLength(200);
+            e.Property(x => x.ExpiredAt).IsRequired();
+        });
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
