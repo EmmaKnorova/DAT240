@@ -3,7 +3,7 @@ using UiS.Dat240.Lab3.SharedKernel;
 
 namespace TarlBreuJacoBaraKnor.Core.Domain.Users;
 
-public class User : BaseEntity
+public class User : IdentityUser
 {
 	public Guid Id { get; protected set; }
     public string Name { get; set; }

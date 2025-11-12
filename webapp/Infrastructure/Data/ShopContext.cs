@@ -24,6 +24,7 @@ public class ShopContext : DbContext
     public DbSet<ShoppingCart> ShoppingCarts => Set<ShoppingCart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<TokenInfo> TokenInfos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder b)
     {
