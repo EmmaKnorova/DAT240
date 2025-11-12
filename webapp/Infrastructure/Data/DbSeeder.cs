@@ -32,11 +32,11 @@ public class DbSeeder
                 };
 
                 // Create Admin role if it doesn't exist
-                if ((await roleManager.RoleExistsAsync(Roles.Admin)) == false)
+                if ((await roleManager.RoleExistsAsync(Roles.Admin.ToString())) == false)
                 {
                     logger.LogInformation("Admin role is creating");
                     var roleResult = await roleManager
-                    .CreateAsync(new IdentityRole(Roles.Admin));
+                    .CreateAsync(new IdentityRole(Roles.Admin.ToString()));
 
                     if (roleResult.Succeeded == false)
                     {
@@ -64,7 +64,7 @@ public class DbSeeder
 
                 // adding role to user
                 var addUserToRoleResult = await userManager
-                                .AddToRoleAsync(user: user, role: Roles.Admin);
+                                .AddToRoleAsync(user: user, role: Roles.Admin.ToString());
 
                 if (addUserToRoleResult.Succeeded == false)
                 {

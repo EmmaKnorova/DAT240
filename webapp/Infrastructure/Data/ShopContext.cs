@@ -104,6 +104,7 @@ public class ShopContext : DbContext
 
         b.Entity<SignupModel>(e =>
         {
+            e.HasNoKey();
             e.Property(x => x.Name).IsRequired().HasMaxLength(32);
             e.Property(x => x.Email).IsRequired().HasMaxLength(64);
             e.Property(x => x.Password).IsRequired().HasMaxLength(64);
@@ -111,12 +112,14 @@ public class ShopContext : DbContext
 
         b.Entity<LoginModel>(e =>
         {
+            e.HasNoKey();
             e.Property(x => x.Username).IsRequired();
             e.Property(x => x.Password).IsRequired();
         });
 
         b.Entity<TokenModel>(e =>
         {
+            e.HasNoKey();
             e.Property(x => x.AccessToken).IsRequired();
             e.Property(x => x.RefreshToken).IsRequired();
         });

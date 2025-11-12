@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -102,7 +103,7 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
     }
-    
+
     [HttpPost("token/refresh")]
     public async Task<IActionResult> Refresh(TokenModel tokenModel)
     {
@@ -112,8 +113,8 @@ public class AuthController : ControllerBase
             var username = principal.Identity.Name;
 
             var tokenInfo = _context.TokenInfos.SingleOrDefault(u => u.Username == username);
-            if (tokenInfo == null 
-                || tokenInfo.RefreshToken != tokenModel.RefreshToken 
+            if (tokenInfo == null
+                || tokenInfo.RefreshToken != tokenModel.RefreshToken
                 || tokenInfo.ExpiredAt <= DateTime.UtcNow)
             {
                 return BadRequest("Invalid refresh token. Please login again.");
@@ -130,6 +131,32 @@ public class AuthController : ControllerBase
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken
             });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+    
+    [HttpPost("token/revoke")]
+    [Authorize]
+    public async Task<IActionResult> Revoke()
+    {
+        try
+        {
+            var username = User.Identity.Name;
+
+            var user = _context.TokenInfos.SingleOrDefault(u => u.Username == username);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            user.RefreshToken = string.Empty;
+            await _context.SaveChangesAsync();
+
+            return Ok(true);
         }
         catch (Exception ex)
         {
