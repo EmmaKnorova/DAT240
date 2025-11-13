@@ -7,6 +7,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 using TarlBreuJacoBaraKnor.webapp.SharedKernel;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 
 namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
@@ -24,6 +25,7 @@ public class ShopContext : DbContext
     public DbSet<ShoppingCart> ShoppingCarts => Set<ShoppingCart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<Order> Orders => Set<Order>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
