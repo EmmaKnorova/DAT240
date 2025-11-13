@@ -6,18 +6,26 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 
 public class Get
 {
-	public record Request : IRequest<List<Order>> { }
+    public record Request(Guid UserId) : IRequest<List<Order>>;
 
-	public class Handler : IRequestHandler<Request, List<Order>>
-	{
-		private readonly ShopContext _db;
+    public class Handler : IRequestHandler<Request, List<Order>>
+    {
+        private readonly ShopContext _db;
 
-		public Handler(ShopContext db)
-		{
-			_db = db ?? throw new ArgumentNullException(nameof(db));
-		}
+        public Handler(ShopContext db)
+        {
+            _db = db ?? throw new ArgumentNullException(nameof(db));
+        }
 
-		public async Task<List<Order>> Handle(Request request, CancellationToken cancellationToken)
-			=> await _db.Orders.Include(or=>or.OrderLines).Include(or=>or.Customer).Include(or=>or.Location).OrderBy(i => i.Id).ToListAsync(cancellationToken: cancellationToken);
-	}
+        public async Task<List<Order>> Handle(Request request, CancellationToken cancellationToken)
+        {
+            return await _db.Orders
+                .Include(o => o.OrderLines)
+                .Include(o => o.Customer)
+                .Include(o => o.Location)
+                .Where(o => o.Customer != null && o.Customer.Id == request.UserId)
+                .OrderBy(o => o.Id)
+                .ToListAsync(cancellationToken);
+        }
+    }
 }
