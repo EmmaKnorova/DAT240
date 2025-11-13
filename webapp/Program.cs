@@ -17,7 +17,7 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(
         typeof(Program).Assembly,
         typeof(ShopContext).Assembly
-    )
+    )   
 );
 
 var app = builder.Build();
@@ -25,7 +25,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ShopContext>();
-    //db.Database.Migrate();
+    db.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.

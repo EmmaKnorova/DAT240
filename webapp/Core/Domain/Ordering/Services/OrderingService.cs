@@ -1,0 +1,38 @@
+using MediatR;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Dto;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
+
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
+{
+    public class OrderingService : IOrderingService
+    {
+        private readonly IMediator _mediator;
+
+        public OrderingService(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        public async Task<Guid> PlaceOrder(Location location, User User, OrderLineDto[] orderLines, string notes)
+        {
+
+            var order = new Order(location, User, notes)
+            {
+                OrderDate = DateTime.Now,
+                Status = Status.Placed
+            };
+
+            foreach (var line in orderLines)
+                order.AddOrderLine(new OrderLine(Guid.NewGuid(), line.FoodItemName, line.Amount, line.Price));
+
+            order.Events.Add(new OrderPlaced(order.Id));
+
+            await _mediator.Send(new AddOrder.Request(order));
+            await _mediator.Send(new SaveChanges.Request());
+
+            return order.Id;
+        }
+
+    }
+}

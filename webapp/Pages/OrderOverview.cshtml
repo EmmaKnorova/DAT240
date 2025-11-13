@@ -1,0 +1,50 @@
+﻿@page
+@model TarlBreuJacoBaraKnor.webapp.Pages.OrderOverviewModel
+@{
+    ViewData["Title"] = "Order Overview";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.Orders == null || !Model.Orders.Any())
+{
+    <p>No orders found.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Customer</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Items</th>
+                <th>Notes</th>
+                <th>Order Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate))
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@order.Customer?.Name</td>
+                <td>@order.Location?.Building</td>
+                <td>@order.Status</td>
+                <td>@order.OrderLines.Count</td>
+                <td>@order.Notes</td>
+                <td>
+                    <form method="post">
+                        <input type="hidden" name="orderId" value="@order.Id" />
+                        <button type="submit" class="btn btn-primary btn-sm">View</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
