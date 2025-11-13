@@ -15,7 +15,7 @@ public class Order : BaseEntity
 
     public string Notes { get; set; }
     public User Customer { get; set; }
-    public Status Status { get; set; } = Status.New;
+    public Status Status { get; set; } = Status.Submitted;
 
     public Order()
     {
