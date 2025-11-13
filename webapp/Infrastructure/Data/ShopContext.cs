@@ -8,10 +8,12 @@ using UiS.Dat240.Lab3.Core.Domain.Products;
 using UiS.Dat240.Lab3.SharedKernel;
 using TarlBreuJacoBaraKnor.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace UiS.Dat240.Lab3.Infrastructure.Data;
 
-public class ShopContext : DbContext
+public class ShopContext : IdentityDbContext<User, IdentityRole, string>
 {
     private readonly IMediator? _mediator;
 
@@ -48,17 +50,17 @@ public class ShopContext : DbContext
 
         // -------- ShoppingCart / CartItem --------
         b.Entity<ShoppingCart>(e =>
-{
-    e.HasKey(x => x.Id);
-    e.HasMany(x => x.Items)
-    .WithOne()
-    .HasForeignKey("cart_id")
-    .OnDelete(DeleteBehavior.Cascade);
+            {
+                e.HasKey(x => x.Id);
+                e.HasMany(x => x.Items)
+                .WithOne()
+                .HasForeignKey("cart_id")
+                .OnDelete(DeleteBehavior.Cascade);
 
-    var nav = e.Metadata.FindNavigation(nameof(ShoppingCart.Items))!;
-    nav.SetField("_items");
-    nav.SetPropertyAccessMode(PropertyAccessMode.Field);
-});
+                var nav = e.Metadata.FindNavigation(nameof(ShoppingCart.Items))!;
+                nav.SetField("_items");
+                nav.SetPropertyAccessMode(PropertyAccessMode.Field);
+            });
 
         b.Entity<CartItem>(e =>
         {
@@ -80,7 +82,6 @@ public class ShopContext : DbContext
             e.Property(x => x.Name).IsRequired().HasMaxLength(120);
             e.Property(x => x.Email).IsRequired().HasMaxLength(256);
             e.Property(x => x.PhoneNumber).HasMaxLength(32);
-            e.Property(x => x.Password).IsRequired().HasMaxLength(256);
 
             // EF Core primitive collection ->  user_roles table (user_id, role)
             // e.PrimitiveCollection(x => x.Roles)
@@ -102,12 +103,16 @@ public class ShopContext : DbContext
             e.Property(x => x.ExpiredAt).IsRequired();
         });
 
-        b.Entity<SignupModel>(e =>
+        b.Entity<RegisterInputModel>(e =>
         {
             e.HasNoKey();
             e.Property(x => x.Name).IsRequired().HasMaxLength(32);
             e.Property(x => x.Email).IsRequired().HasMaxLength(64);
             e.Property(x => x.Password).IsRequired().HasMaxLength(64);
+            e.Property(x => x.Address).IsRequired().HasMaxLength(100);
+            e.Property(x => x.City).IsRequired().HasMaxLength(100);
+            e.Property(x => x.PostalCode).IsRequired().HasMaxLength(32);
+            e.Property(x => x.PhoneNumber).IsRequired().HasMaxLength(20);
         });
 
         b.Entity<LoginModel>(e =>

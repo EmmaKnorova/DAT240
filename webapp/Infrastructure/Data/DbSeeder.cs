@@ -19,6 +19,15 @@ public class DbSeeder
             var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
             var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
 
+            // Create roles
+            foreach (Roles role in Enum.GetValues<Roles>())
+            {
+                if ((await roleManager.RoleExistsAsync(role.ToString())) == false)
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role.ToString()));
+                }
+            }
+
             // Check if any users exist to prevent duplicate seeding
             if (userManager.Users.Any() == false)
             {
@@ -30,23 +39,6 @@ public class DbSeeder
                     EmailConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
-
-                // Create Admin role if it doesn't exist
-                if ((await roleManager.RoleExistsAsync(Roles.Admin.ToString())) == false)
-                {
-                    logger.LogInformation("Admin role is creating");
-                    var roleResult = await roleManager
-                    .CreateAsync(new IdentityRole(Roles.Admin.ToString()));
-
-                    if (roleResult.Succeeded == false)
-                    {
-                        var roleErros = roleResult.Errors.Select(e => e.Description);
-                        logger.LogError($"Failed to create admin role. Errors : {string.Join(",", roleErros)}");
-
-                        return;
-                    }
-                    logger.LogInformation("Admin role is created");
-                }
 
                 // Attempt to create admin user
                 var createUserResult = await userManager
@@ -78,6 +70,5 @@ public class DbSeeder
         {
             logger.LogCritical(ex.Message);
         }
-
     }
 }
