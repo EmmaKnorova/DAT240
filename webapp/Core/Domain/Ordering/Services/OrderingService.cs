@@ -20,7 +20,7 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
             var order = new Order(location, User, notes)
             {
                 OrderDate = DateTime.Now,
-                Status = Status.Placed
+                Status = Status.Submitted
             };
 
             foreach (var line in orderLines)

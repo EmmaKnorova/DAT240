@@ -14,7 +14,7 @@ public class OrderSentHandler : INotificationHandler<OrderSent>
 	public async Task Handle(OrderSent notification, CancellationToken cancellationToken)
     {
         var order = await _db.Orders.SingleOrDefaultAsync(or => or.Id == notification.orderId, cancellationToken);
-        order.Status = Status.Shipped;
+        order.Status = Status.On_the_way;
 		await _db.SaveChangesAsync(cancellationToken);
 	}
 }
