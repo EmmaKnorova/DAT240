@@ -22,78 +22,147 @@ namespace TarlBreuJacoBaraKnor.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.Core.Domain.Users.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("password");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("phone_number");
+
+                    b.PrimitiveCollection<int[]>("Roles")
+                        .IsRequired()
+                        .HasColumnType("integer[]")
+                        .HasColumnName("roles");
+
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
+
+                    b.ToTable("users", (string)null);
+                });
+
             modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<int>("Count")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("count");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<Guid?>("ShoppingCartId")
-                        .HasColumnType("uuid");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("price");
 
                     b.Property<int>("Sku")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sku");
 
-                    b.HasKey("Id");
+                    b.Property<Guid?>("cart_id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cart_id");
 
-                    b.HasIndex("ShoppingCartId");
+                    b.HasKey("Id")
+                        .HasName("pk_cart_items");
 
-                    b.ToTable("CartItem");
+                    b.HasIndex("cart_id")
+                        .HasDatabaseName("ix_cart_items_cart_id");
+
+                    b.ToTable("cart_items", (string)null);
                 });
 
             modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.ShoppingCart", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_shopping_carts");
 
-                    b.ToTable("ShoppingCart");
+                    b.ToTable("shopping_carts", (string)null);
                 });
 
             modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Products.FoodItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CookTime")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("cook_time");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("description");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("price");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_food_items");
 
-                    b.ToTable("FoodItems");
+                    b.ToTable("food_items", (string)null);
                 });
 
             modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.CartItem", b =>
                 {
                     b.HasOne("UiS.Dat240.Lab3.Core.Domain.Cart.ShoppingCart", null)
                         .WithMany("Items")
-                        .HasForeignKey("ShoppingCartId");
+                        .HasForeignKey("cart_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_cart_items_shopping_carts_cart_id");
                 });
 
             modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.ShoppingCart", b =>
