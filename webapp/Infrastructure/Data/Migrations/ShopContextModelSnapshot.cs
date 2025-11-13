@@ -22,7 +22,53 @@ namespace TarlBreuJacoBaraKnor.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.CartItem", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.Core.Domain.Users.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("password");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("phone_number");
+
+                    b.PrimitiveCollection<int[]>("Roles")
+                        .IsRequired()
+                        .HasColumnType("integer[]")
+                        .HasColumnName("roles");
+
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
+
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,6 +151,14 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasDatabaseName("ix_orders_customer_id");
 
                     b.ToTable("orders", (string)null);
+
+                    b.HasKey("Id")
+                        .HasName("pk_cart_items");
+
+                    b.HasIndex("cart_id")
+                        .HasDatabaseName("ix_cart_items_cart_id");
+
+                    b.ToTable("cart_items", (string)null);
                 });
 
             modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.OrderLine", b =>
@@ -142,6 +196,11 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasDatabaseName("ix_order_line_order_id");
 
                     b.ToTable("order_line", (string)null);
+
+                    b.HasKey("Id")
+                        .HasName("pk_shopping_carts");
+
+                    b.ToTable("shopping_carts", (string)null);
                 });
 
             modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Events.FoodItem", b =>
@@ -224,6 +283,11 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
+
+                    b.HasKey("Id")
+                        .HasName("pk_food_items");
+
+                    b.ToTable("food_items", (string)null);
                 });
 
             modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.CartItem", b =>

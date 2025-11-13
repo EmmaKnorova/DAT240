@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
-using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Events;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 

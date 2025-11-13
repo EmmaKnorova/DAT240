@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Events;
 using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
-namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Events;
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 
 public class FoodItem : BaseEntity
 {
