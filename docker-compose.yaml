@@ -15,6 +15,8 @@ services:
         Database=${POSTGRES_DB};
         Username=${POSTGRES_USER};
         Password=${POSTGRES_PASSWORD};
+    volumes:
+      - dpkeys:/keys
     depends_on:
       db:
         condition: service_healthy
@@ -45,3 +47,4 @@ networks:
 
 volumes:
   db_data:
+  dpkeys:
