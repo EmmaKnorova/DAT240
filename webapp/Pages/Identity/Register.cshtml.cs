@@ -16,6 +16,7 @@ public class RegisterModel : PageModel
     private readonly RoleManager<IdentityRole> _roleManager;
     [BindProperty]
     public RegisterInputModel Input { get; set; }
+    public List<string> AvailableRoles { get; set; } = ["User", "Courier"];
 
     public string ReturnUrl { get; set; }
 
@@ -44,7 +45,7 @@ public class RegisterModel : PageModel
                 Email = Input.Email,
                 Name = Input.Name,
                 PhoneNumber = Input.PhoneNumber,
-                EmailConfirmed = true
+                EmailConfirmed = true,
             };
 
             var result = await _userManager.CreateAsync(user, Input.Password);
@@ -53,13 +54,13 @@ public class RegisterModel : PageModel
                 _logger.LogInformation($"New user has registered: {Input.Name}.");
 
                 // 2. Assign default role (enum-based)
-                var defaultRole = Roles.User.ToString();
-                if (!await _roleManager.RoleExistsAsync(defaultRole))
+                var userSelectedRole = Input.Role;
+                if (!await _roleManager.RoleExistsAsync(userSelectedRole))
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(defaultRole));
+                    return Page();
                 }
 
-                var roleResult = await _userManager.AddToRoleAsync(user, defaultRole);
+                var roleResult = await _userManager.AddToRoleAsync(user, userSelectedRole);
                 if (!roleResult.Succeeded)
                 {
                     foreach (var error in roleResult.Errors)
@@ -78,6 +79,6 @@ public class RegisterModel : PageModel
             }
         }
 
-        return Page();
+        return RedirectToPage("/Index");
     }
 }
