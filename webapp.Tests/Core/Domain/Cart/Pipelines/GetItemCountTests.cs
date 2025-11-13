@@ -1,14 +1,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using UiS.Dat240.Lab3.Core.Domain.Cart;
-using UiS.Dat240.Lab3.Core.Domain.Cart.Pipelines;
-using TarlBreuJacoBaraKnor.Tests.Helpers;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
+using TarlBreuJacoBaraKnor.webapp.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
-using TarlBreuJacoBaraKnor.Core.Domain.Cart.Pipelines;
 
-namespace TarlBreuJacoBaraKnor.Tests.Core.Domain.Cart.Pipelines;
+namespace TarlBreuJacoBaraKnor.webapp.Tests.Core.Domain.Cart.Pipelines;
 
 public class GetItemCountTests : IClassFixture<DbTest>
 {

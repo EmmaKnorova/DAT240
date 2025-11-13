@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using UiS.Dat240.Lab3.Core.Domain.Cart;
-using TarlBreuJacoBaraKnor.Core.Domain.Cart.Pipelines;
-using TarlBreuJacoBaraKnor.Tests.Helpers;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
+using TarlBreuJacoBaraKnor.webapp.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace TarlBreuJacoBaraKnor.Tests.Core.Domain.Cart.Pipelines;
+namespace TarlBreuJacoBaraKnor.webapp.Tests.Core.Domain.Cart.Pipelines;
 
 public class AddItemTests : IClassFixture<DbTest>
 {

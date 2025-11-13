@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using UiS.Dat240.Lab3.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace UiS.Dat240.Lab3.Core.Domain.Cart.Pipelines;
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 
 public class Get
 {

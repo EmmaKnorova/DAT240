@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.Migrations
+namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateSchema : Migration

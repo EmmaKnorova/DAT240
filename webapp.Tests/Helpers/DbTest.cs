@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MediatR;
 using Moq;
-using UiS.Dat240.Lab3.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
-namespace TarlBreuJacoBaraKnor.Tests.Helpers;
+namespace TarlBreuJacoBaraKnor.webapp.Tests.Helpers;
 
 public class DbTest : IDisposable
 {
