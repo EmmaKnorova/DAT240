@@ -9,11 +9,11 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data.Migrations
+namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    [Migration("20251112164351_ordering context")]
-    partial class orderingcontext
+    [Migration("20251114065217_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,7 +147,7 @@ namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data.Migrations
                     b.ToTable("order_line", (string)null);
                 });
 
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Events.FoodItem", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.FoodItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
