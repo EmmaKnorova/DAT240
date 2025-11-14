@@ -23,8 +23,9 @@ public class RegisterInputModel
     public string ConfirmPassword { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
+    [Display(Name = "Postal code")]
     public string PostalCode { get; set; } = string.Empty;
-    
     public string Role { get; set; } = string.Empty;
+    [Display(Name = "Phone number")]
     public string PhoneNumber { get; set; } = string.Empty;
 }

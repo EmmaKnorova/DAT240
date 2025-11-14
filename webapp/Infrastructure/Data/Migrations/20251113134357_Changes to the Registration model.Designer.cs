@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UiS.Dat240.Lab3.Infrastructure.Data;
@@ -11,9 +12,11 @@ using UiS.Dat240.Lab3.Infrastructure.Data;
 namespace TarlBreuJacoBaraKnor.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    partial class ShopContextModelSnapshot : ModelSnapshot
+    [Migration("20251113134357_Changes to the Registration model")]
+    partial class ChangestotheRegistrationmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,19 +189,19 @@ namespace TarlBreuJacoBaraKnor.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs.LoginInputModel", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs.LoginModel", b =>
                 {
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password");
 
-                    b.ToTable("login_input_model", (string)null);
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("username");
+
+                    b.ToTable("login_model", (string)null);
                 });
 
             modelBuilder.Entity("TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs.RegisterInputModel", b =>
@@ -288,16 +291,6 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("access_failed_count");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("address");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("city");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text")
@@ -342,6 +335,7 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)")
                         .HasColumnName("phone_number");
@@ -349,11 +343,6 @@ namespace TarlBreuJacoBaraKnor.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean")
                         .HasColumnName("phone_number_confirmed");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("postal_code");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text")

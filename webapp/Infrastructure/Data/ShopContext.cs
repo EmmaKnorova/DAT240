@@ -113,12 +113,13 @@ public class ShopContext : IdentityDbContext<User, IdentityRole, string>
             e.Property(x => x.City).IsRequired().HasMaxLength(100);
             e.Property(x => x.PostalCode).IsRequired().HasMaxLength(32);
             e.Property(x => x.PhoneNumber).IsRequired().HasMaxLength(20);
+            e.Property(x => x.Role).IsRequired();
         });
 
-        b.Entity<LoginModel>(e =>
+        b.Entity<LoginInputModel>(e =>
         {
             e.HasNoKey();
-            e.Property(x => x.Username).IsRequired();
+            e.Property(x => x.Email).IsRequired();
             e.Property(x => x.Password).IsRequired();
         });
 

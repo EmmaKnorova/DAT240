@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UiS.Dat240.Lab3.Infrastructure.Data;
@@ -11,9 +12,11 @@ using UiS.Dat240.Lab3.Infrastructure.Data;
 namespace TarlBreuJacoBaraKnor.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    partial class ShopContextModelSnapshot : ModelSnapshot
+    [Migration("20251113142605_Changes to the Login model")]
+    partial class ChangestotheLoginmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -288,16 +291,6 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("access_failed_count");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("address");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("city");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text")
@@ -342,6 +335,7 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)")
                         .HasColumnName("phone_number");
@@ -349,11 +343,6 @@ namespace TarlBreuJacoBaraKnor.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean")
                         .HasColumnName("phone_number_confirmed");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("postal_code");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text")
