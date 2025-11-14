@@ -14,120 +14,106 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TarlBreuJacoBaraKnor.styles.css" asp-append-version="true" />
     <title>@ViewData["Title"]</title>
-
 </head>
 
-<body>
-    <section class="">
-        <!-- Jumbotron -->
-        <div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
-            <div class="container">
+<body class="bg-light">
+    <section class="min-vh-100 d-flex align-items-center bg-light">
+        <div class="container-fluid">
             <div class="row gx-lg-5 align-items-center">
                 <div class="col-lg-6 mb-5 mb-lg-0">
-                <h1 class="my-5 display-3 fw-bold ls-tight">
-                    Campus Eats<br />
-                    <span class="text-primary">A better food delivery service</span>
-                </h1>
-                <p style="color: hsl(217, 10%, 50.8%)">
-                    Fast delivery and pickup, easy payments, and zero waiting in line.
-                </p>
+                    <div class="px-4 py-5 px-md-5 text-center text-lg-start">
+                        <h1 class="my-5 display-3 fw-bold ls-tight">
+                            Campus Eats<br />
+                            <span class="text-primary">Register</span>
+                        </h1>
+                        <p class="text-muted">
+                            Fast delivery and pickup, easy payments, and zero waiting in line.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="card">
-                    <div class="card-body py-5 px-md-5">
-                    <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                        <div class="mb-3">
-                            <label asp-for="Input.Name" class="form-label"></label>
-                            <input asp-for="Input.Name" class="form-control" />
-                            <span asp-validation-for="Input.Name" class="text-danger small"></span>
+                    <div class="card">
+                        <div class="card-body py-5 px-md-5 center">
+                            <form method="post">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Input.Name" class="form-label"></label>
+                                    <input asp-for="Input.Name" class="form-control" />
+                                    <span asp-validation-for="Input.Name" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Input.UserName" class="form-label"></label>
+                                    <input asp-for="Input.UserName" class="form-control" />
+                                    <span asp-validation-for="Input.UserName" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Input.Email" class="form-label"></label>
+                                    <input asp-for="Input.Email" class="form-control" />
+                                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                                    <input asp-for="Input.PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Input.Address" class="form-label"></label>
+                                    <input asp-for="Input.Address" class="form-control" />
+                                    <span asp-validation-for="Input.Address" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Input.City" class="form-label"></label>
+                                    <input asp-for="Input.City" class="form-control" />
+                                    <span asp-validation-for="Input.City" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Input.PostalCode" class="form-label"></label>
+                                    <input asp-for="Input.PostalCode" class="form-control" />
+                                    <span asp-validation-for="Input.PostalCode" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Input.Password" class="form-label"></label>
+                                    <input asp-for="Input.Password" class="form-control" autocomplete="off"/>
+                                    <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Input.Role" class="form-label"></label>
+                                    <select asp-for="Input.Role" class="form-select" asp-items="@(new SelectList(Model.AvailableRoles))"></select>
+                                    <span asp-validation-for="Input.Role" class="text-danger small"></span>
+                                </div>
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary btn-block mb-4 btn-lg">
+                                        Register
+                                    </button>
+
+                                    <p>or register with:</p>
+
+                                    <p class="text-muted">
+                                        Already have an account? 
+                                        <a href="/Identity/Login" class="text-primary text-decoration-none">Log In here</a>
+                                    </p>
+                                </div>
+                            </form>
                         </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Input.UserName" class="form-label"></label>
-                            <input asp-for="Input.UserName" class="form-control" />
-                            <span asp-validation-for="Input.UserName" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Input.Email" class="form-label"></label>
-                            <input asp-for="Input.Email" class="form-control" />
-                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Input.PhoneNumber" class="form-label"></label>
-                            <input asp-for="Input.PhoneNumber" class="form-control" />
-                            <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Input.Address" class="form-label"></label>
-                            <input asp-for="Input.Address" class="form-control" />
-                            <span asp-validation-for="Input.Address" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Input.City" class="form-label"></label>
-                            <input asp-for="Input.City" class="form-control" />
-                            <span asp-validation-for="Input.City" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Input.PostalCode" class="form-label"></label>
-                            <input asp-for="Input.PostalCode" class="form-control" />
-                            <span asp-validation-for="Input.PostalCode" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Input.Password" class="form-label"></label>
-                            <input asp-for="Input.Password" class="form-control" />
-                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="Input.ConfirmPassword" class="form-label"></label>
-                            <input asp-for="Input.ConfirmPassword" class="form-control" />
-                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="Input.Role" class="form-label"></label>
-                            <select asp-for="Input.Role" class="form-select">
-                                @foreach (var role in Model.AvailableRoles) {
-                                    <option value="@role">@role</option>
-                                }
-                            </select>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4 btn-lg">
-                            Register
-                            </button>
-
-                            <p>or register with:</p>
-                            
-                            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-link btn-floating mx-1">
-                            <i class="fab fa-facebook-f"></i>
-                            </button>
-
-                            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-link btn-floating mx-1">
-                            <i class="fab fa-google"></i>
-                            </button>
-
-                            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-link btn-floating mx-1">
-                            <i class="fab fa-twitter"></i>
-                            </button>
-
-                            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-link btn-floating mx-1">
-                            <i class="fab fa-github"></i>
-                            </button>
-                        </div>
-                    </form>
                     </div>
                 </div>
-                </div>
-            </div>
             </div>
         </div>
     </section>
@@ -135,9 +121,6 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
-    @section Scripts {
-        <partial name="_ValidationScriptsPartial" />
-    }
+    <partial name="_ValidationScriptsPartial" />
 </body>
 </html>

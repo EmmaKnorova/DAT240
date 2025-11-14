@@ -15,10 +15,8 @@ public class RegisterModel : PageModel
     private readonly ILogger<RegisterModel> _logger;
     private readonly RoleManager<IdentityRole> _roleManager;
     [BindProperty]
-    public RegisterInputModel Input { get; set; }
-    public List<string> AvailableRoles { get; set; } = ["User", "Courier"];
-
-    public string ReturnUrl { get; set; }
+    public required RegisterInputModel Input { get; set; }
+    public List<string> AvailableRoles { get; set; } = [Roles.User.ToString(), Roles.Courier.ToString()];
 
     public RegisterModel(
         UserManager<User> userManager,
@@ -32,53 +30,69 @@ public class RegisterModel : PageModel
         _roleManager = roleManager;
     }
 
-    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+    // public async Task<IActionResult> OnGetAsync()
+    // {
+    //     if (User.Identity.IsAuthenticated)
+    //             return Redirect("/");
+    //         else return Page();
+    // }
+
+    public async Task<IActionResult> OnPostAsync()
     {
-        returnUrl ??= Url.Content("~/");
+        if (!ModelState.IsValid)
+            return Page();
 
-        if (ModelState.IsValid)
+        var user = new User
         {
-            // 1. Create user
-            var user = new User
-            {
-                UserName = Input.UserName,
-                Email = Input.Email,
-                Name = Input.Name,
-                PhoneNumber = Input.PhoneNumber,
-                EmailConfirmed = true,
-            };
+            UserName = Input.UserName,
+            Email = Input.Email,
+            Name = Input.Name,
+            PhoneNumber = Input.PhoneNumber,
+            Address = Input.Address,
+            City = Input.City,
+            PostalCode = Input.PostalCode,
+            EmailConfirmed = true,
+        };
 
-            var result = await _userManager.CreateAsync(user, Input.Password);
-            if (result.Succeeded)
-            {
-                _logger.LogInformation($"New user has registered: {Input.Name}.");
+        var userFoundByEmail = await _userManager.FindByEmailAsync(user.Email);
+        if (userFoundByEmail != null)
+        {
+            ModelState.AddModelError(string.Empty, $"A user has already registered with this email address: {user.Email}");
+            return Page();
+        }
 
-                // 2. Assign default role (enum-based)
-                var userSelectedRole = Input.Role;
-                if (!await _roleManager.RoleExistsAsync(userSelectedRole))
-                {
-                    return Page();
-                }
+        Console.WriteLine("User doesn't exist");
 
-                var roleResult = await _userManager.AddToRoleAsync(user, userSelectedRole);
-                if (!roleResult.Succeeded)
-                {
-                    foreach (var error in roleResult.Errors)
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    return Page();
-                }
-
-                // 4. Sign in user
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return LocalRedirect(returnUrl);
-            }
-
+        var result = await _userManager.CreateAsync(user, Input.Password);
+        Console.WriteLine(result);
+        if (!result.Succeeded)
+        {
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
+            return Page();
         }
 
-        return RedirectToPage("/Index");
+        _logger.LogInformation($"New user has registered: {Input.Name}.");
+
+        var userSelectedRole = Input.Role;
+        Console.WriteLine($"The user decided to become: {userSelectedRole}");
+        if (!await _roleManager.RoleExistsAsync(userSelectedRole))
+        {
+            ModelState.AddModelError(string.Empty, "Selected role doesn't exist.");
+            return Page();
+        }
+
+        var roleResult = await _userManager.AddToRoleAsync(user, userSelectedRole);
+        if (!roleResult.Succeeded)
+        {
+            foreach (var error in roleResult.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
+            return Page();
+        }
+
+        await _signInManager.SignInAsync(user, isPersistent: false);
+        return LocalRedirect("/");
     }
 }
