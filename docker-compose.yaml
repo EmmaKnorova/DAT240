@@ -22,6 +22,17 @@ services:
         condition: service_healthy
     networks:
       - campus_eats_net
+    # https://docs.docker.com/compose/how-tos/file-watch/
+    develop:
+      watch:
+        - action: sync
+          path: ./webapp
+          target: /src/webapp
+          ignore:
+            - /obj
+            - /bin
+        - action: rebuild
+          path: ./webapp
 
   db:
     image: postgres:16-alpine
