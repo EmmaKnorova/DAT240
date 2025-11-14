@@ -4,23 +4,14 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data.Migrations
+namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class orderingcontext : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "CartItem");
-
-            migrationBuilder.DropTable(
-                name: "FoodItems");
-
-            migrationBuilder.DropTable(
-                name: "ShoppingCart");
-
             migrationBuilder.CreateTable(
                 name: "food_items",
                 columns: table => new
@@ -173,59 +164,6 @@ namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "users");
-
-            migrationBuilder.CreateTable(
-                name: "FoodItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CookTime = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FoodItems", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShoppingCart",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShoppingCart", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CartItem",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Count = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    ShoppingCartId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Sku = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CartItem", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CartItem_ShoppingCart_ShoppingCartId",
-                        column: x => x.ShoppingCartId,
-                        principalTable: "ShoppingCart",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CartItem_ShoppingCartId",
-                table: "CartItem",
-                column: "ShoppingCartId");
         }
     }
 }
