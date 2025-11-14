@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using UiS.Dat240.Lab3.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.Migrations
+namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ShopContext))]
     partial class ShopContextModelSnapshot : ModelSnapshot
@@ -416,7 +416,7 @@ namespace TarlBreuJacoBaraKnor.Migrations
                     b.ToTable("token_infos", (string)null);
                 });
 
-            modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.CartItem", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -447,6 +447,7 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasColumnName("cart_id");
 
                     b.HasKey("Id")
+                        .HasName("pk_cart_items")
                         .HasName("pk_cart_items");
 
                     b.HasIndex("cart_id")
@@ -455,7 +456,7 @@ namespace TarlBreuJacoBaraKnor.Migrations
                     b.ToTable("cart_items", (string)null);
                 });
 
-            modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.ShoppingCart", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.ShoppingCart", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -466,23 +467,100 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasName("pk_shopping_carts");
 
                     b.ToTable("shopping_carts", (string)null);
+                    b.ToTable("cart_items", (string)null);
                 });
 
-            modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Products.FoodItem", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("customer_id");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("order_date");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
+
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("ix_orders_customer_id");
+
+                    b.ToTable("orders", (string)null);
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.OrderLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer")
+                        .HasColumnName("amount");
+
+                    b.Property<Guid>("FoodItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("food_item_id");
+
+                    b.Property<string>("FoodItemName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("food_item_name");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("order_id");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric")
+                        .HasColumnName("price");
+
+                    b.HasKey("Id")
+                        .HasName("pk_order_line");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_order_line_order_id");
+
+                    b.ToTable("order_line", (string)null);
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.FoodItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
+                        .HasColumnName("id")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CookTime")
                         .HasColumnType("integer")
+                        .HasColumnName("cook_time")
                         .HasColumnName("cook_time");
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("description");
                         .HasMaxLength(2048)
                         .HasColumnType("character varying(2048)")
                         .HasColumnName("description");
@@ -492,12 +570,19 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("name");
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(10, 2)
+                        .HasPrecision(10, 2)
                         .HasColumnType("numeric(10,2)")
+                        .HasColumnName("price(10,2)")
                         .HasColumnName("price");
 
+                    b.HasKey("Id")
+                        .HasName("pk_food_items");
                     b.HasKey("Id")
                         .HasName("pk_food_items");
 
@@ -559,20 +644,124 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                    b.ToTable("food_items", (string)null);
                 });
 
-            modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.CartItem", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", b =>
                 {
-                    b.HasOne("UiS.Dat240.Lab3.Core.Domain.Cart.ShoppingCart", null)
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("password");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("phone_number");
+
+                    b.PrimitiveCollection<int[]>("Roles")
+                        .IsRequired()
+                        .HasColumnType("integer[]")
+                        .HasColumnName("roles");
+
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
+
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.CartItem", b =>
+                {
+                    b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.ShoppingCart", null)
                         .WithMany("Items")
                         .HasForeignKey("cart_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_cart_items_shopping_carts_cart_id");
                 });
 
-            modelBuilder.Entity("UiS.Dat240.Lab3.Core.Domain.Cart.ShoppingCart", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order", b =>
+                {
+                    b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_orders_users_customer_id");
+
+                    b.OwnsOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Location", "Location", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Building")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("location_building");
+
+                            b1.Property<string>("Notes")
+                                .HasColumnType("text")
+                                .HasColumnName("location_notes");
+
+                            b1.Property<string>("RoomNumber")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("location_room_number");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId")
+                                .HasConstraintName("fk_orders_orders_id");
+                        });
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Location")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.OrderLine", b =>
+                {
+                    b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order", null)
+                        .WithMany("OrderLines")
+                        .HasForeignKey("OrderId")
+                        .HasConstraintName("fk_order_line_orders_order_id");
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.ShoppingCart", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order", b =>
+                {
+                    b.Navigation("OrderLines");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,7 +1,7 @@
 ﻿using System;
-using UiS.Dat240.Lab3.SharedKernel;
+using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
-namespace UiS.Dat240.Lab3.Core.Domain.Cart;
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 
 public class CartItem : BaseEntity
 {

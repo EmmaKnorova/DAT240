@@ -1,17 +1,15 @@
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using UiS.Dat240.Lab3.Core.Domain.Cart;
-using UiS.Dat240.Lab3.Core.Domain.Products;
-using UiS.Dat240.Lab3.SharedKernel;
-using TarlBreuJacoBaraKnor.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
+using TarlBreuJacoBaraKnor.webapp.SharedKernel;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
-namespace UiS.Dat240.Lab3.Infrastructure.Data;
+namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 public class ShopContext : IdentityDbContext<User, IdentityRole, string>
 {
@@ -27,6 +25,7 @@ public class ShopContext : IdentityDbContext<User, IdentityRole, string>
     public DbSet<ShoppingCart> ShoppingCarts => Set<ShoppingCart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<Order> Orders => Set<Order>();
     public DbSet<TokenInfo> TokenInfos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder b)

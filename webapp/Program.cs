@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TarlBreuJacoBaraKnor.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.Infrastructure.Data;
-using UiS.Dat240.Lab3.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,14 +15,15 @@ builder.Services.AddRazorPages();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 
-builder.Services.AddDbContext<ShopContext>(options => options.UseNpgsql(connectionString));
-builder.Services.AddDbContext<ShopContext>(options => options.UseSnakeCaseNamingConvention());
+builder.Services.AddDbContext<ShopContext>(options =>
+    options.UseNpgsql(connectionString)
+           .UseSnakeCaseNamingConvention());
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(
         typeof(Program).Assembly,
         typeof(ShopContext).Assembly
-    )
+    )   
 );
 
 builder.Services.AddIdentity<User, IdentityRole>()

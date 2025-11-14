@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UiS.Dat240.Lab3.SharedKernel;
+namespace TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
 public abstract class BaseEntity
 {

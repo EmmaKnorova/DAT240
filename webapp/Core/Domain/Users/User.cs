@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace TarlBreuJacoBaraKnor.Core.Domain.Users;
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 public class User : IdentityUser
 {

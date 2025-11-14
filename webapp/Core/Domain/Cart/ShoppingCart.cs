@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UiS.Dat240.Lab3.SharedKernel;
+using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
-namespace UiS.Dat240.Lab3.Core.Domain.Cart;
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 
 public class ShoppingCart : BaseEntity
 {
