@@ -8,7 +8,7 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
+namespace TarlBreuJacoBaraKnor.Migrations
 {
     [DbContext(typeof(ShopContext))]
     partial class ShopContextModelSnapshot : ModelSnapshot
@@ -22,10 +22,11 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
                         .HasColumnName("id");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -53,7 +54,7 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,9 +71,8 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("claim_value");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
                         .HasColumnName("role_id");
 
                     b.HasKey("Id")
@@ -84,7 +84,7 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -101,9 +101,8 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("claim_value");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
@@ -115,7 +114,7 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("text")
@@ -129,9 +128,8 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("provider_display_name");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.HasKey("LoginProvider", "ProviderKey")
@@ -143,14 +141,14 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("text")
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
                         .HasColumnName("role_id");
 
                     b.HasKey("UserId", "RoleId")
@@ -162,10 +160,10 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.Property<string>("LoginProvider")
@@ -278,10 +276,169 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                     b.ToTable("token_model", (string)null);
                 });
 
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.Core.Domain.Users.User", b =>
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.CartItem", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("integer")
+                        .HasColumnName("count");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("price");
+
+                    b.Property<int>("Sku")
+                        .HasColumnType("integer")
+                        .HasColumnName("sku");
+
+                    b.Property<Guid?>("cart_id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cart_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cart_items");
+
+                    b.HasIndex("cart_id")
+                        .HasDatabaseName("ix_cart_items_cart_id");
+
+                    b.ToTable("cart_items", (string)null);
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.ShoppingCart", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_shopping_carts");
+
+                    b.ToTable("shopping_carts", (string)null);
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("customer_id");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
                         .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("order_date");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
+
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("ix_orders_customer_id");
+
+                    b.ToTable("orders", (string)null);
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.OrderLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer")
+                        .HasColumnName("amount");
+
+                    b.Property<Guid>("FoodItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("food_item_id");
+
+                    b.Property<string>("FoodItemName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("food_item_name");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("order_id");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric")
+                        .HasColumnName("price");
+
+                    b.HasKey("Id")
+                        .HasName("pk_order_line");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_order_line_order_id");
+
+                    b.ToTable("order_line", (string)null);
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.FoodItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CookTime")
+                        .HasColumnType("integer")
+                        .HasColumnName("cook_time");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("price");
+
+                    b.HasKey("Id")
+                        .HasName("pk_food_items");
+
+                    b.ToTable("food_items", (string)null);
+                });
+
+            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
                         .HasColumnName("id");
 
                     b.Property<int>("AccessFailedCount")
@@ -416,182 +573,9 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                     b.ToTable("token_infos", (string)null);
                 });
 
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.CartItem", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("integer")
-                        .HasColumnName("count");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)")
-                        .HasColumnName("price");
-
-                    b.Property<int>("Sku")
-                        .HasColumnType("integer")
-                        .HasColumnName("sku");
-
-                    b.Property<Guid?>("cart_id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("cart_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_cart_items")
-                        .HasName("pk_cart_items");
-
-                    b.HasIndex("cart_id")
-                        .HasDatabaseName("ix_cart_items_cart_id");
-
-                    b.ToTable("cart_items", (string)null);
-                });
-
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.ShoppingCart", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_shopping_carts");
-
-                    b.ToTable("shopping_carts", (string)null);
-                    b.ToTable("cart_items", (string)null);
-                });
-
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("customer_id");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("notes");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("order_date");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
-
-                    b.HasKey("Id")
-                        .HasName("pk_orders");
-
-                    b.HasIndex("CustomerId")
-                        .HasDatabaseName("ix_orders_customer_id");
-
-                    b.ToTable("orders", (string)null);
-                });
-
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.OrderLine", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasColumnName("id");
-
-                    b.Property<int>("Amount")
-                        .HasColumnType("integer")
-                        .HasColumnName("amount");
-
-                    b.Property<Guid>("FoodItemId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("food_item_id");
-
-                    b.Property<string>("FoodItemName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("food_item_name");
-
-                    b.Property<Guid?>("OrderId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("order_id");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric")
-                        .HasColumnName("price");
-
-                    b.HasKey("Id")
-                        .HasName("pk_order_line");
-
-                    b.HasIndex("OrderId")
-                        .HasDatabaseName("ix_order_line_order_id");
-
-                    b.ToTable("order_line", (string)null);
-                });
-
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.FoodItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CookTime")
-                        .HasColumnType("integer")
-                        .HasColumnName("cook_time")
-                        .HasColumnName("cook_time");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("description");
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
-                        .HasColumnName("name");
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
-                        .HasColumnName("name");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(10, 2)
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)")
-                        .HasColumnName("price(10,2)")
-                        .HasColumnName("price");
-
-                    b.HasKey("Id")
-                        .HasName("pk_food_items");
-                    b.HasKey("Id")
-                        .HasName("pk_food_items");
-
-                    b.ToTable("food_items", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -599,9 +583,9 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                         .HasConstraintName("fk_asp_net_role_claims_asp_net_roles_role_id");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("TarlBreuJacoBaraKnor.Core.Domain.Users.User", null)
+                    b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -609,9 +593,9 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                         .HasConstraintName("fk_asp_net_user_claims_asp_net_users_user_id");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("TarlBreuJacoBaraKnor.Core.Domain.Users.User", null)
+                    b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -619,16 +603,16 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                         .HasConstraintName("fk_asp_net_user_logins_asp_net_users_user_id");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_roles_asp_net_roles_role_id");
 
-                    b.HasOne("TarlBreuJacoBaraKnor.Core.Domain.Users.User", null)
+                    b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -636,61 +620,14 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                         .HasConstraintName("fk_asp_net_user_roles_asp_net_users_user_id");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("TarlBreuJacoBaraKnor.Core.Domain.Users.User", null)
+                    b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
-                    b.ToTable("food_items", (string)null);
-                });
-
-            modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("email");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("password");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("phone_number");
-
-                    b.PrimitiveCollection<int[]>("Roles")
-                        .IsRequired()
-                        .HasColumnType("integer[]")
-                        .HasColumnName("roles");
-
-                    b.HasKey("Id")
-                        .HasName("pk_users");
-
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("ix_users_email");
-
-                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.CartItem", b =>
@@ -709,7 +646,7 @@ namespace TarlBreuJacoBaraKnor.Infrastructure.Data.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_orders_users_customer_id");
+                        .HasConstraintName("fk_orders_user_customer_id");
 
                     b.OwnsOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Location", "Location", b1 =>
                         {
