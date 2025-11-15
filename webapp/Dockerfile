@@ -3,8 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /webapp
 
 COPY . .
-RUN dotnet restore TarlBreuJacoBaraKnor.csproj
-RUN dotnet publish TarlBreuJacoBaraKnor.csproj -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 # ===== Runtime =====
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
@@ -13,5 +12,7 @@ COPY --from=build /app/publish ./
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
+
+RUN mkdir /keys
 
 ENTRYPOINT ["dotnet", "TarlBreuJacoBaraKnor.dll"]

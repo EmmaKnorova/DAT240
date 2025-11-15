@@ -1,5 +1,11 @@
+using System.Text;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using TarlBreuJacoBaraKnor.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +24,27 @@ builder.Services.AddMediatR(cfg =>
         typeof(Program).Assembly,
         typeof(ShopContext).Assembly
     )   
-);
+); 
+
+builder.Services.AddIdentity<User, IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<ShopContext>()
+                .AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 12;
+});
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/keys"))
+    .SetApplicationName("CampusEats")
+    .UseCryptographicAlgorithms(
+        new AuthenticatedEncryptorConfiguration
+        {
+            EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+            ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+        });
 
 var app = builder.Build();
 
@@ -40,10 +66,13 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+await DbSeeder.SeedData(app);
 
 app.Run();

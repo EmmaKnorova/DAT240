@@ -1,8 +1,8 @@
 namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
-public enum Role
+public enum Roles
 {
     Admin,
     Courier,
-    Customer
+    User
 }

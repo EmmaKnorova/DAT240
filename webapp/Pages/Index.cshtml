@@ -1,10 +1,76 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Campus Eats";
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TarlBreuJacoBaraKnor.styles.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - Campus Eats</title>
+</head>
+
+<body class="bg-light">
+    <section class="min-vh-100 d-flex align-items-center">
+        <div class="container">
+            <div class="row gx-lg-5 align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <h1 class="display-3 fw-bold ls-tight mb-4">
+                        Welcome to <br />
+                        <span class="text-primary">Campus Eats</span>
+                    </h1>
+                    <p class="text-muted lead mb-4">
+                        Your campus food delivery solution - fast, convenient, and delicious. 
+                        Skip the lines and get your favorite meals delivered right to your dorm, 
+                        library, or anywhere on campus.
+                    </p>
+                    <p class="text-muted mb-5">
+                        With easy payments, real-time tracking, and a wide variety of dining options, 
+                        Campus Eats makes campus dining better than ever. Join thousands of students 
+                        who are already enjoying hassle-free meals.
+                    </p>
+                    <div class="d-grid gap-3 d-md-flex justify-content-md-start">
+                        <a href="/Identity/Register" class="btn btn-primary btn-lg px-4 me-md-2">Register Now</a>
+                        <a href="/Identity/Login" class="btn btn-outline-primary btn-lg px-4">Log In</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="card">
+                        <div class="card-body p-5 text-center">
+                            <h3 class="card-title mb-4">Why Choose Campus Eats?</h3>
+                            <div class="row text-start">
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-primary">🚀 Fast Delivery</h5>
+                                    <p class="text-muted small">Get your food in 30 minutes or less</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-primary">💳 Easy Payments</h5>
+                                    <p class="text-muted small">Secure campus payment integration</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-primary">📍 Campus-Wide</h5>
+                                    <p class="text-muted small">Delivery anywhere on campus</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-primary">🍕 Variety</h5>
+                                    <p class="text-muted small">All your favorite campus restaurants</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

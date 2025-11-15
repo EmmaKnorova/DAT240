@@ -1,6 +1,3 @@
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
@@ -8,10 +5,13 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
+using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
-public class ShopContext : DbContext
+public class ShopContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
     private readonly IMediator? _mediator;
 
@@ -26,6 +26,7 @@ public class ShopContext : DbContext
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<TokenInfo> TokenInfos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -48,17 +49,17 @@ public class ShopContext : DbContext
 
         // -------- ShoppingCart / CartItem --------
         b.Entity<ShoppingCart>(e =>
-{
-			e.HasKey(x => x.Id);
-			e.HasMany(x => x.Items)
-			.WithOne()
-			.HasForeignKey("cart_id")
-			.OnDelete(DeleteBehavior.Cascade);
+            {
+                e.HasKey(x => x.Id);
+                e.HasMany(x => x.Items)
+                .WithOne()
+                .HasForeignKey("cart_id")
+                .OnDelete(DeleteBehavior.Cascade);
 
-			var nav = e.Metadata.FindNavigation(nameof(ShoppingCart.Items))!;
-			nav.SetField("_items");
-			nav.SetPropertyAccessMode(PropertyAccessMode.Field);
-		});
+                var nav = e.Metadata.FindNavigation(nameof(ShoppingCart.Items))!;
+                nav.SetField("_items");
+                nav.SetPropertyAccessMode(PropertyAccessMode.Field);
+            });
 
         b.Entity<CartItem>(e =>
         {
@@ -80,7 +81,6 @@ public class ShopContext : DbContext
             e.Property(x => x.Name).IsRequired().HasMaxLength(120);
             e.Property(x => x.Email).IsRequired().HasMaxLength(256);
             e.Property(x => x.PhoneNumber).HasMaxLength(32);
-            e.Property(x => x.Password).IsRequired().HasMaxLength(256);
 
             // EF Core primitive collection ->  user_roles table (user_id, role)
             // e.PrimitiveCollection(x => x.Roles)
@@ -92,6 +92,41 @@ public class ShopContext : DbContext
             //  });
 
             e.HasIndex(x => x.Email).IsUnique();
+        });
+
+        b.Entity<TokenInfo>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Username).IsRequired().HasMaxLength(30);
+            e.Property(x => x.RefreshToken).IsRequired().HasMaxLength(200);
+            e.Property(x => x.ExpiredAt).IsRequired();
+        });
+
+        b.Entity<RegisterInputModel>(e =>
+        {
+            e.HasNoKey();
+            e.Property(x => x.Name).IsRequired().HasMaxLength(32);
+            e.Property(x => x.Email).IsRequired().HasMaxLength(64);
+            e.Property(x => x.Password).IsRequired().HasMaxLength(64);
+            e.Property(x => x.Address).IsRequired().HasMaxLength(100);
+            e.Property(x => x.City).IsRequired().HasMaxLength(100);
+            e.Property(x => x.PostalCode).IsRequired().HasMaxLength(32);
+            e.Property(x => x.PhoneNumber).IsRequired().HasMaxLength(20);
+            e.Property(x => x.Role).IsRequired();
+        });
+
+        b.Entity<LoginInputModel>(e =>
+        {
+            e.HasNoKey();
+            e.Property(x => x.Email).IsRequired();
+            e.Property(x => x.Password).IsRequired();
+        });
+
+        b.Entity<TokenModel>(e =>
+        {
+            e.HasNoKey();
+            e.Property(x => x.AccessToken).IsRequired();
+            e.Property(x => x.RefreshToken).IsRequired();
         });
     }
 

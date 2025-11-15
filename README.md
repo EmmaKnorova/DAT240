@@ -1,12 +1,19 @@
 # Start the project
 
-
 ## For Developers
 
 ### Docker
 
+To build the project:
+
 ```bash
 docker compose up --build
+```
+
+To rebuild after every change during development
+
+```bash
+docker compose up --watch
 ```
 
 ### Commit Structure
