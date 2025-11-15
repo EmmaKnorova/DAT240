@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using TarlBreuJacoBaraKnor.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.Infrastructure.Data;
 
@@ -17,14 +17,14 @@ public class DbSeeder
         {
             // resolve other dependencies
             var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
-            var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+            var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole<Guid>>>();
 
             // Create roles
             foreach (Roles role in Enum.GetValues<Roles>())
             {
                 if ((await roleManager.RoleExistsAsync(role.ToString())) == false)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(role.ToString()));
+                    await roleManager.CreateAsync(new IdentityRole<Guid>(role.ToString()));
                 }
             }
 
@@ -42,7 +42,7 @@ public class DbSeeder
 
                 // Attempt to create admin user
                 var createUserResult = await userManager
-                    .CreateAsync(user: user, password: "admin");
+                    .CreateAsync(user: user, password: "Admin123456789!");
 
                 // Validate user creation
                 if (createUserResult.Succeeded == false)

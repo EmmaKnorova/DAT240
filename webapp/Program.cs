@@ -24,9 +24,9 @@ builder.Services.AddMediatR(cfg =>
         typeof(Program).Assembly,
         typeof(ShopContext).Assembly
     )   
-);
+); 
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ShopContext>()
                 .AddDefaultTokenProviders();
 

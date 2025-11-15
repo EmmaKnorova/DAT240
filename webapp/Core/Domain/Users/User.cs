@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
-public class User : IdentityUser
+public class User : IdentityUser<Guid>
 {
     public string Name { get; set; }
     public string Address { get; set; }

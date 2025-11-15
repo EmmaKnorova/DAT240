@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
-using TarlBreuJacoBaraKnor.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.Pages.Identity;
 
@@ -13,7 +13,7 @@ public class RegisterModel : PageModel
     private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
     private readonly ILogger<RegisterModel> _logger;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
     [BindProperty]
     public required RegisterInputModel Input { get; set; }
     public List<string> AvailableRoles { get; set; } = [Roles.User.ToString(), Roles.Courier.ToString()];
@@ -22,7 +22,7 @@ public class RegisterModel : PageModel
         UserManager<User> userManager,
         SignInManager<User> signInManager,
         ILogger<RegisterModel> logger,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole<Guid>> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
-public class ShopContext : IdentityDbContext<User, IdentityRole, string>
+public class ShopContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
     private readonly IMediator? _mediator;
 
