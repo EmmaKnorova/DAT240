@@ -30,12 +30,12 @@ public class RegisterModel : PageModel
         _roleManager = roleManager;
     }
 
-    // public async Task<IActionResult> OnGetAsync()
-    // {
-    //     if (User.Identity.IsAuthenticated)
-    //             return Redirect("/");
-    //         else return Page();
-    // }
+    public async Task<IActionResult> OnGetAsync()
+    {
+        if (User.Identity.IsAuthenticated)
+                return Redirect("/");
+            else return Page();
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {

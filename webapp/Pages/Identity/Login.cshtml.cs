@@ -18,36 +18,38 @@ public class LoginModel(
     private readonly UserManager<User> _userManager = userManager;
     private readonly ILogger<LoginModel> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
-    [BindProperty]
-    public LoginInputModel Input { get; set; }
+    [BindProperty] public required LoginInputModel Input { get; set; }
     public List<string> AvailableRoles { get; set; } = ["User", "Courier"];
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        if (User.Identity.IsAuthenticated)
+                return Redirect("/");
+            else return Page();
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
             return Page();
 
-        Console.WriteLine($"It works! {Input.Email} and {Input.Password}");
-
         var user = await _userManager.FindByEmailAsync(Input.Email);
-        Console.WriteLine(user);
         if (user == null)
         {
             ModelState.AddModelError(string.Empty, "Invalid email or password.");
-            Console.WriteLine("User not found!");
             return Page();
         }
         
-        var result = await _signInManager.PasswordSignInAsync(
-            Input.Email,
+        var result = await _signInManager.CheckPasswordSignInAsync(
+            user,
             Input.Password,
-            isPersistent: false,
             lockoutOnFailure: false
         );
         
         if (result.Succeeded)
         {
             _logger.LogInformation($"User logged in: {user.Email}");
+            await _signInManager.SignInAsync(user, isPersistent: false);
             return Redirect("/");
         }
         
