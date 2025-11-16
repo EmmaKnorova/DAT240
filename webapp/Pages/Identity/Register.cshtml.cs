@@ -16,7 +16,7 @@ public class RegisterModel : PageModel
     private readonly RoleManager<IdentityRole<Guid>> _roleManager;
     [BindProperty]
     public required RegisterInputModel Input { get; set; }
-    public List<string> AvailableRoles { get; set; } = [Roles.User.ToString(), Roles.Courier.ToString()];
+    public List<string> AvailableRoles { get; set; } = [Roles.Customer.ToString(), Roles.Courier.ToString()];
 
     public RegisterModel(
         UserManager<User> userManager,

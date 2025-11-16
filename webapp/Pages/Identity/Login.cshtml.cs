@@ -19,7 +19,7 @@ public class LoginModel(
     private readonly ILogger<LoginModel> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
     [BindProperty] public required LoginInputModel Input { get; set; }
-    public List<string> EnabledRoles { get; set; } = ["Admin"];
+    public List<string> AllowedRoles { get; set; } = ["User", "Courier"];
 
     public async Task<IActionResult> OnGetAsync()
     {
@@ -37,6 +37,12 @@ public class LoginModel(
         if (user == null)
         {
             ModelState.AddModelError(string.Empty, "Invalid email or password.");
+            return Page();
+        }
+
+        var userRoles = await _userManager.GetRolesAsync(user);
+        if (!userRoles.Any(r => AllowedRoles.Contains(r))) {
+            ModelState.AddModelError(string.Empty, "User doesn't have ");
             return Page();
         }
         

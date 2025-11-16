@@ -4,5 +4,5 @@ public enum Roles
 {
     Admin,
     Courier,
-    User
+    Customer
 }

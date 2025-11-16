@@ -29,7 +29,7 @@ public class DbSeeder
             }
 
             // Check if any users exist to prevent duplicate seeding
-            if (userManager.Users.Any() == false)
+            if (userManager.FindByEmailAsync("admin@gmail.com") == null)
             {
                 var user = new User
                 {
@@ -39,10 +39,12 @@ public class DbSeeder
                     EmailConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
-
+                
                 // Attempt to create admin user
                 var createUserResult = await userManager
                     .CreateAsync(user: user, password: "Admin123456789!");
+
+                Console.WriteLine(createUserResult);
 
                 // Validate user creation
                 if (createUserResult.Succeeded == false)
