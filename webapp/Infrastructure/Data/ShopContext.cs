@@ -26,7 +26,6 @@ public class ShopContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Order> Orders => Set<Order>();
-    public DbSet<TokenInfo> TokenInfos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -94,14 +93,6 @@ public class ShopContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
             e.HasIndex(x => x.Email).IsUnique();
         });
 
-        b.Entity<TokenInfo>(e =>
-        {
-            e.HasKey(x => x.Id);
-            e.Property(x => x.Username).IsRequired().HasMaxLength(30);
-            e.Property(x => x.RefreshToken).IsRequired().HasMaxLength(200);
-            e.Property(x => x.ExpiredAt).IsRequired();
-        });
-
         b.Entity<RegisterInputModel>(e =>
         {
             e.HasNoKey();
@@ -120,13 +111,6 @@ public class ShopContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
             e.HasNoKey();
             e.Property(x => x.Email).IsRequired();
             e.Property(x => x.Password).IsRequired();
-        });
-
-        b.Entity<TokenModel>(e =>
-        {
-            e.HasNoKey();
-            e.Property(x => x.AccessToken).IsRequired();
-            e.Property(x => x.RefreshToken).IsRequired();
         });
     }
 
