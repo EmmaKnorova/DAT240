@@ -18,13 +18,17 @@ public class LoginModel(
     private readonly UserManager<User> _userManager = userManager;
     private readonly ILogger<LoginModel> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
+    private readonly string _defaultUrlRedirectPath = "/OrderOverview"; 
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
     public List<string> AllowedRoles { get; set; } = ["User", "Courier"];
 
-    public async Task<IActionResult> OnGetAsync()
+    public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
+        ReturnUrl = returnUrl ?? Url.Content("~/");
         if (User.Identity.IsAuthenticated)
-                return Redirect("/");
+                return Redirect(_defaultUrlRedirectPath);
             else return Page();
     }
 
@@ -42,7 +46,7 @@ public class LoginModel(
 
         var userRoles = await _userManager.GetRolesAsync(user);
         if (!userRoles.Any(r => AllowedRoles.Contains(r))) {
-            ModelState.AddModelError(string.Empty, "User doesn't have ");
+            ModelState.AddModelError(string.Empty, "User doesn't have appropriate roles to log in.");
             return Page();
         }
         
@@ -56,7 +60,9 @@ public class LoginModel(
         {
             _logger.LogInformation($"User logged in: {user.Email}");
             await _signInManager.SignInAsync(user, isPersistent: false);
-            return Redirect("/");
+            if (Url.IsLocalUrl(ReturnUrl))
+                return Redirect(ReturnUrl);
+            return Redirect(_defaultUrlRedirectPath);
         }
         
         if (result.IsLockedOut)

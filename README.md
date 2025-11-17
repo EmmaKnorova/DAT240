@@ -1,5 +1,11 @@
 # Start the project
 
+## Access the Admin Overview
+
+To access the admin interface, please visint `http://127.0.0.1:8080/Admin/Identity/Login`.
+The default credentials for the admin user are: `admin@gmail.com:Admin123456789!`.
+You will be prompted to change the password after the first login.
+
 ## For Developers
 
 ### Docker
