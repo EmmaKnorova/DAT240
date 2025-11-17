@@ -19,7 +19,7 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
 
             var order = new Order(location, User, notes)
             {
-                OrderDate = DateTime.Now,
+                OrderDate = DateTimeOffset.UtcNow,
                 Status = Status.Submitted
             };
 
