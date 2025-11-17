@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TarlBreuJacoBaraKnor.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
@@ -28,6 +29,8 @@ builder.Services.AddMediatR(cfg =>
 );
 
 builder.Services.AddScoped<RequireChangingPasswordFilter>();
+// Register the OrderingService
+builder.Services.AddScoped<IOrderingService, OrderingService>();
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ShopContext>()
