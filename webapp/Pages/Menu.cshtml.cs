@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -11,25 +12,31 @@ namespace TarlBreuJacoBaraKnor.webapp.Pages;
 
 public class MenuModel : PageModel
 {
-	private readonly IMediator _mediator;
-	public MenuModel(IMediator mediator) => _mediator = mediator;
+    private readonly IMediator _mediator;
+    public MenuModel(IMediator mediator) => _mediator = mediator;
 
-	public List<FoodItem> FoodItems { get; set; } = new();
+    public List<FoodItem> FoodItems { get; set; } = new();
 
-	public async Task OnGetAsync()
-		=> FoodItems = await _mediator.Send(new Core.Domain.Products.Pipelines.Get.Request());
+    public async Task OnGetAsync()
+        => FoodItems = await _mediator.Send(new Core.Domain.Products.Pipelines.Get.Request());
 
-	/* public async Task<IActionResult> OnPostAddToCartAsync(int id, string name, decimal price)
-	{
-		var cartId = HttpContext.Session.GetGuid("CartId");
-		if (cartId == null)
-		{
-			cartId = Guid.NewGuid();
-			HttpContext.Session.SetString("CartId", cartId.ToString());
-		}
+    public async Task<IActionResult> OnPostAddToCartAsync(int id, string name, decimal price)
+    {
+        // Get the current user's ID from the authentication cookie
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+        {
+            return RedirectToPage("/Identity/Login");
+        }
 
-		await _mediator.Send(new Core.Domain.Cart.Pipelines.AddItem.Request(id, name, price, cartId.Value));
+        // Get the user's cart from the database (or create one if it doesn't exist)
+        var cartResponse = await _mediator.Send(new GetCartByUserId.Request(userId));
+        var cartId = cartResponse.CartId ?? Guid.NewGuid();
 
-		return RedirectToPage();
-	} */
+        // Add item to cart
+        await _mediator.Send(new AddItem.Request(id, name, price, userId, cartId));
+
+        return RedirectToPage();
+    }
 }

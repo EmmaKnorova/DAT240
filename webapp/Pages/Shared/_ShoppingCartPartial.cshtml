@@ -1,0 +1,24 @@
+@using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines
+@using MediatR
+@using System.Security.Claims
+@inject IMediator Mediator
+@{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var itemCount = 0;
+    Guid? cartId = null;
+
+    if (!string.IsNullOrEmpty(userId) && Guid.TryParse(userId, out var userGuid))
+    {
+        var cartResponse = await Mediator.Send(new GetCartByUserId.Request(userGuid));
+        cartId = cartResponse.CartId;
+        
+        if (cartId.HasValue)
+        {
+            itemCount = await Mediator.Send(new GetItemCount.Request(cartId.Value));
+        }
+    }
+}
+<i class="bi bi-cart3" style="font-size: 2.5rem;"></i>
+<a asp-page="/Cart/Cart" class="btn @(itemCount == 0 ? "disabled" : "")" style="background-color:#6F9A37; color: white;">
+    @itemCount items in cart
+</a>
