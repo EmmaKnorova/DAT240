@@ -11,7 +11,7 @@ public class DbSeeder
         using var scope = app.ApplicationServices.CreateScope();
 
         // resolve the logger service
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<DbSeeder>>();
+        var logger = scope.ServiceProvider.GetService<ILogger<DbSeeder>>();
 
         try
         {
@@ -29,13 +29,17 @@ public class DbSeeder
             }
 
             // Check if any users exist to prevent duplicate seeding
-            if (userManager.FindByEmailAsync("admin@gmail.com") == null)
+            if (await userManager.FindByEmailAsync("admin@gmail.com") == null)
             {
                 var user = new User
                 {
                     Name = "Admin",
                     UserName = "admin",
                     Email = "admin@gmail.com",
+                    Address = "Admin Street",
+                    City = "Admin City",
+                    PostalCode = "1234",
+                    ChangePasswordOnFirstLogin = true,
                     EmailConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };

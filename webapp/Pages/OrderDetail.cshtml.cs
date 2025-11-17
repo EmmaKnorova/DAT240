@@ -38,6 +38,6 @@ namespace TarlBreuJacoBaraKnor.webapp.Pages
 
 
             return RedirectToPage(new { id = OrderId });
-        }   
+        }
     }
 }
