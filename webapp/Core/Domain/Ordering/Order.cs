@@ -7,7 +7,7 @@ public class Order : BaseEntity
 {   
     public Guid Id { get; set; }
 
-    public DateTime OrderDate { get; set; }
+    public DateTimeOffset OrderDate { get; set; }
 
     public List<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 

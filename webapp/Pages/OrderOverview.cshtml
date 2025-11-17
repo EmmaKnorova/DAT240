@@ -24,7 +24,7 @@
                         <div>
                             <strong>Order </strong> – @order.Status  
                             <br />
-                            @order.OrderDate.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
+                            @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
                         </div>
                         <div>
                             <form method="post" class="m-0">
