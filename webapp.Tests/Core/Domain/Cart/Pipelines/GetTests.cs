@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -43,10 +44,25 @@ public class GetTests : IClassFixture<DbTest>
     {
         // Arrange
         await using var context = _dbTest.CreateContext();
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
         var cartId = Guid.NewGuid();
 
         // Create a cart in the database
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         context.Set<ShoppingCart>().Add(cart);
         await context.SaveChangesAsync();
 
@@ -66,10 +82,25 @@ public class GetTests : IClassFixture<DbTest>
     {
         // Arrange
         await using var context = _dbTest.CreateContext();
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
         var cartId = Guid.NewGuid();
 
         // Create cart with items
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(1, "Pizza", 12.99m);
         cart.AddItem(2, "Burger", 8.99m);
         cart.AddItem(3, "Fries", 3.99m);
@@ -98,10 +129,25 @@ public class GetTests : IClassFixture<DbTest>
     {
         // Arrange
         await using var context = _dbTest.CreateContext();
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
         var cartId = Guid.NewGuid();
 
         // Create empty cart
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         context.Set<ShoppingCart>().Add(cart);
         await context.SaveChangesAsync();
 
@@ -122,10 +168,25 @@ public class GetTests : IClassFixture<DbTest>
     {
         // Arrange
         await using var context = _dbTest.CreateContext();
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
         var cartId = Guid.NewGuid();
 
         // Create cart with items
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(1, "Pizza", 12.99m);
         cart.AddItem(1, "Pizza", 12.99m); // Add same item twice to increment count
         
@@ -150,18 +211,59 @@ public class GetTests : IClassFixture<DbTest>
     {
         // Arrange
         await using var context = _dbTest.CreateContext();
+        
+        var userId1 = Guid.NewGuid();
+        var user1 = new User
+        {
+            Id = userId1,
+            Name = "User 1",
+            Email = "user1@example.com",
+            UserName = "user1@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user1);
+
+        var userId2 = Guid.NewGuid();
+        var user2 = new User
+        {
+            Id = userId2,
+            Name = "User 2",
+            Email = "user2@example.com",
+            UserName = "user2@example.com",
+            Address = "456 Test Ave",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user2);
+
+        var userId3 = Guid.NewGuid();
+        var user3 = new User
+        {
+            Id = userId3,
+            Name = "User 3",
+            Email = "user3@example.com",
+            UserName = "user3@example.com",
+            Address = "789 Test Blvd",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user3);
+        await context.SaveChangesAsync();
+
         var targetCartId = Guid.NewGuid();
         var otherCartId1 = Guid.NewGuid();
         var otherCartId2 = Guid.NewGuid();
 
         // Create multiple carts
-        var targetCart = new ShoppingCart(targetCartId);
+        var targetCart = new ShoppingCart(targetCartId, userId1);
         targetCart.AddItem(1, "Pizza", 12.99m);
         
-        var otherCart1 = new ShoppingCart(otherCartId1);
+        var otherCart1 = new ShoppingCart(otherCartId1, userId2);
         otherCart1.AddItem(2, "Burger", 8.99m);
         
-        var otherCart2 = new ShoppingCart(otherCartId2);
+        var otherCart2 = new ShoppingCart(otherCartId2, userId3);
         otherCart2.AddItem(3, "Fries", 3.99m);
 
         context.Set<ShoppingCart>().Add(targetCart);
