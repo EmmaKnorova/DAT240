@@ -48,7 +48,6 @@ public class DbSeeder
                 var createUserResult = await userManager
                     .CreateAsync(user: user, password: "Admin123456789!");
 
-                Console.WriteLine(createUserResult);
 
                 // Validate user creation
                 if (createUserResult.Succeeded == false)
