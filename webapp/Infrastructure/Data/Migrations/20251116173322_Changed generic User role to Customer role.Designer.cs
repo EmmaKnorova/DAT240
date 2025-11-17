@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
@@ -11,9 +12,11 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 namespace TarlBreuJacoBaraKnor.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    partial class ShopContextModelSnapshot : ModelSnapshot
+    [Migration("20251116173322_Changed generic User role to Customer role")]
+    partial class ChangedgenericUserroletoCustomerrole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -434,10 +437,6 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("address");
-
-                    b.Property<bool>("ChangePasswordOnFirstLogin")
-                        .HasColumnType("boolean")
-                        .HasColumnName("change_password_on_first_login");
 
                     b.Property<string>("City")
                         .IsRequired()

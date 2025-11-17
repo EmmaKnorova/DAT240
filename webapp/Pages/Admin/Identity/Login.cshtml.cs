@@ -19,7 +19,7 @@ public class AdminLoginModel(
     private readonly ILogger<AdminLoginModel> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
     [BindProperty] public required LoginInputModel Input { get; set; }
-    public List<string> AvailableRoles { get; set; } = ["User", "Courier"];
+    public List<string> AllowedRoles { get; set; } = [Roles.Admin.ToString()];
 
     public async Task<IActionResult> OnPostAsync()
     {
