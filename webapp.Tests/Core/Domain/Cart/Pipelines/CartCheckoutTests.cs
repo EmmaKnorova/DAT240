@@ -46,7 +46,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         context.Users.Add(user);
 
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         cart.AddItem(itemId: 2, itemName: "Burger", itemPrice: 8.00m);
         context.ShoppingCarts.Add(cart);
@@ -130,8 +130,9 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         // Arrange
         using var context = _dbTest.CreateContext();
         
+        var userId = Guid.NewGuid();
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -174,7 +175,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         context.Users.Add(user);
 
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
 
@@ -222,7 +223,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         context.Users.Add(user);
 
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -264,7 +265,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         context.Users.Add(user);
 
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -312,7 +313,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         context.Users.Add(user);
 
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
 
@@ -365,7 +366,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         context.Users.Add(user);
 
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -395,7 +396,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
     }
 
     [Fact]
-    public async Task Handle_NullContext_ThrowsArgumentNullException()
+    public void Handle_NullContext_ThrowsArgumentNullException()
     {
         // Arrange
         var orderingServiceMock = new Mock<IOrderingService>();
@@ -408,7 +409,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
     }
 
     [Fact]
-    public async Task Handle_NullOrderingService_ThrowsArgumentNullException()
+    public void Handle_NullOrderingService_ThrowsArgumentNullException()
     {
         // Arrange
         using var context = _dbTest.CreateContext();
@@ -421,7 +422,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
     }
 
     [Fact]
-    public async Task Handle_NullCartValidators_ThrowsArgumentNullException()
+    public void Handle_NullCartValidators_ThrowsArgumentNullException()
     {
         // Arrange
         using var context = _dbTest.CreateContext();
@@ -434,7 +435,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
     }
 
     [Fact]
-    public async Task Handle_NullLocationValidators_ThrowsArgumentNullException()
+    public void Handle_NullLocationValidators_ThrowsArgumentNullException()
     {
         // Arrange
         using var context = _dbTest.CreateContext();
@@ -466,7 +467,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         context.Users.Add(user);
 
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -508,7 +509,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         context.Users.Add(user);
 
         var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId);
+        var cart = new ShoppingCart(cartId, userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 12.99m);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 12.99m); // Count = 2
         cart.AddItem(itemId: 2, itemName: "Burger", itemPrice: 8.50m);

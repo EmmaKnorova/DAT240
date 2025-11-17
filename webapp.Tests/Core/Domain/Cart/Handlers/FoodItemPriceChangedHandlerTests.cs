@@ -6,6 +6,7 @@ using Xunit;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Handlers;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Events;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +26,22 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -50,13 +66,54 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart1 = new ShoppingCart(Guid.NewGuid());
+        
+        var userId1 = Guid.NewGuid();
+        var user1 = new User
+        {
+            Id = userId1,
+            Name = "User 1",
+            Email = "user1@example.com",
+            UserName = "user1@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user1);
+
+        var userId2 = Guid.NewGuid();
+        var user2 = new User
+        {
+            Id = userId2,
+            Name = "User 2",
+            Email = "user2@example.com",
+            UserName = "user2@example.com",
+            Address = "456 Test Ave",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user2);
+
+        var userId3 = Guid.NewGuid();
+        var user3 = new User
+        {
+            Id = userId3,
+            Name = "User 3",
+            Email = "user3@example.com",
+            UserName = "user3@example.com",
+            Address = "789 Test Blvd",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user3);
+        await context.SaveChangesAsync();
+
+        var cart1 = new ShoppingCart(Guid.NewGuid(), userId1);
         cart1.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         
-        var cart2 = new ShoppingCart(Guid.NewGuid());
+        var cart2 = new ShoppingCart(Guid.NewGuid(), userId2);
         cart2.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         
-        var cart3 = new ShoppingCart(Guid.NewGuid());
+        var cart3 = new ShoppingCart(Guid.NewGuid(), userId3);
         cart3.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         
         context.ShoppingCarts.AddRange(cart1, cart2, cart3);
@@ -85,7 +142,22 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         cart.AddItem(itemId: 2, itemName: "Burger", itemPrice: 8.00m);
         cart.AddItem(itemId: 3, itemName: "Salad", itemPrice: 6.00m);
@@ -108,8 +180,8 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
         var saladItem = updatedCart.Items.First(i => i.Sku == 3);
         
         Assert.Equal(14.99m, pizzaItem.Price);
-        Assert.Equal(8.00m, burgerItem.Price); // Should remain unchanged
-        Assert.Equal(6.00m, saladItem.Price); // Should remain unchanged
+        Assert.Equal(8.00m, burgerItem.Price);
+        Assert.Equal(6.00m, saladItem.Price);
     }
 
     [Fact]
@@ -117,7 +189,22 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 2, itemName: "Burger", itemPrice: 8.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -134,7 +221,7 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
             .FirstAsync(c => c.Id == cart.Id);
         
         var burgerItem = unchangedCart.Items.First();
-        Assert.Equal(8.00m, burgerItem.Price); // Should remain unchanged
+        Assert.Equal(8.00m, burgerItem.Price);
         Assert.Equal(2, burgerItem.Sku);
     }
 
@@ -158,10 +245,25 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
-        cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m); // Increment count
-        cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m); // Increment count again
+        cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
+        cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
 
@@ -180,7 +282,7 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
         var item = updatedCart.Items.First();
         Assert.Equal(11.99m, item.Price);
         Assert.Equal(3, item.Count);
-        Assert.Equal(35.97m, item.Sum); // 11.99 * 3
+        Assert.Equal(35.97m, item.Sum);
     }
 
     [Fact]
@@ -188,7 +290,22 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -213,7 +330,22 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 15.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -234,7 +366,7 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     }
 
     [Fact]
-    public async Task Handle_NullContext_ThrowsArgumentNullException()
+    public void Handle_NullContext_ThrowsArgumentNullException()
     {
         // Arrange & Act & Assert
         Assert.Throws<ArgumentNullException>(() => new FoodItemPriceChangedHandler(null!));
@@ -245,7 +377,22 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -266,7 +413,22 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
@@ -277,7 +439,7 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
         // Act
         await handler.Handle(notification, CancellationToken.None);
 
-        // Assert - Detach and reload from same context to verify persistence
+        // Assert
         context.Entry(cart).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
         
         var persistedCart = await context.ShoppingCarts
@@ -293,7 +455,22 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         cart.AddItem(itemId: 2, itemName: "Burger", itemPrice: 8.00m);
         cart.AddItem(itemId: 3, itemName: "Salad", itemPrice: 6.00m);
@@ -323,9 +500,24 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cart = new ShoppingCart(Guid.NewGuid());
+        
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Name = "Test User",
+            Email = "test@example.com",
+            UserName = "test@example.com",
+            Address = "123 Test St",
+            City = "Test City",
+            PostalCode = "12345"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var cart = new ShoppingCart(Guid.NewGuid(), userId);
         cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
-        cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m); // Count = 2
+        cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
         context.ShoppingCarts.Add(cart);
         await context.SaveChangesAsync();
 
@@ -343,6 +535,6 @@ public class FoodItemPriceChangedHandlerTests : IClassFixture<DbTest>
         var item = updatedCart.Items.First();
         Assert.Equal(12.00m, item.Price);
         Assert.Equal(2, item.Count);
-        Assert.Equal(24.00m, item.Sum); // 12.00 * 2
+        Assert.Equal(24.00m, item.Sum);
     }
 }

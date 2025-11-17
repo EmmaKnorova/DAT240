@@ -7,8 +7,15 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 
 public class ShoppingCart : BaseEntity
 {
-	public ShoppingCart(Guid id) => Id = id;
+	private ShoppingCart() { }
+	public ShoppingCart(Guid id, Guid userId)
+    {
+        Id = id;
+        UserId = userId;
+    }
+
 	public Guid Id { get; protected set; }
+	public Guid? UserId { get; set; }
 
 	private readonly List<CartItem> _items = new();
 	public IEnumerable<CartItem> Items => _items.AsReadOnly();

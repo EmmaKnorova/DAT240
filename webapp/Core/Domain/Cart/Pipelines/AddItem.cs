@@ -15,6 +15,7 @@ public class AddItem
         int ItemId,
         string ItemName,
         decimal ItemPrice,
+        Guid UserId,
         Guid CartId) : IRequest<Unit>;
 
     public record Response(bool Success, string[] Errors);
@@ -30,10 +31,9 @@ public class AddItem
             var cart = await _db.Set<ShoppingCart>()
                 .Include(c => c.Items)
                 .SingleOrDefaultAsync(c => c.Id == request.CartId, cancellationToken);
-            
             if (cart == null)
             {
-                cart = new ShoppingCart(request.CartId);
+                cart = new ShoppingCart(request.CartId, request.UserId);
                 _db.Set<ShoppingCart>().Add(cart);
             }
             
