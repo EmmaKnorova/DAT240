@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationM
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TarlBreuJacoBaraKnor.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
@@ -24,7 +25,10 @@ builder.Services.AddMediatR(cfg =>
         typeof(Program).Assembly,
         typeof(ShopContext).Assembly
     )   
-); 
+);
+
+// Register the OrderingService
+builder.Services.AddScoped<IOrderingService, OrderingService>();
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ShopContext>()
