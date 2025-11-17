@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.Pages.Admin;
 
+[ServiceFilter(typeof(RequireChangingPasswordFilter))]
 [Authorize(Roles = "Admin")]
 public class AdminDashboardModel(
     UserManager<User> userManager,
@@ -24,11 +26,4 @@ public class AdminDashboardModel(
     [BindProperty]
     public Guid OrderId { get; set; }
 
-    public async Task<IActionResult> OnGetAsync()
-    {
-        var user = await userManager.GetUserAsync(HttpContext.User);
-        if (user.ChangePasswordOnFirstLogin)
-            return LocalRedirect("/Admin/Identity/ChangeDefaultPassword");
-        return Page();
-    }
 }

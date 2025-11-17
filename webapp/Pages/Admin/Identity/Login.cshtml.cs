@@ -18,10 +18,21 @@ public class AdminLoginModel(
     private readonly UserManager<User> _userManager = userManager;
     private readonly ILogger<AdminLoginModel> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
+    private readonly string _defaultUrlRedirectPath = "/Admin/Dashboard"; 
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
     public List<string> AllowedRoles { get; set; } = [Roles.Admin.ToString()];
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
+    {
+        ReturnUrl = returnUrl ?? Url.Content("~/");
+        if (User.Identity.IsAuthenticated)
+                return Redirect(_defaultUrlRedirectPath);
+            else return Page();
+    }
+
+    public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
         if (!ModelState.IsValid)
             return Page();
@@ -43,7 +54,9 @@ public class AdminLoginModel(
         {
             _logger.LogInformation($"User logged in: {user.Email}");
             await _signInManager.SignInAsync(user, isPersistent: false);
-            return Redirect("/Admin/Dashboard");
+            if (Url.IsLocalUrl(ReturnUrl))
+                return Redirect(ReturnUrl);
+            return Redirect(_defaultUrlRedirectPath);
         }
 
         if (result.IsLockedOut)

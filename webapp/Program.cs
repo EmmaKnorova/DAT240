@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationM
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TarlBreuJacoBaraKnor.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
@@ -24,7 +25,9 @@ builder.Services.AddMediatR(cfg =>
         typeof(Program).Assembly,
         typeof(ShopContext).Assembly
     )   
-); 
+);
+
+builder.Services.AddScoped<RequireChangingPasswordFilter>();
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ShopContext>()
@@ -35,6 +38,30 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
     options.Password.RequiredLength = 12;
 });
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
+    {
+        OnRedirectToLogin = context =>
+        {
+            var requestPath = context.Request.Path.Value ?? "";
+            if (requestPath.StartsWith("/Admin"))
+            {
+                context.Response.Redirect("/Admin/Identity/Login?ReturnUrl=" + 
+                    Uri.EscapeDataString(context.Request.Path + context.Request.QueryString));
+            }
+            else
+            {
+                context.Response.Redirect("/Identity/Login?ReturnUrl=" +
+                    Uri.EscapeDataString(context.Request.Path + context.Request.QueryString));
+            }
+
+            return Task.CompletedTask;
+        }
+    };
+});
+
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/keys"))
