@@ -56,7 +56,7 @@ public class LoginModel(
         {
             _logger.LogInformation($"User logged in: {user.Email}");
             await _signInManager.SignInAsync(user, isPersistent: false);
-            return Redirect("/");
+            return Redirect("/Admin/Identity/ChangeDefaultPassword");
         }
         
         if (result.IsLockedOut)
