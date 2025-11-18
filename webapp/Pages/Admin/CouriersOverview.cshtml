@@ -29,8 +29,17 @@
                                 <td>@courier.Name</td>
                                 <td>@courier.Email</td>
                                 <td>
-                                    <button class="btn btn-success btn-sm">Approve</button>
-                                    <button class="btn btn-danger btn-sm">Decline</button>
+                                    <form method="post" asp-page-handler="" class="d-inline">
+                                        <input type="hidden" name="userId" value="@courier.Id" />
+                                        <input type="hidden" name="approve" value="true" />
+                                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                    </form>
+
+                                    <form method="post" asp-page-handler="" class="d-inline">
+                                        <input type="hidden" name="userId" value="@courier.Id" />
+                                        <input type="hidden" name="approve" value="false" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                                    </form>
                                 </td>
                             </tr>
                             }
@@ -43,7 +52,7 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Approved Users</h5>
+                    <h5 class="mb-0">Approved Couriers</h5>
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered table-hover">
@@ -61,7 +70,11 @@
                                 <td>@courier.Name</td>
                                 <td>@courier.Email</td>
                                 <td>
-                                    <button class="btn btn-danger btn-sm">Decline</button>
+                                    <form method="post" asp-page-handler="" class="d-inline">
+                                        <input type="hidden" name="userId" value="@courier.Id" />
+                                        <input type="hidden" name="approve" value="false" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                                    </form>
                                 </td>
                             </tr>
                             }
@@ -74,7 +87,7 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">Declined Users</h5>
+                    <h5 class="mb-0">Declined Couriers</h5>
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered table-hover">
@@ -92,7 +105,11 @@
                                 <td>@courier.Name</td>
                                 <td>@courier.Email</td>
                                 <td>
-                                    <button class="btn btn-success btn-sm">Approve</button>
+                                    <form method="post" asp-page-handler="" class="d-inline">
+                                        <input type="hidden" name="userId" value="@courier.Id" />
+                                        <input type="hidden" name="approve" value="true" />
+                                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                    </form>
                                 </td>
                             </tr>
                             }

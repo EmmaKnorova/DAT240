@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
@@ -28,8 +29,12 @@ public class CouriersOverviewModel(IMediator mediator, UserManager<User> userMan
         return Page();
     }
 
-    // public async Task<IActionResult> OnPostAsync()
-    // {
-        
-    // }
+    public async Task OnPostAsync(string userId, bool approve)
+    {
+        if (approve)
+            await _mediator.Send(new Approve.Request(userId));
+        else
+            await _mediator.Send(new Decline.Request(userId));
+        await OnGetAsync();
+    }
 }
