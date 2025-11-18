@@ -33,6 +33,5 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
 
             return order.Id;
         }
-
     }
 }
