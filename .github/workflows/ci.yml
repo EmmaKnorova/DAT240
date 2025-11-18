@@ -11,14 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup .NET 9 (Preview)
-        uses: actions/setup-dotnet@v3
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
-          include-prerelease: true
+          dotnet-version: 9.x
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
