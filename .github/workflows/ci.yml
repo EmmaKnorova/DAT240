@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore ./webapp.Tests/webapp.Tests.csproj
 
       - name: Build
         run: dotnet build --no-restore --configuration Release
