@@ -26,7 +26,7 @@ public class AdminLoginModel(
 
     public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
-        ReturnUrl = returnUrl ?? Url.Content("~/");
+        ReturnUrl = returnUrl ?? Url.Content(_defaultUrlRedirectPath);
         if (User.Identity.IsAuthenticated)
                 return Redirect(_defaultUrlRedirectPath);
             else return Page();

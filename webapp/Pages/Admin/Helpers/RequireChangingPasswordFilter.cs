@@ -21,7 +21,7 @@ public class RequireChangingPasswordFilter(UserManager<User> userManager) : IAsy
             bool firstLogin = user.ChangePasswordOnFirstLogin;
             string currentUrl = context.HttpContext.Request.Path;
 
-            if (!firstLogin && !currentUrl.StartsWith("/Admin/Identity/ChangeDefaultPassword"))
+            if (firstLogin && !currentUrl.StartsWith("/Admin/Identity/ChangeDefaultPassword"))
             {
                 context.Result = new RedirectToPageResult("/Admin/Identity/ChangeDefaultPassword");
                 return;

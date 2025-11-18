@@ -39,14 +39,8 @@ public class AdminChangeDefaultPasswordModel(
         if (!user.ChangePasswordOnFirstLogin)
             return LocalRedirect("/Admin/Dashboard");
 
-        if (Input.Password != Input.PasswordConfirmation)
-        {
-            ModelState.AddModelError(string.Empty, "The password and password confirmation don't match.");
-            return Page();
-        }
-
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var result = await _userManager.ChangePasswordAsync(user, token, Input.Password);
+        var result = await _userManager.ResetPasswordAsync(user, token, Input.Password);
 
         if (result.Succeeded)
         {
@@ -57,7 +51,7 @@ public class AdminChangeDefaultPasswordModel(
             return LocalRedirect("/Admin/Dashboard");
         }
 
-        ModelState.AddModelError(string.Empty, "Password change was unsuccessful.");
+        ModelState.AddModelError(string.Empty, $"Password change was unsuccessful: {result}");
         return Page();
     }
 }
