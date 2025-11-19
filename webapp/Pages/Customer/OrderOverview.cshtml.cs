@@ -35,11 +35,27 @@ public class OrderOverviewModel : PageModel
         .ToList();
 
         PastOrders = orders
-        .Where(o => o.Status == Status.Delivered)
+        .Where(o => o.Status == Status.Delivered || o.Status == Status.Cancelled)
         .ToList();
     }
-    public IActionResult OnPost(Guid orderId)
+    public async Task<IActionResult> OnPostCancelAsync(Guid orderId)
+    {
+        User = await _userManager.GetUserAsync(HttpContext.User);
+        var order = (await _mediator.Send(new Get.Request(User.Id)))
+            .FirstOrDefault(o => o.Id == orderId);
+
+        if (order == null || (order.Status != Status.Submitted && order.Status != Status.Being_picked_up))
+            return RedirectToPage();
+
+        order.Status = Status.Cancelled;
+        await _mediator.Send(new UpdateOrder.Request(order));
+
+        return RedirectToPage();
+    }
+
+    public IActionResult OnPostDetails(Guid orderId)
     {
         return RedirectToPage("/Customer/OrderDetail", new { id = orderId });
     }
+
 }
