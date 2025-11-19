@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 namespace TarlBreuJacoBaraKnor.webapp.Tests.Core.Domain.Cart.Pipelines;
 
 public class AddItemTests : IClassFixture<DbTest>
-{
+{ 
     private readonly DbTest _dbTest;
     private readonly ITestOutputHelper _output;
 
