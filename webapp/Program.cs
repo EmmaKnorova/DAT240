@@ -9,6 +9,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.webapp.Pages.Courier.Helpers;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -108,6 +109,17 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+app.UseStaticFiles();
+
+var productsPhysicalPath = Path.Combine(app.Environment.WebRootPath, "images", "products");
+Directory.CreateDirectory(productsPhysicalPath);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(productsPhysicalPath),
+    RequestPath = "/images/products"
+});
 
 await DbSeeder.SeedData(app);
 

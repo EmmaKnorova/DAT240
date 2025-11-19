@@ -21,7 +21,9 @@ public class AdminChangeDefaultPasswordModel(
     private readonly ILogger<AdminLoginModel> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
     private readonly ShopContext _context = context;
+
     [BindProperty] public required ChangeDefaultPasswordModel Input { get; set; }
+
     public List<string> PermittedRoles { get; set; } = [Roles.Admin.ToString()];
 
     public async Task<IActionResult> OnPostAsync()
@@ -45,13 +47,22 @@ public class AdminChangeDefaultPasswordModel(
         if (result.Succeeded)
         {
             user.ChangePasswordOnFirstLogin = false;
+
+            _context.Users.Attach(user);
+            _context.Entry(user).Property(u => u.ChangePasswordOnFirstLogin).IsModified = true;
             await _context.SaveChangesAsync();
-            
-            ModelState.AddModelError(string.Empty, "Account is locked. Try again later.");
+
+            await _signInManager.RefreshSignInAsync(user);
+
+            _logger.LogInformation("Admin password changed successfully.");
+
             return LocalRedirect("/Admin/Dashboard");
         }
 
-        ModelState.AddModelError(string.Empty, $"Password change was unsuccessful: {result}");
+        ModelState.AddModelError(string.Empty, "Password change was unsuccessful.");
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error.Description);
+
         return Page();
     }
 }
