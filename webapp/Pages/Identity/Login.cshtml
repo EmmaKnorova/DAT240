@@ -7,6 +7,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -36,7 +37,7 @@
                     <div class="card">
                         <div class="card-body py-5 px-md-5">
                             <form method="post">
-                            @Html.AntiForgeryToken()
+                                @Html.AntiForgeryToken()
                                 <div asp-validation-summary="All" class="text-danger"></div>
                                 <div class="mb-4">
                                     <label asp-for="Input.Email" class="form-label"></label>
@@ -46,7 +47,7 @@
 
                                 <div class="mb-4">
                                     <label asp-for="Input.Password" class="form-label"></label>
-                                    <input type="password" asp-for="Input.Password" class="form-control"/>
+                                    <input type="password" asp-for="Input.Password" class="form-control" />
                                     <span asp-validation-for="Input.Password" class="text-danger small"></span>
                                 </div>
 
@@ -56,13 +57,37 @@
                                     <button type="submit" class="btn btn-primary btn-block mb-4 btn-lg">
                                         Log in
                                     </button>
-                                    
-                                    <p class="text-muted">
-                                        Don't have an account yet? 
-                                        <a href="/Identity/Register" class="text-primary text-decoration-none">Register here</a>
-                                    </p>
                                 </div>
                             </form>
+
+                            <div class="text-center">
+                                <p>or log in with:</p>
+
+                                <div class="d-flex justify-content-center gap-3 mt-4 mb-2">
+                                    <form method="post" asp-page-handler="Google">
+                                        <button type="submit"
+                                            class="btn btn-light border d-flex align-items-center px-3">
+                                            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg"
+                                                width="22" height="22" class="me-2" />
+                                            Google
+                                        </button>
+                                    </form>
+                                    <form method="post" asp-page-handler="Microsoft">
+                                        <button type="submit"
+                                            class="btn btn-light border d-flex align-items-center px-3">
+                                            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoft.svg"
+                                                width="22" height="22" class="me-2" />
+                                            Microsoft
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <p class="text-muted">
+                                    Don't have an account yet?
+                                    <a href="/Identity/Register" class="text-primary text-decoration-none">Register
+                                        here</a>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,4 +100,5 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <partial name="_ValidationScriptsPartial" />
 </body>
+
 </html>

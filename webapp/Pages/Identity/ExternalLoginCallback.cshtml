@@ -1,0 +1,34 @@
+@page
+@using TarlBreuJacoBaraKnor.webapp.Pages.Identity
+@model ExternalLoginCallbackModel
+@{
+    ViewData["Title"] = "External Login";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+@if (Model.ShowConfirmAccountForm)
+{
+    <div class="card p-4 shadow-sm">
+        <h4>Confirm your account</h4>
+        <p>Please confirm your email to finish signing in.</p>
+
+        <form method="post">
+            <div class="form-group">
+                <label>Email</label>
+                <input asp-for="Input.Email" class="form-control" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Confirm</button>
+        </form>
+    </div>
+}
+else
+{
+    <p>Processing external login...</p>
+}

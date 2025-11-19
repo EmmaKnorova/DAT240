@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
 using TarlBreuJacoBaraKnor.Pages.Shared;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
@@ -12,11 +11,9 @@ namespace TarlBreuJacoBaraKnor.Pages.Identity;
 public class LoginModel(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
-    ILogger<LoginModel> logger,
-    RoleManager<IdentityRole<Guid>> roleManager) : BasePageModel(userManager, signInManager)
+    ILogger<LoginModel> logger) : BasePageModel(userManager, signInManager)
 {
     private readonly ILogger<LoginModel> _logger = logger;
-    private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
     [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
@@ -33,6 +30,27 @@ public class LoginModel(
         else if (User.IsInRole(Roles.Courier.ToString()))
             return Redirect("/Customer/OrderOverview");
         return Redirect("/");
+    }
+
+    public IActionResult OnPostGoogle()
+    {
+        var redirectUrl = Url.Page("/Identity/ExternalLoginCallback");
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+        return new ChallengeResult("Google", properties);
+    }
+
+    public IActionResult OnPostMicrosoft()
+    {
+        var redirectUrl = Url.Page("/Identity/ExternalLoginCallback");
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Microsoft", redirectUrl);
+        return new ChallengeResult("Microsoft", properties);
+    }
+
+    public IActionResult OnPostFacebook()
+    {
+        var redirectUrl = Url.Page("/Identity/ExternalLoginCallback");
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Facebook", redirectUrl);
+        return new ChallengeResult("Facebook", properties);
     }
 
     public async Task<IActionResult> OnPostAsync()
