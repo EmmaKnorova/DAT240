@@ -1,11 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Pipelines;
+using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 
 namespace TarlBreuJacoBaraKnor.Pages.Admin.Products;
-
+[ServiceFilter(typeof(RequireChangingPasswordFilter))]
 [Authorize(Roles = "Admin")]
 public class IndexModel(IMediator mediator) : PageModel
 {

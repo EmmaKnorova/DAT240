@@ -13,7 +13,6 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorPages();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
