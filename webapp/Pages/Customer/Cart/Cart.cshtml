@@ -1,5 +1,5 @@
 @page "/cart"
-@model TarlBreuJacoBaraKnor.webapp.Pages.Cart.CartModel
+@model TarlBreuJacoBaraKnor.webapp.Pages.Customer.Cart.CartModel
 @{
 	ViewData["Title"] = "Shopping cart";
 }
@@ -36,7 +36,7 @@
 					}
 				</tbody>
 			</table>
-			<a class="btn btn-primary" asp-page="/Cart/CartCheckout" asp-route-id="@Model.Cart.Id">Go to Checkout</a>
+			<a class="btn btn-primary" asp-page="/Customer/Cart/CartCheckout" asp-route-id="@Model.Cart.Id">Go to Checkout</a>
 		}
 	</div>
 </div>

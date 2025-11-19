@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.Migrations
+namespace TarlBreuJacoBaraKnor.Migrations;
+
+/// <inheritdoc />
+public partial class ChangeDateTimeToDateTimeOffset : Migration
 {
     /// <inheritdoc />
-    public partial class ChangeDateTimeToDateTimeOffset : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }

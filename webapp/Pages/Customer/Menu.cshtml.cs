@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace TarlBreuJacoBaraKnor.webapp.Pages;
+namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer;
 
 public class MenuModel : PageModel
 {

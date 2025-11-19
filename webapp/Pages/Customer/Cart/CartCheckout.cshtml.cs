@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 
-namespace TarlBreuJacoBaraKnor.webapp.Pages.Cart;
+namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer.Cart;
 
 public class CartCheckoutModel : PageModel
 {
@@ -42,7 +40,7 @@ public class CartCheckoutModel : PageModel
         
         if (!cartResponse.CartId.HasValue)
         {
-            return RedirectToPage("/Cart/Cart");
+            return RedirectToPage("/Customer/Cart/Cart");
         }
 
         return Page();
@@ -63,7 +61,7 @@ public class CartCheckoutModel : PageModel
         
         if (!cartResponse.CartId.HasValue)
         {
-            return RedirectToPage("/Cart/Cart");
+            return RedirectToPage("/Customer/Cart/Cart");
         }
 
         var location = new Location
@@ -82,7 +80,7 @@ public class CartCheckoutModel : PageModel
 
         if (result.success)
         {
-            return RedirectToPage("/OrderOverview");
+            return RedirectToPage("/Customer/OrderOverview");
         }
 
         Errors = result.Errors;

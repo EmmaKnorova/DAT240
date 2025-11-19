@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.Migrations
+namespace TarlBreuJacoBaraKnor.Migrations;
+
+/// <inheritdoc />
+public partial class ChangedgenericUserroletoCustomerrole : Migration
 {
     /// <inheritdoc />
-    public partial class ChangedgenericUserroletoCustomerrole : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }

@@ -3,35 +3,34 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Dto;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
-namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
+
+public class OrderingService : IOrderingService
 {
-    public class OrderingService : IOrderingService
+    private readonly IMediator _mediator;
+
+    public OrderingService(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        public OrderingService(IMediator mediator)
+    public async Task<Guid> PlaceOrder(Location location, User User, OrderLineDto[] orderLines, string notes)
+    {
+
+        var order = new Order(location, User, notes)
         {
-            _mediator = mediator;
-        }
+            OrderDate = DateTimeOffset.UtcNow,
+            Status = Status.Submitted
+        };
 
-        public async Task<Guid> PlaceOrder(Location location, User User, OrderLineDto[] orderLines, string notes)
-        {
+        foreach (var line in orderLines)
+            order.AddOrderLine(new OrderLine(Guid.NewGuid(), line.FoodItemName, line.Amount, line.Price));
 
-            var order = new Order(location, User, notes)
-            {
-                OrderDate = DateTimeOffset.UtcNow,
-                Status = Status.Submitted
-            };
+        order.Events.Add(new OrderPlaced(order.Id));
 
-            foreach (var line in orderLines)
-                order.AddOrderLine(new OrderLine(Guid.NewGuid(), line.FoodItemName, line.Amount, line.Price));
+        await _mediator.Send(new AddOrder.Request(order));
+        await _mediator.Send(new SaveChanges.Request());
 
-            order.Events.Add(new OrderPlaced(order.Id));
-
-            await _mediator.Send(new AddOrder.Request(order));
-            await _mediator.Send(new SaveChanges.Request());
-
-            return order.Id;
-        }
+        return order.Id;
     }
 }
