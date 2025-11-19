@@ -34,6 +34,9 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/OrderOverview">Order Overview</a>
                         </li>
                     </ul>
+                    
+                    <partial name="_ShoppingCartPartial" />
+
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <form method="post" asp-area="" asp-page="/Identity/Logout">
@@ -41,7 +44,6 @@
                             </form>
                         </li>
                     </ul>
-                    <partial name="_ShoppingCartPartial" />
                 </div>
             </div>
         </nav>
