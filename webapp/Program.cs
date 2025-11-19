@@ -1,5 +1,3 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
@@ -10,6 +8,7 @@ using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.Pages.Courier.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +29,8 @@ builder.Services.AddMediatR(cfg =>
 );
 
 builder.Services.AddScoped<RequireChangingPasswordFilter>();
+builder.Services.AddScoped<RequireAccountApprovalFilter>();
+
 // Register the OrderingService
 builder.Services.AddScoped<IOrderingService, OrderingService>();
 
