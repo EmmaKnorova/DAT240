@@ -2,28 +2,27 @@
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.Migrations
+namespace TarlBreuJacoBaraKnor.Migrations;
+
+/// <inheritdoc />
+public partial class AddedChangePasswordOnFirstLogintoUserentity : Migration
 {
     /// <inheritdoc />
-    public partial class AddedChangePasswordOnFirstLogintoUserentity : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<bool>(
-                name: "change_password_on_first_login",
-                table: "AspNetUsers",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-        }
+        migrationBuilder.AddColumn<bool>(
+            name: "change_password_on_first_login",
+            table: "AspNetUsers",
+            type: "boolean",
+            nullable: false,
+            defaultValue: false);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "change_password_on_first_login",
-                table: "AspNetUsers");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(
+            name: "change_password_on_first_login",
+            table: "AspNetUsers");
     }
 }

@@ -8,7 +8,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 
-namespace TarlBreuJacoBaraKnor.webapp.Pages;
+namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer;
 
 [Authorize]
 public class OrderOverviewModel : PageModel
@@ -40,6 +40,6 @@ public class OrderOverviewModel : PageModel
     }
     public IActionResult OnPost(Guid orderId)
     {
-        return RedirectToPage("/OrderDetail", new { id = orderId });
+        return RedirectToPage("/Customer/OrderDetail", new { id = orderId });
     }
 }

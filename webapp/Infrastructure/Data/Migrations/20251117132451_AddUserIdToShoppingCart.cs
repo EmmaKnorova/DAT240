@@ -3,27 +3,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TarlBreuJacoBaraKnor.Migrations
+namespace TarlBreuJacoBaraKnor.Migrations;
+
+/// <inheritdoc />
+public partial class AddUserIdToShoppingCart : Migration
 {
     /// <inheritdoc />
-    public partial class AddUserIdToShoppingCart : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<Guid>(
-                name: "user_id",
-                table: "shopping_carts",
-                type: "uuid",
-                nullable: true);
-        }
+        migrationBuilder.AddColumn<Guid>(
+            name: "user_id",
+            table: "shopping_carts",
+            type: "uuid",
+            nullable: true);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "user_id",
-                table: "shopping_carts");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(
+            name: "user_id",
+            table: "shopping_carts");
     }
 }

@@ -1,13 +1,11 @@
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TarlBreuJacoBaraKnor.webapp.Pages.Cart;
+namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer.Cart;
 
 public class CartModel : PageModel
 {
@@ -21,7 +19,7 @@ public class CartModel : PageModel
     {
         // Get the current user's ID from the authentication cookie
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        
+
         if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
         {
             return RedirectToPage("/Identity/Login");
@@ -29,7 +27,7 @@ public class CartModel : PageModel
 
         // Get the user's cart from the database
         var cartResponse = await _mediator.Send(new GetCartByUserId.Request(userId));
-        
+
         if (cartResponse.CartId.HasValue)
         {
             Cart = await _mediator.Send(new Get.Request(cartResponse.CartId.Value));
