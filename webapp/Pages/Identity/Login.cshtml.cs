@@ -22,7 +22,7 @@ public class LoginModel(
     [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
-    public List<string> PermittedRoles { get; set; } = [Roles.Customer.ToString(), Roles.Customer.ToString()];
+    public List<string> PermittedRoles { get; set; } = [Roles.Customer.ToString(), Roles.Courier.ToString()];
 
     public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
@@ -50,8 +50,8 @@ public class LoginModel(
         }
 
         var userRoles = await _userManager.GetRolesAsync(user);
-        if (!userRoles.Any(r => PermittedRoles.Contains(r))) {
-            ModelState.AddModelError(string.Empty, "User doesn't have appropriate roles to log in.");
+        if (!userRoles.Any(PermittedRoles.Contains)) {
+            ModelState.AddModelError(string.Empty, "User is not a Courier or Customer.");
             return Page();
         }
         
