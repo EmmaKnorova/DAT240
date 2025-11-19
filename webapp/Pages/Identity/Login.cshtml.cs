@@ -45,6 +45,7 @@ public class LoginModel(
         }
 
         var userRoles = await _userManager.GetRolesAsync(user);
+        Console.WriteLine(userRoles);
         if (!userRoles.Any(r => AllowedRoles.Contains(r))) {
             ModelState.AddModelError(string.Empty, "User doesn't have appropriate roles to log in.");
             return Page();

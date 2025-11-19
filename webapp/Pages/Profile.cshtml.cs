@@ -1,4 +1,4 @@
-using System.ComponentModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -6,6 +6,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages
 {
+    [Authorize(Roles = "Courier, Customer")]
     public class ProfileModel : PageModel
     {
 
@@ -17,13 +18,9 @@ namespace TarlBreuJacoBaraKnor.webapp.Pages
             _userManager = userManager;
         }
          
-        [BindProperty]
-        public string PhoneNumber { get; set; } = "";
-        [BindProperty]
-        public string Name { get; set; } = "";
 
         public async Task<IActionResult> OnGetAsync()
-        {
+        {   
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (user == null)
             {
@@ -33,6 +30,8 @@ namespace TarlBreuJacoBaraKnor.webapp.Pages
             CurrentUser = user;
             return Page();
         }
+
+        
 
 
     }
