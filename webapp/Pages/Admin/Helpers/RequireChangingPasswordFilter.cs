@@ -1,35 +1,42 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Identity;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 
-public class RequireChangingPasswordFilter(UserManager<User> userManager) : IAsyncPageFilter
+public class RequireChangingPasswordFilter : IAsyncActionFilter
 {
-    private readonly UserManager<User> _userManager = userManager;
+    private readonly UserManager<User> _userManager;
 
-    public async Task OnPageHandlerExecutionAsync(
-        PageHandlerExecutingContext context,
-        PageHandlerExecutionDelegate next)
+    public RequireChangingPasswordFilter(UserManager<User> userManager)
     {
-        var httpContext = context.HttpContext;
-        var user = await _userManager.GetUserAsync(httpContext.User);
-
-        if (user != null)
-        {
-            bool firstLogin = user.ChangePasswordOnFirstLogin;
-            string currentUrl = context.HttpContext.Request.Path;
-
-            if (firstLogin && !currentUrl.StartsWith("/Admin/Identity/ChangeDefaultPassword"))
-            {
-                context.Result = new RedirectToPageResult("/Admin/Identity/ChangeDefaultPassword");
-                return;
-            }
-        }
-
-        await next();
+        _userManager = userManager;
     }
 
-    public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context) => Task.CompletedTask;
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        var httpContext = context.HttpContext;
+        
+        if (!httpContext.User.Identity?.IsAuthenticated ?? true)
+        {
+            await next();
+            return;
+        }
+
+        var user = await _userManager.GetUserAsync(httpContext.User);
+        if (user is null)
+        {
+            await next();
+            return;
+        }
+
+        if (!user.ChangePasswordOnFirstLogin)
+        {
+            await next();
+            return;
+        }
+
+        context.Result = new RedirectToPageResult("/Admin/Identity/ChangeDefaultPassword");
+    }
 }
