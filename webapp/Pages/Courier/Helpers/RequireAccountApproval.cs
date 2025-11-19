@@ -20,7 +20,7 @@ public class RequireAccountApprovalFilter(UserManager<User> userManager) : IAsyn
         if (user != null)
         {
             AccountStates currentAccountState = user.AccountState;
-            if (currentAccountState == AccountStates.Pending || currentAccountState == AccountStates.Declined)
+            if (currentAccountState is AccountStates.Pending or AccountStates.Declined)
             {
                 context.Result = new RedirectToPageResult("/Courier/Shared/AccountState");
                 return;
