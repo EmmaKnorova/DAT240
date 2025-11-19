@@ -22,7 +22,7 @@ public class AdminLoginModel(
     [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
-    public List<string> AllowedRoles { get; set; } = [Roles.Admin.ToString()];
+    public List<string> PermittedRoles { get; set; } = [Roles.Admin.ToString()];
 
     public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
