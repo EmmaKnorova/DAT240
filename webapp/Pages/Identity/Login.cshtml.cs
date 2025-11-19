@@ -27,9 +27,14 @@ public class LoginModel(
     public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
         ReturnUrl = returnUrl ?? Url.Content("~/");
-        if (User.Identity.IsAuthenticated)
-                return Redirect(_defaultUrlRedirectPath);
-            else return Page();
+        if (!User.Identity.IsAuthenticated)
+            return Page();
+
+        if (User.IsInRole(Roles.Customer.ToString()))
+            return Redirect("/Menu");
+        else if (User.IsInRole(Roles.Courier.ToString()))
+            return Redirect("/OrderOverview");
+        return Redirect(_defaultUrlRedirectPath);
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -61,8 +66,12 @@ public class LoginModel(
             _logger.LogInformation($"User logged in: {user.Email}");
             await _signInManager.SignInAsync(user, isPersistent: false);
             if (Url.IsLocalUrl(ReturnUrl))
-                return Redirect(ReturnUrl);
-            return Redirect(_defaultUrlRedirectPath);
+                return LocalRedirect(ReturnUrl);
+            else if (userRoles.Contains(Roles.Customer.ToString()))
+                return LocalRedirect("/Menu");
+            else if (userRoles.Contains(Roles.Courier.ToString()))
+                return LocalRedirect("/OrderOverview");
+            return LocalRedirect(_defaultUrlRedirectPath);
         }
         
         if (result.IsLockedOut)

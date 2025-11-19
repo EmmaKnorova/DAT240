@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TarlBreuJacoBaraKnor.Pages.Identity;
 
+[Authorize]
 public class AccessDeniedModel : PageModel
 {
     public string ReturnUrl { get; set; }
