@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
+using TarlBreuJacoBaraKnor.Pages.Shared;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.Pages.Identity;
@@ -12,13 +13,10 @@ public class LoginModel(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
     ILogger<LoginModel> logger,
-    RoleManager<IdentityRole<Guid>> roleManager) : PageModel
+    RoleManager<IdentityRole<Guid>> roleManager) : BasePageModel(userManager, signInManager)
 {
-    private readonly SignInManager<User> _signInManager = signInManager;
-    private readonly UserManager<User> _userManager = userManager;
     private readonly ILogger<LoginModel> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
-    private readonly string _defaultUrlRedirectPath = "/OrderOverview"; 
     [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
@@ -34,7 +32,7 @@ public class LoginModel(
             return Redirect("/Customer/Menu");
         else if (User.IsInRole(Roles.Courier.ToString()))
             return Redirect("/Customer/OrderOverview");
-        return Redirect(_defaultUrlRedirectPath);
+        return Redirect("/");
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -65,13 +63,14 @@ public class LoginModel(
         {
             _logger.LogInformation($"User logged in: {user.Email}");
             await _signInManager.SignInAsync(user, isPersistent: false);
-            if (Url.IsLocalUrl(ReturnUrl))
-                return LocalRedirect(ReturnUrl);
-            else if (userRoles.Contains(Roles.Customer.ToString()))
+
+            if (userRoles.Contains(Roles.Customer.ToString()))
                 return LocalRedirect("/Customer/Menu");
             else if (userRoles.Contains(Roles.Courier.ToString()))
                 return LocalRedirect("/Customer/OrderOverview");
-            return LocalRedirect(_defaultUrlRedirectPath);
+            else if (Url.IsLocalUrl(ReturnUrl))
+                return LocalRedirect(ReturnUrl);
+            return LocalRedirect("/");
         }
         
         if (result.IsLockedOut)

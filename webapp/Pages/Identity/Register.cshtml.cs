@@ -61,10 +61,7 @@ public class RegisterModel : PageModel
             return Page();
         }
 
-        Console.WriteLine("User doesn't exist");
-
         var result = await _userManager.CreateAsync(user, Input.Password);
-        Console.WriteLine(result);
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors)
@@ -77,7 +74,6 @@ public class RegisterModel : PageModel
         _logger.LogInformation($"New user has registered: {Input.Name}.");
 
         var userSelectedRole = Input.Role;
-        Console.WriteLine($"The user decided to become: {userSelectedRole}");
         if (!await _roleManager.RoleExistsAsync(userSelectedRole))
         {
             ModelState.AddModelError(string.Empty, "Selected role doesn't exist.");
@@ -93,6 +89,8 @@ public class RegisterModel : PageModel
         }
 
         await _signInManager.SignInAsync(user, isPersistent: false);
-        return LocalRedirect("/");
+        if (userSelectedRole == "Customer")
+            return LocalRedirect("/Customer/Menu");
+        return LocalRedirect("/Courier/Dashboard");
     }
 }
