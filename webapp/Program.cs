@@ -7,6 +7,7 @@ using TarlBreuJacoBaraKnor.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Infrastructure.Configuration;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.webapp.Pages.Courier.Helpers;
 
@@ -43,6 +44,10 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
     options.Password.RequiredLength = 12;
 });
+
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
