@@ -22,12 +22,12 @@ public class AdminLoginModel(
     [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
-    public List<string> AllowedRoles { get; set; } = [Roles.Admin.ToString()];
+    public List<string> PermittedRoles { get; set; } = [Roles.Admin.ToString()];
 
     public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
         ReturnUrl = returnUrl ?? Url.Content(_defaultUrlRedirectPath);
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity.IsAuthenticated && User.IsInRole(Roles.Admin.ToString()))
                 return Redirect(_defaultUrlRedirectPath);
             else return Page();
     }

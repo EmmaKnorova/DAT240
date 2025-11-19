@@ -22,7 +22,7 @@ public class AdminChangeDefaultPasswordModel(
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
     private readonly ShopContext _context = context;
     [BindProperty] public required ChangeDefaultPasswordModel Input { get; set; }
-    public List<string> AllowedRoles { get; set; } = [Roles.Admin.ToString()];
+    public List<string> PermittedRoles { get; set; } = [Roles.Admin.ToString()];
 
     public async Task<IActionResult> OnPostAsync()
     {
