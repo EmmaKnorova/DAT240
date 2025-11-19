@@ -1,5 +1,7 @@
 ﻿@page
 @model TarlBreuJacoBaraKnor.webapp.Pages.Customer.OrderOverviewModel
+@using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
+
 
 @{
     ViewData["Title"] = "My Orders";
@@ -22,17 +24,26 @@
                 {
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Order </strong> – @order.Status  
+                            <strong>Order</strong> – @order.Status
                             <br />
                             @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
                         </div>
-                        <div>
-                            <form method="post" class="m-0">
-                            <input type="hidden" name="orderId" value="@order.Id" />
-                            <button type="submit" class="btn btn-primary btn-sm rounded-pill shadow-sm d-flex align-items-center">
-                                <span class="me-2"><i class="bi bi-eye"></i></span> View Details
-                            </button>
-                        </form>
+                        <div class="d-flex gap-2">
+                            <form method="post" asp-page-handler="Details" class="m-0">
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <button type="submit" class="btn btn-primary btn-sm rounded-pill shadow-sm d-flex align-items-center">
+                                    <span class="me-2"><i class="bi bi-eye"></i></span> View Details
+                                </button>
+                            </form>
+                            @if (order.Status == Status.Submitted || order.Status == Status.Being_picked_up)
+                            {
+                                <form method="post" asp-page-handler="Cancel" class="m-0">
+                                    <input type="hidden" name="orderId" value="@order.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm rounded-pill shadow-sm d-flex align-items-center text-white">
+                                        <span class="me-2"><i class="bi bi-x-circle"></i></span> Cancel Order
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </li>
                 }
@@ -51,19 +62,19 @@
             <ul class="list-group list-group-flush">
                 @foreach (var order in Model.PastOrders)
                 {
-                    <li class="list-group-item">
-                        <strong>Order #@order.Id</strong> – @order.Status  
-                        <br />
-                        @order.Location?.Building
-                    </li>
-                    <div>
-                        <form method="post" class="m-0">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Order #@order.Id</strong> – @order.Status  
+                            <br />
+                            @order.Location?.Building
+                        </div>
+                        <form method="post" asp-page-handler="Details" class="m-0">
                             <input type="hidden" name="orderId" value="@order.Id" />
                             <button type="submit" class="btn btn-primary btn-sm rounded-pill shadow-sm d-flex align-items-center">
                                 <span class="me-2"><i class="bi bi-eye"></i></span> View Details
                             </button>
                         </form>
-                    </div>
+                    </li>
                 }
             </ul>
         }
