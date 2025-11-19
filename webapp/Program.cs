@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
@@ -44,6 +45,10 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.AccessDeniedPath = "/Identity/AccessDenied";
+    options.LoginPath = "/Identity/Login";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    options.SlidingExpiration = true;
     options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
     {
         OnRedirectToLogin = context =>
