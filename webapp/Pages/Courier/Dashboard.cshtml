@@ -1,0 +1,53 @@
+@page
+@model CourierDashboardModel
+@{
+    ViewData["Title"] = "Courier Dashboard";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">My Orders</h2>
+
+    <div class="d-flex justify-content-center mb-4">
+        <button id="activeTab" class="btn btn-primary mx-2">Active Orders</button>
+        <button id="pastTab" class="btn btn-outline-secondary mx-2">Order History</button>
+    </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const activeTab = document.getElementById("activeTab");
+        const pastTab = document.getElementById("pastTab");
+        const activeCard = document.getElementById("activeOrdersCard");
+        const pastCard = document.getElementById("pastOrdersCard");
+
+        function launchConfetti(direction = 'center') {
+            let originX = 0.5;
+            if (direction === 'left') originX = 0.2;
+            if (direction === 'right') originX = 0.8;
+
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { x: originX, y: 0.6 },
+                colors: ['#007bff', '#28a745', '#ffc107', '#dc3545']
+            });
+        }
+
+        activeTab.addEventListener("click", () => {
+            activeCard.classList.remove("d-none");
+            pastCard.classList.add("d-none");
+            activeTab.classList.replace("btn-outline-secondary", "btn-primary");
+            pastTab.classList.replace("btn-primary", "btn-outline-secondary");
+            launchConfetti('left');
+        });
+
+        pastTab.addEventListener("click", () => {
+            pastCard.classList.remove("d-none");
+            activeCard.classList.add("d-none");
+            pastTab.classList.replace("btn-outline-secondary", "btn-primary");
+            activeTab.classList.replace("btn-primary", "btn-outline-secondary");
+            launchConfetti('right');
+        });
+    </script>
+}
