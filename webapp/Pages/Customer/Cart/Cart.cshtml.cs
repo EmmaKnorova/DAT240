@@ -4,9 +4,10 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer.Cart;
-
+[Authorize(Roles = "Customer")]
 public class CartModel : PageModel
 {
     private readonly IMediator _mediator;

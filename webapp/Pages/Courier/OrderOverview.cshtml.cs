@@ -8,9 +8,9 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 
-namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer;
+namespace TarlBreuJacoBaraKnor.webapp.Pages.Courier;
 
-[Authorize(Roles = "Customer")]
+[Authorize(Roles = "Courier")]
 public class OrderOverviewModel : PageModel
 {
 
@@ -18,7 +18,7 @@ public class OrderOverviewModel : PageModel
     public List<Order> PastOrders { get; set; } = new();
     private readonly IMediator _mediator;
     private readonly UserManager<User> _userManager;
-    private User User;
+    private User Courier;
 
     public OrderOverviewModel(IMediator mediator, UserManager<User> userManager)
     {
@@ -27,11 +27,11 @@ public class OrderOverviewModel : PageModel
     }
     public async Task OnGetAsync()
     {
-        User = await _userManager.GetUserAsync(HttpContext.User);
-        var orders = await _mediator.Send(new Get.Request(User.Id));
-
+        Courier = await _userManager.GetUserAsync(HttpContext.User);
+        var orders = await _mediator.Send(new Get.Request(Courier.Id));
+        
         ActiveOrders = orders
-        .Where(o => o.Status == Status.Submitted || o.Status == Status.Being_picked_up || o.Status == Status.On_the_way)
+        .Where(o=> o.Status == Status.Being_picked_up || o.Status == Status.On_the_way)
         .ToList();
 
         PastOrders = orders
@@ -40,8 +40,8 @@ public class OrderOverviewModel : PageModel
     }
     public async Task<IActionResult> OnPostCancelAsync(Guid orderId)
     {
-        User = await _userManager.GetUserAsync(HttpContext.User);
-        var order = (await _mediator.Send(new Get.Request(User.Id)))
+        Courier = await _userManager.GetUserAsync(HttpContext.User);
+        var order = (await _mediator.Send(new Get.Request(Courier.Id)))
             .FirstOrDefault(o => o.Id == orderId);
 
         if (order == null || (order.Status != Status.Submitted && order.Status != Status.Being_picked_up))
@@ -55,7 +55,7 @@ public class OrderOverviewModel : PageModel
 
     public IActionResult OnPostDetails(Guid orderId)
     {
-        return RedirectToPage("/Customer/OrderDetail", new { id = orderId });
+        return RedirectToPage("/Courier/OrderDetail", new { id = orderId });
     }
 
 }

@@ -1,9 +1,9 @@
 ﻿@page "{id:Guid}"
 @using System.Globalization
 @using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
-@model TarlBreuJacoBaraKnor.webapp.Pages.Customer.OrderDetailModel
+@model TarlBreuJacoBaraKnor.webapp.Pages.Courier.OrderDetailModel
 @{
-	Layout = "/Pages/Customer/Shared/_Customer_Layout.cshtml";
+    Layout = "/Pages/Courier/Shared/_Courier_Layout.cshtml";
     ViewData["Title"] = "Order Details";
 }
 
@@ -73,5 +73,23 @@ else
 
         </div>
 
+        <form method="post" class="mt-3 d-flex align-items-center">
+            <input type="hidden" asp-for="OrderId" value="@Model.OrderId" />
+
+            @{
+                string buttonText = Model._order.Status switch
+                {
+                    Status.Submitted => "Accept Order",
+                    Status.Being_picked_up => "Change status to: On the way!",
+                    Status.On_the_way => "Change status to: Delivered",
+                    _ =>  ""
+                };
+            }
+
+            @if (buttonText != "")
+            {
+                <button type="submit" class="btn btn-primary btn-sm">@buttonText</button>
+            }
+        </form>
     }
 }
