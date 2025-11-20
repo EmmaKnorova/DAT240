@@ -1,9 +1,57 @@
 ﻿@page
 @model TarlBreuJacoBaraKnor.webapp.Pages.Customer.OrderOverviewModel
+@using Microsoft.AspNetCore.Html
 @using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
 @{
-	Layout = "/Pages/Customer/Shared/_Customer_Layout.cshtml";
+    Layout = "/Pages/Customer/Shared/_Customer_Layout.cshtml";
     ViewData["Title"] = "My Orders";
+
+    Func<Status,int> priorityPast = s => s switch
+    {
+        Status.Delivered => 1,
+        Status.On_the_way => 2,
+        Status.Being_picked_up => 3,
+        Status.Submitted => 4,
+        Status.CancelledWithFee => 5,
+        Status.Cancelled => 6,
+        _ => 99
+    };
+
+    Func<Status,int> priorityActive = s => s switch
+    {
+        Status.On_the_way => 1,
+        Status.Being_picked_up => 2,
+        Status.Submitted => 3,
+        _ => 99
+    };
+
+    var activeSorted = Model.ActiveOrders.OrderBy(o => priorityActive(o.Status)).ToList();
+    var pastSorted = Model.PastOrders.OrderBy(o => priorityPast(o.Status)).ToList();
+
+    Func<TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order, string> totalDisplay = o =>
+    {
+        var itemsTotal = o.OrderLines.Sum(l => l.Amount * l.Price);
+        var deliveryFee = o.DeliveryFee;
+        var grandTotal = itemsTotal + deliveryFee;
+
+        if (o.Status == Status.Cancelled)
+            return $"<span style='text-decoration: line-through;'>{grandTotal.ToString("C", new System.Globalization.CultureInfo("nb-NO"))}</span> <span class='fw-bold text-danger'>0 NOK</span>";
+
+        if (o.Status == Status.CancelledWithFee)
+            return $"<span style='text-decoration: line-through;'>{grandTotal.ToString("C", new System.Globalization.CultureInfo("nb-NO"))}</span> <span class='fw-bold text-danger'>{deliveryFee.ToString("C", new System.Globalization.CultureInfo("nb-NO"))}</span>";
+
+        return $"<span class='fw-bold'>{grandTotal.ToString("C", new System.Globalization.CultureInfo("nb-NO"))}</span>";
+    };
 }
 
 <div class="container mt-5">
@@ -16,16 +64,35 @@
 
     <div id="activeOrdersCard" class="card shadow-sm p-3">
         <h4>Active Orders</h4>
-        @if (Model.ActiveOrders.Any())
+        @if (activeSorted.Any())
         {
             <ul class="list-group list-group-flush">
-                @foreach (var order in Model.ActiveOrders)
+                @foreach (var order in activeSorted)
                 {
+                    var itemsTotal = order.OrderLines.Sum(line => line.Amount * line.Price);
+                    var deliveryFee = order.DeliveryFee;
+                    var grandTotal = itemsTotal + deliveryFee;
+
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Order</strong> – @order.Status
+                            <strong>Order</strong> – @RenderStatusBadge(order.Status)
                             <br />
                             @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
+                            <br />
+                            <strong>Delivery Fee:</strong>
+                            @if (order.Status == Status.Cancelled)
+                            {
+                                <span style="text-decoration: line-through;">
+                                    @deliveryFee.ToString("C", new System.Globalization.CultureInfo("nb-NO"))
+                                </span>
+                                <span class="text-danger">0 NOK</span>
+                            }
+                            else
+                            {
+                                @deliveryFee.ToString("C", new System.Globalization.CultureInfo("nb-NO"))
+                            }
+                            <br />
+                            <strong>Total:</strong> @Html.Raw(totalDisplay(order))
                         </div>
                         <div class="d-flex gap-2">
                             <form method="post" asp-page-handler="Details" class="m-0">
@@ -56,16 +123,35 @@
 
     <div id="pastOrdersCard" class="card shadow-sm p-3 d-none">
         <h4>Order history</h4>
-        @if (Model.PastOrders.Any())
+        @if (pastSorted.Any())
         {
             <ul class="list-group list-group-flush">
-                @foreach (var order in Model.PastOrders)
+                @foreach (var order in pastSorted)
                 {
+                    var itemsTotal = order.OrderLines.Sum(line => line.Amount * line.Price);
+                    var deliveryFee = order.DeliveryFee;
+                    var grandTotal = itemsTotal + deliveryFee;
+
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Order #@order.Id</strong> – @order.Status  
+                            <strong>Order</strong> – @RenderStatusBadge(order.Status)
                             <br />
-                            @order.Location?.Building
+                            @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
+                            <br />
+                            <strong>Delivery Fee:</strong>
+                            @if (order.Status == Status.Cancelled)
+                            {
+                                <span style="text-decoration: line-through;">
+                                    @deliveryFee.ToString("C", new System.Globalization.CultureInfo("nb-NO"))
+                                </span>
+                                <span class="text-danger">0 NOK</span>
+                            }
+                            else
+                            {
+                                @deliveryFee.ToString("C", new System.Globalization.CultureInfo("nb-NO"))
+                            }
+                            <br />
+                            <strong>Total:</strong> @Html.Raw(totalDisplay(order))
                         </div>
                         <form method="post" asp-page-handler="Details" class="m-0">
                             <input type="hidden" name="orderId" value="@order.Id" />
@@ -86,7 +172,6 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
     <script>
         const activeTab = document.getElementById("activeTab");
         const pastTab = document.getElementById("pastTab");
@@ -122,4 +207,33 @@
             launchConfetti('right');
         });
     </script>
+}
+
+@functions {
+    public IHtmlContent RenderStatusBadge(Status status)
+    {
+        var label = status switch
+        {
+            Status.Delivered => "Delivered",
+            Status.On_the_way => "On the way",
+            Status.Being_picked_up => "Being picked up",
+            Status.Submitted => "Submitted",
+            Status.CancelledWithFee => "Cancelled (with fee)",
+            Status.Cancelled => "Cancelled",
+            _ => status.ToString()
+        };
+
+        var cls = status switch
+        {
+            Status.Delivered => "badge bg-success",
+            Status.On_the_way => "badge bg-primary",
+            Status.Being_picked_up => "badge bg-warning text-dark",
+            Status.Submitted => "badge bg-secondary",
+            Status.CancelledWithFee => "badge bg-info text-dark",  // fond visible
+            Status.Cancelled => "badge bg-danger",
+            _ => "badge bg-secondary"
+        };
+
+        return new HtmlString($"<span class=\"{cls}\">{label}</span>");
+    }
 }

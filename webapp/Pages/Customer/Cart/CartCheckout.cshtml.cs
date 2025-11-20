@@ -52,57 +52,45 @@ public class CartCheckoutModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        // Get the current user's ID from the authentication cookie
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
         {
-            // If user is not logged in, redirect to login page
             return RedirectToPage("/Identity/Login");
         }
 
-        // Get the user's cart from the database
+        // Get the user's cart
         var cartResponse = await _mediator.Send(new GetCartByUserId.Request(userId));
-
         if (!cartResponse.CartId.HasValue)
         {
-            // If no cart exists, redirect back to cart page
             return RedirectToPage("/Customer/Cart/Cart");
         }
 
-        // Load the full cart with items
         var cart = await _mediator.Send(new Get.Request(cartResponse.CartId.Value));
-
         if (cart is null || !cart.Items.Any())
         {
-            // If cart is empty, show error message
             Errors = new[] { "Your cart is empty." };
             return Page();
         }
 
-        // Calculate the total amount of the cart (sum of all items)
-        var totalAmount = cart.Items.Sum(item => item.Sum);
+        // Define delivery fee (fixed or calculated)
+        decimal deliveryFee = 50m; // example: 50 NOK
 
-        // Prepare delivery location details
-        var location = new Location
-        {
-            Building = Building,
-            RoomNumber = RoomNumber,
-            Notes = Notes ?? ""
-        };
+        // Create Stripe checkout session with cart items + delivery fee
+        var (checkoutUrl, paymentIntentId) = _paymentService.CreatePaymentSession(cart, deliveryFee, "nok");
 
-        // Create a Stripe checkout session with total amount in NOK
-        var checkoutUrl = _paymentService.CreatePaymentSession(totalAmount, "nok");
 
-        // Store necessary order information in TempData for use after payment success
+        // Store necessary order information in TempData
         TempData["CartId"] = cartResponse.CartId.Value.ToString();
         TempData["UserId"] = userId.ToString();
         TempData["Building"] = Building;
         TempData["RoomNumber"] = RoomNumber;
         TempData["Notes"] = Notes ?? "";
-        TempData["TotalAmount"] = totalAmount.ToString();
+        TempData["DeliveryFee"] = deliveryFee.ToString();
+        TempData["PaymentIntentId"] = paymentIntentId;
 
-        // Redirect the user to Stripe checkout page
+
+        // Redirect user to Stripe checkout page
         return Redirect(checkoutUrl);
     }
 }

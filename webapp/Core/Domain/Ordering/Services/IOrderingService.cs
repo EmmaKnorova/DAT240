@@ -6,6 +6,6 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 
 public interface IOrderingService
 {
-    Task<Guid> PlaceOrder(Location location, User user, OrderLineDto[] orderLines, string Notes);
+    Task<Guid> PlaceOrder(Location location, User user, OrderLineDto[] orderLines, string Notes, decimal deliveryFee, string paymentIntentId);
 }
 

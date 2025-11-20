@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
+using Stripe.Checkout;
+
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages
 {
@@ -16,7 +18,7 @@ namespace TarlBreuJacoBaraKnor.webapp.Pages
             _mediator = mediator;
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string session_id)
         {
             if (!Guid.TryParse(TempData["CartId"]?.ToString(), out var cartId) ||
                 !Guid.TryParse(TempData["UserId"]?.ToString(), out var userId))
@@ -31,11 +33,18 @@ namespace TarlBreuJacoBaraKnor.webapp.Pages
                 Notes = TempData["Notes"]?.ToString() ?? ""
             };
 
+            var deliveryFee = decimal.Parse(TempData["DeliveryFee"]?.ToString() ?? "0");
+            var sessionService = new SessionService();
+            var session = await sessionService.GetAsync(session_id);
+            var paymentIntentId = session.PaymentIntentId;
+
             var result = await _mediator.Send(new CartCheckout.Request(
                 cartId,
                 location,
                 userId,
-                location.Notes
+                location.Notes,
+                deliveryFee,
+                paymentIntentId 
             ));
 
             if (result.success)

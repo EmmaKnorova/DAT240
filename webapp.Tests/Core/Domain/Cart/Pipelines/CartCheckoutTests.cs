@@ -55,7 +55,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         var orderingServiceMock = new Mock<IOrderingService>();
         var expectedOrderId = Guid.NewGuid();
         orderingServiceMock
-            .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>()))
+            .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>(),It.IsAny<decimal>(),It.IsAny<string>()))
             .ReturnsAsync(expectedOrderId);
 
         var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
@@ -82,7 +82,9 @@ public class CartCheckoutTests : IClassFixture<DbTest>
             It.Is<Location>(l => l.Building == "Test Building" && l.RoomNumber == "Room 101"),
             It.Is<User>(u => u.Id == userId),
             It.Is<OrderLineDto[]>(lines => lines.Length == 2),
-            "Test notes"
+            "Test notes",
+            0,
+            ""  
         ), Times.Once);
     }
 
@@ -373,7 +375,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
 
         var orderingServiceMock = new Mock<IOrderingService>();
         orderingServiceMock
-            .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>()))
+            .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>(),It.IsAny<decimal>(),It.IsAny<string>()))
             .ReturnsAsync(Guid.NewGuid());
 
         var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
@@ -391,7 +393,9 @@ public class CartCheckoutTests : IClassFixture<DbTest>
             It.IsAny<Location>(),
             It.IsAny<User>(),
             It.IsAny<OrderLineDto[]>(),
-            "Please add extra cheese"
+            "Please add extra cheese",
+            0,
+            ""  
         ), Times.Once);
     }
 
@@ -518,7 +522,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
 
         var orderingServiceMock = new Mock<IOrderingService>();
         orderingServiceMock
-            .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>()))
+            .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>(),It.IsAny<decimal>(),It.IsAny<string>()))
             .ReturnsAsync(Guid.NewGuid());
 
         var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
@@ -540,6 +544,8 @@ public class CartCheckoutTests : IClassFixture<DbTest>
                 lines.Any(l => l.FoodItemId == 1 && l.FoodItemName == "Pizza" && l.Amount == 2 && l.Price == 12.99m) &&
                 lines.Any(l => l.FoodItemId == 2 && l.FoodItemName == "Burger" && l.Amount == 1 && l.Price == 8.50m)
             ),
+            It.IsAny<string>(),
+            It.IsAny<decimal>(),
             It.IsAny<string>()
         ), Times.Once);
     }
