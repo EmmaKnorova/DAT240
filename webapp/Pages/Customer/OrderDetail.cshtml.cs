@@ -1,11 +1,12 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer;
-
+[Authorize(Roles = "Customer")]
 public class OrderDetailModel : PageModel
 {
     public Order _order;
@@ -26,17 +27,5 @@ public class OrderDetailModel : PageModel
     {
         OrderId = id;
         _order = await _mediator.Send(new GetSpecificOrder.Request(id));
-    }
-
-    public async Task<ActionResult> OnPostAsync()
-    {
-        _order = await _mediator.Send(new GetSpecificOrder.Request(OrderId));
-        if (_order == null)
-        {
-            return BadRequest("Order not found.");
-        }
-
-
-        return RedirectToPage(new { id = OrderId });
     }
 }

@@ -31,7 +31,7 @@ public class LoginModel(
         if (User.IsInRole(Roles.Customer.ToString()))
             return Redirect("/Customer/Menu");
         else if (User.IsInRole(Roles.Courier.ToString()))
-            return Redirect("/Customer/OrderOverview");
+            return Redirect("/Courier/OrderOverview");
         return Redirect("/");
     }
 
@@ -67,7 +67,7 @@ public class LoginModel(
             if (userRoles.Contains(Roles.Customer.ToString()))
                 return LocalRedirect("/Customer/Menu");
             else if (userRoles.Contains(Roles.Courier.ToString()))
-                return LocalRedirect("/Customer/OrderOverview");
+                return LocalRedirect("/Courier/OrderOverview");
             else if (Url.IsLocalUrl(ReturnUrl))
                 return LocalRedirect(ReturnUrl);
             return LocalRedirect("/");

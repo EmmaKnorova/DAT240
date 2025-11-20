@@ -5,9 +5,10 @@ using System.Security.Claims;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer.Cart;
-
+[Authorize(Roles = "Customer")]
 public class CartCheckoutModel : PageModel
 {
     private readonly IMediator _mediator;
