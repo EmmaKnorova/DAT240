@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
@@ -11,9 +12,11 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 namespace TarlBreuJacoBaraKnor.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    partial class ShopContextModelSnapshot : ModelSnapshot
+    [Migration("20251119200035_AddFoodItemImagePath")]
+    partial class AddFoodItemImagePath
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -328,10 +331,6 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("customer_id");
 
-                    b.Property<decimal>("DeliveryFee")
-                        .HasColumnType("numeric")
-                        .HasColumnName("delivery_fee");
-
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("text")
@@ -340,11 +339,6 @@ namespace TarlBreuJacoBaraKnor.Migrations
                     b.Property<DateTimeOffset>("OrderDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("order_date");
-
-                    b.Property<string>("PaymentIntentId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("payment_intent_id");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer")

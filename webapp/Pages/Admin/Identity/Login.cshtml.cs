@@ -18,21 +18,22 @@ public class AdminLoginModel(
     private readonly UserManager<User> _userManager = userManager;
     private readonly ILogger<AdminLoginModel> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
-    private readonly string _defaultUrlRedirectPath = "/Admin/Dashboard"; 
-    [BindProperty(SupportsGet = true)]
-    public string? ReturnUrl { get; set; }
-    [BindProperty] public required LoginInputModel Input { get; set; }
-    public List<string> PermittedRoles { get; set; } = [Roles.Admin.ToString()];
 
-    public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
+    [BindProperty]
+    public required LoginInputModel Input { get; set; }
+
+    [BindProperty]
+    public string? ReturnUrl { get; set; }
+    public void OnGet()
     {
-        ReturnUrl = returnUrl ?? Url.Content(_defaultUrlRedirectPath);
-        if (User.Identity.IsAuthenticated && User.IsInRole(Roles.Admin.ToString()))
-                return Redirect(_defaultUrlRedirectPath);
-            else return Page();
+        // Si déjà connecté en admin, on va direct au dashboard
+        if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Admin.ToString()))
+        {
+            Response.Redirect("/Admin/Dashboard");
+        }
     }
 
-    public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
+    public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
             return Page();
@@ -44,19 +45,23 @@ public class AdminLoginModel(
             return Page();
         }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(
+        // On utilise PasswordSignInAsync pour gérer tout en un
+        var result = await _signInManager.PasswordSignInAsync(
             user,
             Input.Password,
-            lockoutOnFailure: false
-        );
+            isPersistent: false,
+            lockoutOnFailure: false);
 
         if (result.Succeeded)
         {
-            _logger.LogInformation($"User logged in: {user.Email}");
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            if (Url.IsLocalUrl(ReturnUrl))
-                return Redirect(ReturnUrl);
-            return Redirect(_defaultUrlRedirectPath);
+            _logger.LogInformation("Admin user logged in: {Email}", user.Email);
+
+            // Première connexion → on force la page de changement de mot de passe
+            if (user.ChangePasswordOnFirstLogin)
+                return RedirectToPage("/Admin/Identity/ChangeDefaultPassword");
+
+            // Sinon, on va au dashboard
+            return Redirect("/Admin/Dashboard");
         }
 
         if (result.IsLockedOut)
