@@ -83,8 +83,8 @@ public class CartCheckoutTests : IClassFixture<DbTest>
             It.Is<User>(u => u.Id == userId),
             It.Is<OrderLineDto[]>(lines => lines.Length == 2),
             "Test notes",
-            50m,
-            "pi_test_123"  
+            0,
+            ""  
         ), Times.Once);
     }
 
@@ -394,8 +394,8 @@ public class CartCheckoutTests : IClassFixture<DbTest>
             It.IsAny<User>(),
             It.IsAny<OrderLineDto[]>(),
             "Please add extra cheese",
-            50m,
-            "pi_test_123"  
+            0,
+            ""  
         ), Times.Once);
     }
 
