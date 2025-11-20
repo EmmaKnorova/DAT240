@@ -4,9 +4,9 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 
-public class Get
+public class GetAllOrders
 {
-    public record Request(Guid UserId) : IRequest<List<Order>>;
+    public record Request() : IRequest<List<Order>>;
 
     public class Handler : IRequestHandler<Request, List<Order>>
     {
@@ -23,9 +23,7 @@ public class Get
                 .Include(o => o.OrderLines)
                 .Include(o => o.Customer)
                 .Include(o => o.Location)
-                .Include(o => o.Courier)
-                .Where(o => o.Customer != null && o.Customer.Id == request.UserId || o.Courier.Id == request.UserId)
-                .OrderBy(o => o.Id)
+                .OrderBy(o => o.OrderDate)
                 .ToListAsync(cancellationToken);
         }
     }

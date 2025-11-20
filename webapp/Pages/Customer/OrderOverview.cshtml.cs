@@ -10,7 +10,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages.Customer;
 
-[Authorize]
+[Authorize(Roles = "Customer")]
 public class OrderOverviewModel : PageModel
 {
     public List<Order> ActiveOrders { get; set; } = new();
@@ -85,4 +85,5 @@ public class OrderOverviewModel : PageModel
     {
         return RedirectToPage("/Customer/OrderDetail", new { id = orderId });
     }
+
 }

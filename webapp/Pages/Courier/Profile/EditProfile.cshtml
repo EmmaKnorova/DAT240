@@ -1,0 +1,64 @@
+﻿@page
+@model TarlBreuJacoBaraKnor.webapp.Pages.Shared.EditProfileModel
+@{
+    Layout = "/Pages/Courier/Shared/_Courier_Layout.cshtml";
+    ViewData["Title"] = "Edit Profile";
+}
+
+<h2 class="mb-4">Edit Profile</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label fw-bold"></label>
+                <input asp-for="Input.Email" class="form-control" readonly />
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Input.UserName" class="form-label fw-bold"></label>
+                <input asp-for="Input.UserName" class="form-control"/>
+                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Name" class="form-label fw-bold"></label>
+                <input asp-for="Input.Name" class="form-control" />
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.PhoneNumber" class="form-label fw-bold"></label>
+                <input asp-for="Input.PhoneNumber" class="form-control" />
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Address" class="form-label fw-bold"></label>
+                <input asp-for="Input.Address" class="form-control" />
+                <span asp-validation-for="Input.Address" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.City" class="form-label fw-bold"></label>
+                <input asp-for="Input.City" class="form-control" />
+                <span asp-validation-for="Input.City" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.PostalCode" class="form-label fw-bold"></label>
+                <input asp-for="Input.PostalCode" class="form-control" />
+                <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">
+                Save Changes
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
