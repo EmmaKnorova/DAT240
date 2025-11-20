@@ -56,7 +56,14 @@ public class OrderOverviewModel : PageModel
             var fullAmount = order.OrderLines.Sum(l => l.Amount * l.Price) + order.DeliveryFee;
             await _refundService.Refund(order.PaymentIntentId, fullAmount);
 
+            // ✅ Mise à jour des montants en base
+            foreach (var line in order.OrderLines)
+            {
+                line.Price = 0;
+            }
+            order.DeliveryFee = 0;
             order.Status = Status.Cancelled;
+
             await _mediator.Send(new UpdateOrder.Request(order));
 
             TempData["SuccessMessage"] = "Your order has been cancelled and fully refunded.";
@@ -67,7 +74,14 @@ public class OrderOverviewModel : PageModel
             var itemsAmount = order.OrderLines.Sum(l => l.Amount * l.Price);
             await _refundService.Refund(order.PaymentIntentId, itemsAmount);
 
+            // ✅ Mise à jour des montants en base
+            foreach (var line in order.OrderLines)
+            {
+                line.Price = 0;
+            }
+            // DeliveryFee reste inchangé
             order.Status = Status.CancelledWithFee;
+
             await _mediator.Send(new UpdateOrder.Request(order));
 
             TempData["SuccessMessage"] = "Your order has been cancelled. The delivery fee is non-refundable.";
@@ -85,5 +99,4 @@ public class OrderOverviewModel : PageModel
     {
         return RedirectToPage("/Customer/OrderDetail", new { id = orderId });
     }
-
 }
