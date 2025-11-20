@@ -72,7 +72,7 @@ namespace webapp.Tests.Core.Domain.Ordering.Services
             var service = new OrderingService(mediatorMock.Object);
 
             // Act
-            var orderId = await service.PlaceOrder(location, user, orderLines, "Extra notes");
+            var orderId = await service.PlaceOrder(location, user, orderLines, "Extra notes", 50m,"pi_test_123");
 
             // Assert
             Assert.NotEqual(Guid.Empty, orderId);
