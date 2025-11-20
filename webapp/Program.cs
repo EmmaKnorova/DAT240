@@ -48,6 +48,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
+builder.Services.AddScoped<StripeRefundService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

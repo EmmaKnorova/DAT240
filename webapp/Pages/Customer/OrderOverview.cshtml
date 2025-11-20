@@ -2,6 +2,18 @@
 @model TarlBreuJacoBaraKnor.webapp.Pages.Customer.OrderOverviewModel
 @using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 
 @{
     ViewData["Title"] = "My Orders";
@@ -27,6 +39,10 @@
                             <strong>Order</strong> – @order.Status
                             <br />
                             @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
+                            <br />
+                            Delivery Fee: @order.DeliveryFee.ToString("C", new System.Globalization.CultureInfo("nb-NO"))
+                            <br />
+                            Total: @((order.OrderLines.Sum(line => line.Amount * line.Price) + order.DeliveryFee).ToString("C", new System.Globalization.CultureInfo("nb-NO")))
                         </div>
                         <div class="d-flex gap-2">
                             <form method="post" asp-page-handler="Details" class="m-0">
@@ -64,9 +80,13 @@
                 {
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Order #@order.Id</strong> – @order.Status  
+                            <strong>Order</strong> – @order.Status
                             <br />
-                            @order.Location?.Building
+                            @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
+                            <br />
+                            Delivery Fee: @order.DeliveryFee.ToString("C", new System.Globalization.CultureInfo("nb-NO"))
+                            <br />
+                            Total: @((order.OrderLines.Sum(line => line.Amount * line.Price) + order.DeliveryFee).ToString("C", new System.Globalization.CultureInfo("nb-NO")))
                         </div>
                         <form method="post" asp-page-handler="Details" class="m-0">
                             <input type="hidden" name="orderId" value="@order.Id" />

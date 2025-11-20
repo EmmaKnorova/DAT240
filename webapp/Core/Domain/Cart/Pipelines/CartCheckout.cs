@@ -15,7 +15,7 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 
 public class CartCheckout
 {
-    public record Request(Guid CartId, Ordering.Location Location, Guid UserId, string Notes = "") : IRequest<Response>;
+    public record Request(Guid CartId, Ordering.Location Location, Guid UserId, string Notes = "", decimal DeliveryFee = 0, string PaymentIntentId = "") : IRequest<Response>;
 
     public record Response(bool success, Guid OrderId, string[] Errors);
 
@@ -77,7 +77,7 @@ public class CartCheckout
             // Convert cart items to array of order line DTOs
             var orderLines = cart.Items.Select(item => new OrderLineDto(item.Sku, item.Name, item.Count, item.Price)).ToArray();
 
-            var orderId = await _orderingService.PlaceOrder(request.Location, user, orderLines, request.Notes);
+            var orderId = await _orderingService.PlaceOrder(request.Location, user, orderLines, request.Notes, request.DeliveryFee, request.PaymentIntentId);
 
             _db.ShoppingCarts.Remove(cart);
 
