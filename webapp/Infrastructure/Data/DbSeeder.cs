@@ -5,6 +5,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 using Bogus;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 
 namespace TarlBreuJacoBaraKnor.Infrastructure.Data;
 
@@ -33,6 +34,7 @@ public class DbSeeder
             await CreateDefaultAdminUser();
             await GenerateDummyUsers(30);
             await GenerateFoodItems(30);
+            await GenerateOrders(50);
 
         }
         catch (Exception ex)
@@ -66,6 +68,100 @@ public class DbSeeder
             await Context.FoodItems.AddRangeAsync(foodItems);
             await Context.SaveChangesAsync();
             Logger.LogInformation($"Seeded {foodItems.Count()} food items");
+        }
+    }
+
+    private static async Task GenerateOrders(int count)
+    {
+        // Only seed if no orders exist
+        if (await Context.Orders.AnyAsync())
+        {
+            Logger.LogInformation("Orders already exist, skipping seeding");
+            return;
+        }
+
+        var faker = new Faker();
+        var users = await Context.Users.Where(u => u.AccountState == AccountStates.Approved).ToListAsync();
+        var foodItems = await Context.FoodItems.ToListAsync();
+
+        Logger.LogInformation($"Found {users.Count} approved users and {foodItems.Count} food items for order seeding");
+
+        if (!users.Any())
+        {
+            Logger.LogWarning("Cannot seed orders: no approved users found");
+            return;
+        }
+        
+        if (!foodItems.Any())
+        {
+            Logger.LogWarning("Cannot seed orders: no food items found");
+            return;
+        }
+
+        var orders = new List<Order>();
+
+        for (int i = 0; i < count; i++)
+        {
+            try
+            {
+                var user = faker.PickRandom(users);
+                var location = new Location
+                {
+                    Building = faker.PickRandom("Main Building", "Science Hall", "Engineering Building", "Library", "Student Center"),
+                    RoomNumber = faker.Random.Number(100, 999).ToString(),
+                    Notes = faker.Lorem.Sentence(5)
+                };
+
+                // Create order
+                var order = new Order(
+                    location: location,
+                    customer: user,
+                    notes: faker.Lorem.Sentence(3)
+                )
+                {
+                    Status = faker.PickRandom<Status>(),
+                    // Create orders from the past 30 days
+                    OrderDate = DateTimeOffset.UtcNow.AddDays(-faker.Random.Number(0, 30))
+                };
+
+                // Add random number of order lines (1-5)
+                var itemCount = faker.Random.Number(1, 5);
+                
+                for (int j = 0; j < itemCount; j++)
+                {
+                    var foodItem = faker.PickRandom(foodItems);
+                    var quantity = faker.Random.Number(1, 3);
+                    
+                    // Create a deterministic Guid from the food item ID
+                    var foodItemGuid = new Guid($"00000000-0000-0000-0000-{foodItem.Id:D12}");
+                    
+                    var orderLine = new OrderLine(
+                        foodItemId: foodItemGuid,
+                        foodItemName: foodItem.Name,
+                        amount: quantity,
+                        price: foodItem.Price
+                    );
+
+                    order.AddOrderLine(orderLine);
+                }
+
+                orders.Add(order);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Failed to create order {i}: {ex.Message} - {ex.StackTrace}");
+            }
+        }
+
+        if (orders.Any())
+        {
+            await Context.Orders.AddRangeAsync(orders);
+            await Context.SaveChangesAsync();
+            Logger.LogInformation($"Seeded {orders.Count} orders with a total of {orders.Sum(o => o.OrderLines.Count)} order lines");
+        }
+        else
+        {
+            Logger.LogWarning("No orders were created");
         }
     }
 
