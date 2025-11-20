@@ -10,6 +10,7 @@ using TarlBreuJacoBaraKnor.webapp.Pages.Courier.Helpers;
 
 namespace TarlBreuJacoBaraKnor.Pages.Courier;
 
+[ServiceFilter(typeof(RequireAccountApprovalFilter))]
 
 [Authorize(Roles = "Courier")]
 public class CourierDashboardModel : BasePageModel
