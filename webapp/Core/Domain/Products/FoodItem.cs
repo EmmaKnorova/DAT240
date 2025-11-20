@@ -42,6 +42,8 @@ public class FoodItem : BaseEntity
 		}
 	}
 	public int CookTime { get; set; }
+
+	public string? ImagePath { get; set; }
 }
 
 public class FoodItemNameValidator : IValidator<FoodItem>
