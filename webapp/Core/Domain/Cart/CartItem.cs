@@ -22,4 +22,13 @@ public class CartItem : BaseEntity
 	public int Count { get; private set; }
 
 	public void AddOne() => Count++;
+
+	public void RemoveOne()
+    {
+        if (Count <= 0)
+        {
+            throw new InvalidOperationException("Cannot remove from an item with count 0");
+        }
+        Count--;
+    }
 }
