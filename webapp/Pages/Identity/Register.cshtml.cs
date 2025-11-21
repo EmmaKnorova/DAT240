@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.Core.Domain.Users.DTOs;
 using TarlBreuJacoBaraKnor.Core.Domain.Users.Pipelines;
-using TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
-using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.Pages.Identity;
@@ -51,6 +49,7 @@ public class RegisterModel(
         }
         else
         {
+            Console.WriteLine("Error!");
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error);

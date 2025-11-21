@@ -9,12 +9,12 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 namespace TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
 
-public class UserService(UserManager<User> userManager, SignInManager<User> signInManager, ShopContext db, ILogger logger, RoleManager<IdentityRole<Guid>> roleManager) : IUserService
+public class UserService(UserManager<User> userManager, 
+ ShopContext db, ILogger<UserService> logger, RoleManager<IdentityRole<Guid>> roleManager) : IUserService
 {
     private readonly UserManager<User> _userManager = userManager;
-    private readonly SignInManager<User> _signInManager = signInManager;
     private readonly ShopContext _db = db;
-    private readonly ILogger _logger = logger;
+    private readonly ILogger<UserService> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
     
     public async Task ApproveUserState(string userId, CancellationToken cancellationToken)
@@ -64,7 +64,8 @@ public class UserService(UserManager<User> userManager, SignInManager<User> sign
 
     public async Task<Result> RegisterInternalUser(RegisterInputModel registerInputModel)
     {
-        var userFoundByEmail = GetUserByEmail(registerInputModel.Email);
+        var userFoundByEmail = await GetUserByEmail(registerInputModel.Email);
+        Console.WriteLine($"This is the user with the email: {userFoundByEmail}");
         if (userFoundByEmail != null)
         {
             return Result.Failure($"A user has already registered with this email address: {registerInputModel.Email}");
