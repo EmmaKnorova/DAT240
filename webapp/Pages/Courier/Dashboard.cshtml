@@ -1,34 +1,68 @@
 @page
+@using Microsoft.AspNetCore.Html
+@using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
 @model CourierDashboardModel
 @{
     Layout = "/Pages/Courier/Shared/_Courier_Layout.cshtml";
     ViewData["Title"] = "Courier Dashboard";
+
+    Func<Status,int> priorityActive = s => s switch
+    {
+        Status.On_the_way => 1,
+        Status.Being_picked_up => 2,
+        Status.Submitted => 3,
+        _ => 99
+    };
+
+    Func<TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order, string> totalDisplay = o =>
+    {
+        var itemsTotal = o.OrderLines.Sum(l => l.Amount * l.Price);
+        var deliveryFee = o.DeliveryFee;
+        var grandTotal = itemsTotal + deliveryFee;
+
+        if (o.Status == Status.Cancelled)
+            return $"<span style='text-decoration: line-through;'>{grandTotal.ToString("C", new System.Globalization.CultureInfo("nb-NO"))}</span> <span class='fw-bold text-danger'>0 NOK</span>";
+
+        if (o.Status == Status.CancelledWithFee)
+            return $"<span style='text-decoration: line-through;'>{grandTotal.ToString("C", new System.Globalization.CultureInfo("nb-NO"))}</span> <span class='fw-bold text-danger'>{deliveryFee.ToString("C", new System.Globalization.CultureInfo("nb-NO"))}</span>";
+
+        return $"<span class='fw-bold'>{grandTotal.ToString("C", new System.Globalization.CultureInfo("nb-NO"))}</span>";
+    };
 }
 
 <div class="container mt-5">
     <h2 class="mb-4 text-center">Orders ready for pick-up</h2>
 
-
     <div id="activeOrdersCard" class="card shadow-sm p-3">
         <h4>Active Orders</h4>
+
         @if (Model.ActiveOrders.Any())
         {
             <ul class="list-group list-group-flush">
                 @foreach (var order in Model.ActiveOrders)
                 {
+                    var itemsTotal = order.OrderLines.Sum(line => line.Amount * line.Price);
+                    var deliveryFee = order.DeliveryFee;
+                    var payment = deliveryFee * 0.8m;
+
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Order </strong> – @order.Customer.Name  
+                            <strong>Order</strong> – @order.Customer.Name
                             <br />
                             @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
+                            <br />
+                            <strong>Payment:</strong>
+                                @payment.ToString("C", new System.Globalization.CultureInfo("nb-NO"))
+                            <br />
+                            <strong>Total:</strong> @Html.Raw(totalDisplay(order))
                         </div>
-                        <div>
-                            <form method="post" class="m-0">
-                            <input type="hidden" name="orderId" value="@order.Id" />
-                            <button type="submit" class="btn btn-primary btn-sm rounded-pill shadow-sm d-flex align-items-center">
-                                <span class="me-2"><i class="bi bi-eye"></i></span> View Details
-                            </button>
-                        </form>
+                        <div class="d-flex gap-2">
+                            <form method="post" asp-page-handler="Details" class="m-0">
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <button type="submit" class="btn btn-primary btn-sm rounded-pill shadow-sm d-flex align-items-center">
+                                    <span class="me-2"><i class="bi bi-eye"></i></span> View Details
+                                </button>
+                            </form>
                         </div>
                     </li>
                 }
@@ -41,9 +75,6 @@
     </div>
 </div>
 
-<div class="container mt-5">
-
-@*Tato část kódu je nejdůležitější, bez ní by program vůbec nefungoval, při výměně karet se na obrazovce objeví konfety :0*@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
@@ -82,4 +113,33 @@
             launchConfetti('right');
         });
     </script>
+}
+
+@functions {
+    public IHtmlContent RenderStatusBadge(Status status)
+    {
+        var label = status switch
+        {
+            Status.Delivered => "Delivered",
+            Status.On_the_way => "On the way",
+            Status.Being_picked_up => "Being picked up",
+            Status.Submitted => "Submitted",
+            Status.CancelledWithFee => "Cancelled (with fee)",
+            Status.Cancelled => "Cancelled",
+            _ => status.ToString()
+        };
+
+        var cls = status switch
+        {
+            Status.Delivered => "badge bg-success",
+            Status.On_the_way => "badge bg-primary",
+            Status.Being_picked_up => "badge bg-warning text-dark",
+            Status.Submitted => "badge bg-secondary",
+            Status.CancelledWithFee => "badge bg-info text-dark",
+            Status.Cancelled => "badge bg-danger",
+            _ => "badge bg-secondary"
+        };
+
+        return new HtmlString($"<span class=\"{cls}\">{label}</span>");
+    }
 }
