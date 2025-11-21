@@ -1,18 +1,15 @@
-@page "{id:int}"
-@model EditModel
+@page
+@model CreateModel
 
 @{
     Layout = "/Pages/Admin/Shared/_Admin_Layout.cshtml";
-    ViewData["Title"] = "Edit Product";
+    ViewData["Title"] = "Create Product";
 }
 
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">Edit Product</h2>
+    <h2 class="mb-4 text-center">Create New Product</h2>
 
     <form method="post" enctype="multipart/form-data" class="col-md-8 offset-md-2">
-        <input asp-for="Input.Id" type="hidden" />
-        <input asp-for="Input.ExistingImagePath" type="hidden" />
-
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
         <div class="mb-3">
@@ -44,31 +41,10 @@
             </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Current Image</label>
-            <div class="border rounded p-3 bg-light text-center">
-                @if (!string.IsNullOrWhiteSpace(Model.Input.ExistingImagePath))
-                {
-                    <img src="/@Model.Input.ExistingImagePath" 
-                         alt="@Model.Input.Name" 
-                         class="img-thumbnail" 
-                         style="max-height: 200px; max-width: 200px; object-fit: cover;"
-                         loading="eager" />
-                }
-                else
-                {
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-image" style="font-size: 3rem;"></i>
-                        <p class="mb-0 mt-2">No image uploaded yet</p>
-                    </div>
-                }
-            </div>
-        </div>
-
         <div class="mb-4">
-            <label asp-for="ImageUpload" class="form-label">Upload New Image</label>
+            <label asp-for="ImageUpload" class="form-label">Product Image</label>
             <input asp-for="ImageUpload" type="file" class="form-control" accept="image/*" />
-            <div class="form-text">Upload a new image to replace the current one (JPG, PNG - max 5MB)</div>
+            <div class="form-text">Recommended: JPG, PNG (max 5MB)</div>
             <span asp-validation-for="ImageUpload" class="text-danger"></span>
         </div>
 
@@ -76,8 +52,8 @@
             <a asp-page="Index" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Cancel
             </a>
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-save"></i> Save Changes
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Create Product
             </button>
         </div>
     </form>

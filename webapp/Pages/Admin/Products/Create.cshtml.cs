@@ -4,20 +4,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
-using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
+using MediatR;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products.Pipelines;
 
 namespace TarlBreuJacoBaraKnor.Pages.Admin.Products;
 
 [Authorize(Roles = "Admin")]
-public class EditModel : PageModel
+public class CreateModel : PageModel
 {
-    private readonly ShopContext _db;
+    private readonly IMediator _mediator;
     private readonly IWebHostEnvironment _env;
 
-    public EditModel(ShopContext db, IWebHostEnvironment env)
+    public CreateModel(IMediator mediator, IWebHostEnvironment env)
     {
-        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _env = env ?? throw new ArgumentNullException(nameof(env));
     }
 
@@ -29,8 +29,6 @@ public class EditModel : PageModel
 
     public class InputModel
     {
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "Product name is required")]
         [StringLength(120, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 120 characters")]
         public string Name { get; set; } = string.Empty;
@@ -48,31 +46,16 @@ public class EditModel : PageModel
         [Range(0, 1440, ErrorMessage = "Cook time must be between 0 and 1440 minutes")]
         [Display(Name = "Cook Time (minutes)")]
         public int CookTime { get; set; }
-
-        public string? ExistingImagePath { get; set; }
     }
 
-    public async Task<IActionResult> OnGetAsync(int id)
+    public void OnGet()
     {
-        var foodItem = await _db.FoodItems.FindAsync(id);
-        
-        if (foodItem is null)
-        {
-            TempData["ErrorMessage"] = "Product not found";
-            return RedirectToPage("Index");
-        }
-
+        // Initialize with default values if needed
         Input = new InputModel
         {
-            Id = foodItem.Id,
-            Name = foodItem.Name,
-            Description = foodItem.Description,
-            Price = foodItem.Price,
-            CookTime = foodItem.CookTime,
-            ExistingImagePath = foodItem.ImagePath
+            Price = 0,
+            CookTime = 15
         };
-
-        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -82,19 +65,7 @@ public class EditModel : PageModel
             return Page();
         }
 
-        var foodItem = await _db.FoodItems.FindAsync(Input.Id);
-        
-        if (foodItem is null)
-        {
-            TempData["ErrorMessage"] = "Product not found";
-            return RedirectToPage("Index");
-        }
-
-        // Update basic fields
-        foodItem.Name = Input.Name;
-        foodItem.Description = Input.Description;
-        foodItem.Price = Input.Price;
-        foodItem.CookTime = Input.CookTime;
+        string? imagePath = null;
 
         // Handle image upload
         if (ImageUpload is not null && ImageUpload.Length > 0)
@@ -129,21 +100,7 @@ public class EditModel : PageModel
                     await ImageUpload.CopyToAsync(stream);
                 }
 
-                // Delete the old image if it exists
-                if (!string.IsNullOrWhiteSpace(Input.ExistingImagePath))
-                {
-                    var oldPhysicalPath = Path.Combine(
-                        _env.WebRootPath,
-                        Input.ExistingImagePath.TrimStart('/', '\\')
-                    );
-
-                    if (System.IO.File.Exists(oldPhysicalPath))
-                    {
-                        System.IO.File.Delete(oldPhysicalPath);
-                    }
-                }
-
-                foodItem.ImagePath = Path.Combine("images", "products", fileName).Replace("\\", "/");
+                imagePath = Path.Combine("images", "products", fileName).Replace("\\", "/");
             }
             catch (Exception ex)
             {
@@ -152,9 +109,27 @@ public class EditModel : PageModel
             }
         }
 
-        await _db.SaveChangesAsync();
+        // Create the product using MediatR pipeline
+        var request = new Create.Request(
+            Input.Name,
+            Input.Description,
+            Input.Price,
+            Input.CookTime,
+            imagePath
+        );
 
-        TempData["SuccessMessage"] = $"Product '{Input.Name}' updated successfully!";
+        var response = await _mediator.Send(request);
+
+        if (!response.Success)
+        {
+            foreach (var error in response.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
+            return Page();
+        }
+
+        TempData["SuccessMessage"] = $"Product '{Input.Name}' created successfully!";
         return RedirectToPage("Index");
     }
 }
