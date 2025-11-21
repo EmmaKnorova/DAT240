@@ -5,7 +5,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.DTOs;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 

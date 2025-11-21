@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.DTOs;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.Pages.Admin.Identity;

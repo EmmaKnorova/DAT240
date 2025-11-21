@@ -4,7 +4,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Products;
 using Bogus;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
 
 namespace TarlBreuJacoBaraKnor.Infrastructure.Data;
 

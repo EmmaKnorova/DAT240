@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.DTOs;
 using TarlBreuJacoBaraKnor.Pages.Shared;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
@@ -31,26 +31,18 @@ public class LoginModel(
             return Redirect("/Customer/OrderOverview");
         return Redirect("/");
     }
-
     public IActionResult OnPostGoogle()
     {
-        var redirectUrl = Url.Page("/Identity/ExternalLoginCallback");
+        var redirectUrl = Url.Page("/Identity/ExternalLogin", pageHandler: "Callback");
         var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
         return new ChallengeResult("Google", properties);
     }
 
     public IActionResult OnPostMicrosoft()
     {
-        var redirectUrl = Url.Page("/Identity/ExternalLoginCallback");
+        var redirectUrl = Url.Page("/Identity/ExternalLogin", pageHandler: "Callback");
         var properties = _signInManager.ConfigureExternalAuthenticationProperties("Microsoft", redirectUrl);
         return new ChallengeResult("Microsoft", properties);
-    }
-
-    public IActionResult OnPostFacebook()
-    {
-        var redirectUrl = Url.Page("/Identity/ExternalLoginCallback");
-        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Facebook", redirectUrl);
-        return new ChallengeResult("Facebook", properties);
     }
 
     public async Task<IActionResult> OnPostAsync()

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
 
 namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 

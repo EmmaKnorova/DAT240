@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
-using TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
@@ -17,7 +17,6 @@ public class CouriersOverviewModel(IMediator mediator, UserManager<User> userMan
     public List<User> PendingCouriers { get; set; } = [];
     public List<User> DeclinedCouriers { get; set; } = [];
     private readonly IMediator _mediator = mediator;
-    private readonly ShopContext _context = context;
     private readonly UserManager<User> _userManager = userManager;
 
     public async Task<IActionResult> OnGetAsync()

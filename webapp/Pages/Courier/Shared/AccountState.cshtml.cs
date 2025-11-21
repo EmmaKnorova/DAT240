@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
 using TarlBreuJacoBaraKnor.Pages.Shared;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
