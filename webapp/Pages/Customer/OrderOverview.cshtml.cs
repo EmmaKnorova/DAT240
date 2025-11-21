@@ -99,4 +99,10 @@ public class OrderOverviewModel : PageModel
     {
         return RedirectToPage("/Customer/OrderDetail", new { id = orderId });
     }
+
+    public IActionResult OnPostTip(Guid orderId)
+    {
+        Console.WriteLine("Im tipping!");
+        return RedirectToPage();    
+    }
 }
