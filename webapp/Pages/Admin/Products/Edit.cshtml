@@ -16,51 +16,69 @@
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
         <div class="mb-3">
-            <label asp-for="Input.Name" class="form-label"></label>
-            <input asp-for="Input.Name" class="form-control" />
+            <label asp-for="Input.Name" class="form-label">Product Name</label>
+            <input asp-for="Input.Name" class="form-control" placeholder="e.g., Margherita Pizza" />
             <span asp-validation-for="Input.Name" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Input.Description" class="form-label"></label>
-            <textarea asp-for="Input.Description" class="form-control" rows="3"></textarea>
+            <label asp-for="Input.Description" class="form-label">Description</label>
+            <textarea asp-for="Input.Description" class="form-control" rows="3" placeholder="Enter a detailed description..."></textarea>
             <span asp-validation-for="Input.Description" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="Input.Price" class="form-label"></label>
-            <input asp-for="Input.Price" class="form-control" />
-            <span asp-validation-for="Input.Price" class="text-danger"></span>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Input.Price" class="form-label">Price (NOK)</label>
+                <div class="input-group">
+                    <input asp-for="Input.Price" class="form-control" placeholder="0.00" />
+                    <span class="input-group-text">kr</span>
+                </div>
+                <span asp-validation-for="Input.Price" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label asp-for="Input.CookTime" class="form-label">Cook Time (minutes)</label>
+                <input asp-for="Input.CookTime" class="form-control" type="number" min="0" placeholder="15" />
+                <span asp-validation-for="Input.CookTime" class="text-danger"></span>
+            </div>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Input.CookTime" class="form-label"></label>
-            <input asp-for="Input.CookTime" class="form-control" />
-            <span asp-validation-for="Input.CookTime" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Current image</label>
-            <div>
+            <label class="form-label">Current Image</label>
+            <div class="border rounded p-3 bg-light text-center">
                 @if (!string.IsNullOrWhiteSpace(Model.Input.ExistingImagePath))
                 {
-                    <img src="@Model.Input.ExistingImagePath" alt="@Model.Input.Name" class="img-thumbnail" style="max-height: 150px;" />
+                    <img src="/@Model.Input.ExistingImagePath" 
+                         alt="@Model.Input.Name" 
+                         class="img-thumbnail" 
+                         style="max-height: 200px; max-width: 200px; object-fit: cover;"
+                         loading="eager" />
                 }
                 else
                 {
-                    <p class="text-muted mb-0">No image uploaded yet.</p>
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-image" style="font-size: 3rem;"></i>
+                        <p class="mb-0 mt-2">No image uploaded yet</p>
+                    </div>
                 }
             </div>
         </div>
 
         <div class="mb-4">
-            <label class="form-label">Upload new image</label>
-            <input asp-for="ImageUpload" type="file" class="form-control" />
+            <label asp-for="ImageUpload" class="form-label">Upload New Image</label>
+            <input asp-for="ImageUpload" type="file" class="form-control" accept="image/*" />
+            <div class="form-text">Upload a new image to replace the current one (JPG, PNG - max 5MB)</div>
+            <span asp-validation-for="ImageUpload" class="text-danger"></span>
         </div>
 
         <div class="d-flex justify-content-between">
-            <a asp-page="Index" class="btn btn-outline-secondary">Back to list</a>
-            <button type="submit" class="btn btn-primary">Save changes</button>
+            <a asp-page="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Save Changes
+            </button>
         </div>
     </form>
 </div>
