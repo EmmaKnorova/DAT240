@@ -58,10 +58,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
             .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>(),It.IsAny<decimal>(),It.IsAny<string>()))
             .ReturnsAsync(expectedOrderId);
 
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
-
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
+        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object);
         var location = new Location { Building = "Test Building", RoomNumber = "Room 101" };
         var request = new CartCheckout.Request(cartId, location, userId, "Test notes");
 
@@ -109,10 +106,8 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         await context.SaveChangesAsync();
 
         var orderingServiceMock = new Mock<IOrderingService>();
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
 
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
+        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object);
         var location = new Location { Building = "Test Building", RoomNumber = "Room 101" };
         var request = new CartCheckout.Request(Guid.NewGuid(), location, userId);
 
@@ -140,10 +135,8 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         await context.SaveChangesAsync();
 
         var orderingServiceMock = new Mock<IOrderingService>();
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
 
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
+        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object);
         var location = new Location { Building = "Test Building", RoomNumber = "Room 101" };
         var request = new CartCheckout.Request(cartId, location, Guid.NewGuid());
 
@@ -155,54 +148,6 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         Assert.Equal(Guid.Empty, response.OrderId);
         Assert.Single(response.Errors);
         Assert.Contains("User not found", response.Errors);
-    }
-
-    [Fact]
-    public async Task Handle_CartValidationFails_ReturnsErrors()
-    {
-        // Arrange
-        using var context = _dbTest.CreateContext();
-        
-        var userId = Guid.NewGuid();
-        var user = new User
-        {
-            Id = userId,
-            Name = "Test User",
-            Email = "test@example.com",
-            UserName = "test@example.com",
-            Address = "123 Test St",
-            City = "Test City",
-            PostalCode = "12345"
-        };
-        context.Users.Add(user);
-
-        var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId, userId);
-        context.ShoppingCarts.Add(cart);
-        await context.SaveChangesAsync();
-
-        var orderingServiceMock = new Mock<IOrderingService>();
-
-        var cartValidatorMock = new Mock<IValidator<ShoppingCart>>();
-        cartValidatorMock
-            .Setup(v => v.IsValid(It.IsAny<ShoppingCart>()))
-            .Returns((false, "Cart is empty"));
-        var cartValidators = new[] { cartValidatorMock.Object };
-
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
-
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
-        var location = new Location { Building = "Test Building", RoomNumber = "Room 101" };
-        var request = new CartCheckout.Request(cartId, location, userId);
-
-        // Act
-        var response = await handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        Assert.False(response.success);
-        Assert.Equal(Guid.Empty, response.OrderId);
-        Assert.Single(response.Errors);
-        Assert.Contains("Cart is empty", response.Errors);
     }
 
     [Fact]
@@ -231,10 +176,8 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         await context.SaveChangesAsync();
 
         var orderingServiceMock = new Mock<IOrderingService>();
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
 
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
+        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object);
         var request = new CartCheckout.Request(cartId, null!, userId);
 
         // Act
@@ -245,107 +188,6 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         Assert.Equal(Guid.Empty, response.OrderId);
         Assert.Single(response.Errors);
         Assert.Contains("Location cannot be null", response.Errors);
-    }
-
-    [Fact]
-    public async Task Handle_LocationValidationFails_ReturnsErrors()
-    {
-        // Arrange
-        using var context = _dbTest.CreateContext();
-        
-        var userId = Guid.NewGuid();
-        var user = new User
-        {
-            Id = userId,
-            Name = "Test User",
-            Email = "test@example.com",
-            UserName = "test@example.com",
-            Address = "123 Test St",
-            City = "Test City",
-            PostalCode = "12345"
-        };
-        context.Users.Add(user);
-
-        var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId, userId);
-        cart.AddItem(itemId: 1, itemName: "Pizza", itemPrice: 10.00m);
-        context.ShoppingCarts.Add(cart);
-        await context.SaveChangesAsync();
-
-        var orderingServiceMock = new Mock<IOrderingService>();
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-
-        var locationValidatorMock = new Mock<IValidator<Location>>();
-        locationValidatorMock
-            .Setup(v => v.IsValid(It.IsAny<Location>()))
-            .Returns((false, "Invalid building"));
-        var locationValidators = new[] { locationValidatorMock.Object };
-
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
-        var location = new Location { Building = "", RoomNumber = "Room 101" };
-        var request = new CartCheckout.Request(cartId, location, userId);
-
-        // Act
-        var response = await handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        Assert.False(response.success);
-        Assert.Equal(Guid.Empty, response.OrderId);
-        Assert.Single(response.Errors);
-        Assert.Contains("Invalid building", response.Errors);
-    }
-
-    [Fact]
-    public async Task Handle_MultipleValidationErrors_ReturnsAllErrors()
-    {
-        // Arrange
-        using var context = _dbTest.CreateContext();
-        
-        var userId = Guid.NewGuid();
-        var user = new User
-        {
-            Id = userId,
-            Name = "Test User",
-            Email = "test@example.com",
-            UserName = "test@example.com",
-            Address = "123 Test St",
-            City = "Test City",
-            PostalCode = "12345"
-        };
-        context.Users.Add(user);
-
-        var cartId = Guid.NewGuid();
-        var cart = new ShoppingCart(cartId, userId);
-        context.ShoppingCarts.Add(cart);
-        await context.SaveChangesAsync();
-
-        var orderingServiceMock = new Mock<IOrderingService>();
-
-        var cartValidatorMock = new Mock<IValidator<ShoppingCart>>();
-        cartValidatorMock
-            .Setup(v => v.IsValid(It.IsAny<ShoppingCart>()))
-            .Returns((false, "Cart is empty"));
-        var cartValidators = new[] { cartValidatorMock.Object };
-
-        var locationValidatorMock = new Mock<IValidator<Location>>();
-        locationValidatorMock
-            .Setup(v => v.IsValid(It.IsAny<Location>()))
-            .Returns((false, "Invalid location"));
-        var locationValidators = new[] { locationValidatorMock.Object };
-
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
-        var location = new Location { Building = "", RoomNumber = "" };
-        var request = new CartCheckout.Request(cartId, location, userId);
-
-        // Act
-        var response = await handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        Assert.False(response.success);
-        Assert.Equal(Guid.Empty, response.OrderId);
-        Assert.Equal(2, response.Errors.Length);
-        Assert.Contains("Cart is empty", response.Errors);
-        Assert.Contains("Invalid location", response.Errors);
     }
 
     [Fact]
@@ -378,10 +220,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
             .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>(),It.IsAny<decimal>(),It.IsAny<string>()))
             .ReturnsAsync(Guid.NewGuid());
 
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
-
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
+        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object);
         var location = new Location { Building = "Test Building", RoomNumber = "Room 101", Notes = "Leave at door" };
         var request = new CartCheckout.Request(cartId, location, userId, "Please add extra cheese");
 
@@ -404,12 +243,10 @@ public class CartCheckoutTests : IClassFixture<DbTest>
     {
         // Arrange
         var orderingServiceMock = new Mock<IOrderingService>();
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => 
-            new CartCheckout.Handler(null!, orderingServiceMock.Object, cartValidators, locationValidators));
+            new CartCheckout.Handler(null!, orderingServiceMock.Object));
     }
 
     [Fact]
@@ -417,38 +254,10 @@ public class CartCheckoutTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => 
-            new CartCheckout.Handler(context, null!, cartValidators, locationValidators));
-    }
-
-    [Fact]
-    public void Handle_NullCartValidators_ThrowsArgumentNullException()
-    {
-        // Arrange
-        using var context = _dbTest.CreateContext();
-        var orderingServiceMock = new Mock<IOrderingService>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
-
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => 
-            new CartCheckout.Handler(context, orderingServiceMock.Object, null!, locationValidators));
-    }
-
-    [Fact]
-    public void Handle_NullLocationValidators_ThrowsArgumentNullException()
-    {
-        // Arrange
-        using var context = _dbTest.CreateContext();
-        var orderingServiceMock = new Mock<IOrderingService>();
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => 
-            new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, null!));
+            new CartCheckout.Handler(context, null!));
     }
 
     [Fact]
@@ -477,10 +286,8 @@ public class CartCheckoutTests : IClassFixture<DbTest>
         await context.SaveChangesAsync();
 
         var orderingServiceMock = new Mock<IOrderingService>();
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
 
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
+        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object);
         var location = new Location { Building = "Test Building", RoomNumber = "Room 101" };
         var request = new CartCheckout.Request(cartId, location, userId);
         
@@ -525,10 +332,7 @@ public class CartCheckoutTests : IClassFixture<DbTest>
             .Setup(s => s.PlaceOrder(It.IsAny<Location>(), It.IsAny<User>(), It.IsAny<OrderLineDto[]>(), It.IsAny<string>(),It.IsAny<decimal>(),It.IsAny<string>()))
             .ReturnsAsync(Guid.NewGuid());
 
-        var cartValidators = Enumerable.Empty<IValidator<ShoppingCart>>();
-        var locationValidators = Enumerable.Empty<IValidator<Location>>();
-
-        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object, cartValidators, locationValidators);
+        var handler = new CartCheckout.Handler(context, orderingServiceMock.Object);
         var location = new Location { Building = "Test Building", RoomNumber = "Room 101" };
         var request = new CartCheckout.Request(cartId, location, userId);
 
