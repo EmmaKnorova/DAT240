@@ -23,10 +23,8 @@ public class CartCheckout
     {
         private readonly ShopContext _db;
         private readonly IOrderingService _orderingService;
-        private readonly IEnumerable<IValidator<ShoppingCart>> _cartValidators;
-        private readonly IEnumerable<IValidator<Ordering.Location>> _locationValidators;
 
-        public Handler(ShopContext db, IOrderingService orderingService, IEnumerable<IValidator<ShoppingCart>> cartValidators, IEnumerable<IValidator<Ordering.Location>> locationValidators)
+        public Handler(ShopContext db, IOrderingService orderingService)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
             _orderingService = orderingService ?? throw new ArgumentNullException(nameof(orderingService));
