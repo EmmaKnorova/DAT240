@@ -30,8 +30,6 @@ public class CartCheckout
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
             _orderingService = orderingService ?? throw new ArgumentNullException(nameof(orderingService));
-            _cartValidators = cartValidators ?? throw new ArgumentNullException(nameof(cartValidators));
-            _locationValidators = locationValidators ?? throw new ArgumentNullException(nameof(locationValidators));
         }
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
@@ -52,26 +50,9 @@ public class CartCheckout
                 return new Response(false, Guid.Empty, new[] { "User not found" });
             }
 
-            var errors = _cartValidators
-                    .Select(v => v.IsValid(cart))
-                    .Where(result => !result.IsValid)
-                    .Select(result => result.Error)
-                    .ToArray();
-
             if (request.Location == null)
             {
                 return new Response(false, Guid.Empty, new[] { "Location cannot be null" });
-            }
-
-            errors = errors.Concat(_locationValidators
-                    .Select(v => v.IsValid(request.Location))
-                    .Where(result => !result.IsValid)
-                    .Select(result => result.Error)
-                    .ToArray()).ToArray();
-            
-            if (errors.Any())
-            {
-                return new Response(false, Guid.Empty, errors);
             }
 
             // Convert cart items to array of order line DTOs
