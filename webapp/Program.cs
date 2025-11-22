@@ -88,11 +88,13 @@ builder.Services.AddAuthentication()
 {
     googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("Google ClientId is missing in configuration");;
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret is missing in configuration");;
+    googleOptions.CallbackPath = "/signin-google";
 })
 .AddMicrosoftAccount("Microsoft", microsoftOptions => 
 {
     microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Microsoft ClientSecret is missing in configuration");;
     microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Microsoft ClientSecret is missing in configuration");;
+    microsoftOptions.CallbackPath = "/signin-microsoft";
 });
 
 builder.Services.AddDataProtection()
