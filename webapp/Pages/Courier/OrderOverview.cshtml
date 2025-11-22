@@ -1,6 +1,7 @@
 ﻿@page
 @model TarlBreuJacoBaraKnor.webapp.Pages.Courier.OrderOverviewModel
 @using Microsoft.AspNetCore.Html
+@using System.Globalization
 @using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
 
 @if (TempData["SuccessMessage"] != null)
@@ -78,7 +79,7 @@
                         <div>
                             <strong>Order</strong> – @RenderStatusBadge(order.Status)
                             <br />
-                            @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
+                            @order.OrderDate.DateTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture), @order.OrderDate.DateTime.ToShortTimeString(), @order.Location?.Building @order.Location?.RoomNumber
                             <br />
                             <strong>Payment:</strong>
                             @if (order.Status == Status.Cancelled)
@@ -129,7 +130,7 @@
                         <div>
                             <strong>Order</strong> – @RenderStatusBadge(order.Status)
                             <br />
-                            @order.OrderDate.DateTime.ToLongTimeString(), @order.Location?.Building @order.Location?.RoomNumber
+                            @order.OrderDate.DateTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture), @order.OrderDate.DateTime.ToShortTimeString(), @order.Location?.Building @order.Location?.RoomNumber
                             <br />
                             <strong>Payment: </strong>
                             @if (order.Status == Status.Cancelled)
