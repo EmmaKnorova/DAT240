@@ -14,13 +14,15 @@ public class OrderingService : IOrderingService
         _mediator = mediator;
     }
 
-    public async Task<Guid> PlaceOrder(Location location, User User, OrderLineDto[] orderLines, string notes)
+    public async Task<Guid> PlaceOrder(Location location, User User, OrderLineDto[] orderLines, string notes, decimal deliveryFee, string paymentIntentId)
     {
 
         var order = new Order(location, User, notes)
         {
             OrderDate = DateTimeOffset.UtcNow,
-            Status = Status.Submitted
+            Status = Status.Submitted,
+            DeliveryFee = deliveryFee,
+            PaymentIntentId = paymentIntentId
         };
 
         foreach (var line in orderLines)

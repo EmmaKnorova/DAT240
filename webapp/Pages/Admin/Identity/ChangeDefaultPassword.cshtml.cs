@@ -4,25 +4,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.Core.Domain.Users.DTOs;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
-using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 namespace TarlBreuJacoBaraKnor.Pages.Admin.Identity;
 
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class AdminChangeDefaultPasswordModel(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
-    ILogger<AdminLoginModel> logger,
-    RoleManager<IdentityRole<Guid>> roleManager,
-    ShopContext context) : PageModel
+    ILogger<AdminChangeDefaultPasswordModel> logger) : PageModel
 {
     private readonly SignInManager<User> _signInManager = signInManager;
     private readonly UserManager<User> _userManager = userManager;
-    private readonly ILogger<AdminLoginModel> _logger = logger;
-    private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
-    private readonly ShopContext _context = context;
+    private readonly ILogger<AdminChangeDefaultPasswordModel> _logger = logger;
+
     [BindProperty] public required ChangeDefaultPasswordModel Input { get; set; }
-    public List<string> PermittedRoles { get; set; } = [Roles.Admin.ToString()];
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        if (user == null)
+        {
+            return RedirectToPage("/Admin/Identity/AdminLogin");
+        }
+
+        if (!user.ChangePasswordOnFirstLogin)
+        {
+            return Redirect("/Admin/Dashboard");
+        }
+
+        return Page();
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -32,12 +43,11 @@ public class AdminChangeDefaultPasswordModel(
         var user = await _userManager.GetUserAsync(HttpContext.User);
         if (user == null)
         {
-            ModelState.AddModelError(string.Empty, "User not logged in.");
-            return Page();
+            return RedirectToPage("/Admin/Identity/AdminLogin");
         }
 
         if (!user.ChangePasswordOnFirstLogin)
-            return LocalRedirect("/Admin/Dashboard");
+            return Redirect("/Admin/Dashboard");
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, Input.Password);
@@ -45,13 +55,25 @@ public class AdminChangeDefaultPasswordModel(
         if (result.Succeeded)
         {
             user.ChangePasswordOnFirstLogin = false;
-            await _context.SaveChangesAsync();
-            
-            ModelState.AddModelError(string.Empty, "Account is locked. Try again later.");
-            return LocalRedirect("/Admin/Dashboard");
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                foreach (var err in updateResult.Errors)
+                    ModelState.AddModelError(string.Empty, err.Description);
+
+                return Page();
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+            _logger.LogInformation("Admin changed default password successfully.");
+
+            return Redirect("/Admin/Dashboard");
         }
 
-        ModelState.AddModelError(string.Empty, $"Password change was unsuccessful: {result}");
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error.Description);
+
         return Page();
     }
 }

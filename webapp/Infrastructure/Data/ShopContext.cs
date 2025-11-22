@@ -44,6 +44,8 @@ public class ShopContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
             e.Property(x => x.Price)
                 .HasPrecision(10, 2);
             e.Property(x => x.CookTime);
+            e.Property(x => x.ImagePath)
+                .HasMaxLength(512);
         });
 
         // -------- ShoppingCart / CartItem --------

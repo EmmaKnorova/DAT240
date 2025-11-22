@@ -4,26 +4,46 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TarlBreuJacoBaraKnor.Pages.Shared;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Pages.Courier.Helpers;
 
 namespace TarlBreuJacoBaraKnor.Pages.Courier;
 
 [ServiceFilter(typeof(RequireAccountApprovalFilter))]
+
 [Authorize(Roles = "Courier")]
-public class CourierDashboardModel(
-    UserManager<User> userManager,
-    SignInManager<User> signInManager,
-    ILogger<CourierDashboardModel> logger,
-    RoleManager<IdentityRole<Guid>> roleManager) : BasePageModel(userManager, signInManager)
+public class CourierDashboardModel : BasePageModel
 {
-    public Order _order;
     private readonly IMediator _mediator;
 
-    [BindProperty]
-    public string? ShipperName { get; set; }
+    public List<Order> ActiveOrders { get; set; } = new();
+    public Order _order;
 
-    [BindProperty]
-    public Guid OrderId { get; set; }
+    public CourierDashboardModel(
+        UserManager<User> userManager,
+        SignInManager<User> signInManager,
+        ILogger<CourierDashboardModel> logger,
+        RoleManager<IdentityRole<Guid>> roleManager,
+        IMediator mediator)
+        : base(userManager, signInManager)
+    {
+        _mediator = mediator;
+    }
+
+    public async Task OnGetAsync()
+    {
+        var orders = await _mediator.Send(new GetAllOrders.Request());
+
+        ActiveOrders = orders
+            .Where(o => o.Status == Status.Submitted)
+            .ToList();
+    }
+
+    public async Task<ActionResult> OnPostAsync(Guid orderId)
+    {
+        return RedirectToPage("/Courier/OrderDetail", new { id = orderId });
+    }
+
 
 }

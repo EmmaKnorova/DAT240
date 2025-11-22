@@ -23,7 +23,8 @@ public class Get
                 .Include(o => o.OrderLines)
                 .Include(o => o.Customer)
                 .Include(o => o.Location)
-                .Where(o => o.Customer != null && o.Customer.Id == request.UserId)
+                .Include(o => o.Courier)
+                .Where(o => o.Customer != null && o.Customer.Id == request.UserId || o.Courier.Id == request.UserId)
                 .OrderBy(o => o.Id)
                 .ToListAsync(cancellationToken);
         }

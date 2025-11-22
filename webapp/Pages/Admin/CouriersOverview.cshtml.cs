@@ -7,9 +7,11 @@ using TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
 using TarlBreuJacoBaraKnor.Core.Domain.Users.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 
 namespace TarlBreuJacoBaraKnor.Pages.Admin;
 
+[ServiceFilter(typeof(RequireChangingPasswordFilter))]
 [Authorize(Roles = "Admin")]
 public class CouriersOverviewModel(IMediator mediator, UserManager<User> userManager, ShopContext context) : PageModel
 {

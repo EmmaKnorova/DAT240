@@ -1,0 +1,191 @@
+﻿@page "{id:Guid}"
+@using System.Globalization
+@using Microsoft.AspNetCore.Html
+@using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
+@model TarlBreuJacoBaraKnor.webapp.Pages.Courier.OrderDetailModel
+@{
+    Layout = "/Pages/Courier/Shared/_Courier_Layout.cshtml";
+    ViewData["Title"] = "Order Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model._order == null)
+{
+    <p>Order not found.</p>
+}
+else
+{
+    var payment = Model._order.DeliveryFee * 0.8m;
+    <dl class="row">
+        <dt class="col-sm-2">Order ID</dt>
+        <dd class="col-sm-10">@Model._order.Id</dd>
+
+        <dt class="col-sm-2">Customer</dt>
+        <dd class="col-sm-10">@Model._order.Customer?.Name</dd>
+
+        <dt class="col-sm-2">Order Date</dt>
+        <dd class="col-sm-10">@Model._order.OrderDate.ToString("yyyy-MM-dd HH:mm")</dd>
+
+        <dt class="col-sm-2">Location</dt>
+        <dd class="col-sm-10">@Model._order.Location?.Building</dd>
+
+        <dt class="col-sm-2">Order Status</dt>
+        <dd class="col-sm-10">
+            @RenderStatusBadge(Model._order.Status)
+        </dd>
+
+        <dt class="col-sm-2">Payment</dt>
+        <dd class="col-sm-10">@payment.ToString("C", new System.Globalization.CultureInfo("nb-NO"))</dd>
+
+
+        <dt class="col-sm-2">Notes</dt>
+        <dd class="col-sm-10">@Model._order.Notes</dd>
+    </dl>
+
+    <h3>Items in Order</h3>
+
+    @if (Model._order.OrderLines == null || !Model._order.OrderLines.Any())
+    {
+        <p>No items in this order.</p>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var line in Model._order.OrderLines)
+            {
+                <tr>
+                    <td>@line.FoodItemName</td>
+                    <td>@line.Amount</td>
+                    @if (Model._order.Status == Status.Cancelled || Model._order.Status == Status.CancelledWithFee)
+                    {
+                        <td style="text-decoration: line-through;">
+                            @line.Price.ToString("C", new CultureInfo("nb-NO"))
+                        </td>
+                        <td><span class="text-danger">0 NOK</span></td>
+                    }
+                    else
+                    {
+                        <td>@line.Price.ToString("C", new CultureInfo("nb-NO"))</td>
+                        <td>@((line.Amount * line.Price).ToString("C", new CultureInfo("nb-NO")))</td>
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        var itemsTotal = Model._order.OrderLines.Sum(line => line.Amount * line.Price);
+        var deliveryFee = Model._order.DeliveryFee;
+        var grandTotal = itemsTotal + deliveryFee;
+
+        <div class="text-end mt-3" style="font-size: 1.2rem;">
+            <strong>Items Total: </strong>
+            @if (Model._order.Status == Status.Cancelled || Model._order.Status == Status.CancelledWithFee)
+            {
+                <span style="text-decoration: line-through;">
+                    @itemsTotal.ToString("C", new CultureInfo("nb-NO"))
+                </span>
+                <span class="text-danger">0 NOK</span>
+            }
+            else
+            {
+                @itemsTotal.ToString("C", new CultureInfo("nb-NO"))
+            }
+        </div>
+
+        <div class="text-end mt-1" style="font-size: 1.2rem;">
+            <strong>Delivery Fee: </strong>
+            @if (Model._order.Status == Status.Cancelled)
+            {
+                <span style="text-decoration: line-through;">
+                    @deliveryFee.ToString("C", new CultureInfo("nb-NO"))
+                </span>
+                <span class="text-danger">0 NOK</span>
+            }
+            else
+            {
+                @deliveryFee.ToString("C", new CultureInfo("nb-NO"))
+            }
+        </div>
+
+        <div class="text-end mt-3" style="font-size: 1.5rem;">
+            <strong>Total: </strong>
+            @if (Model._order.Status == Status.Cancelled)
+            {
+                <span style="text-decoration: line-through;">
+                    @grandTotal.ToString("C", new CultureInfo("nb-NO"))
+                </span>
+                <span class="fw-bold text-danger">0 NOK</span>
+            }
+            else if (Model._order.Status == Status.CancelledWithFee)
+            {
+                <span style="text-decoration: line-through;">
+                    @grandTotal.ToString("C", new CultureInfo("nb-NO"))
+                </span>
+                <span class="fw-bold text-danger">@deliveryFee.ToString("C", new CultureInfo("nb-NO"))</span>
+            }
+            else
+            {
+                <span class="fw-bold">@grandTotal.ToString("C", new CultureInfo("nb-NO"))</span>
+            }
+        </div>
+
+        
+        <form method="post" class="mt-3 d-flex align-items-center">
+            <input type="hidden" asp-for="OrderId" value="@Model.OrderId" />
+
+            @{
+                string buttonText = Model._order.Status switch
+                {
+                    Status.Submitted => "Accept Order",
+                    Status.Being_picked_up => "Change status to: On the way!",
+                    Status.On_the_way => "Change status to: Delivered",
+                    _ => ""
+                };
+            }
+
+            @if (buttonText != "")
+            {
+                <button type="submit" class="btn btn-primary btn-sm">@buttonText</button>
+            }
+        </form>
+    }
+}
+
+@functions {
+    public IHtmlContent RenderStatusBadge(Status status)
+    {
+        var label = status switch
+        {
+            Status.Delivered => "Delivered",
+            Status.On_the_way => "On the way",
+            Status.Being_picked_up => "Being picked up",
+            Status.Submitted => "Submitted",
+            Status.CancelledWithFee => "Cancelled (with fee)",
+            Status.Cancelled => "Cancelled",
+            _ => status.ToString()
+        };
+
+        var cls = status switch
+        {
+            Status.Delivered => "badge bg-success",
+            Status.On_the_way => "badge bg-primary",
+            Status.Being_picked_up => "badge bg-warning text-dark",
+            Status.Submitted => "badge bg-secondary",
+            Status.CancelledWithFee => "badge bg-info text-dark",   // patch fond visible
+            Status.Cancelled => "badge bg-danger",
+            _ => "badge bg-secondary"
+        };
+
+        return new HtmlString($"<span class=\"{cls}\">{label}</span>");
+    }
+}

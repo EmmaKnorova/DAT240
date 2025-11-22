@@ -1,7 +1,10 @@
 ﻿@page "{id:Guid}"
+@using System.Globalization
+@using Microsoft.AspNetCore.Html
 @using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
 @model TarlBreuJacoBaraKnor.webapp.Pages.Customer.OrderDetailModel
 @{
+    Layout = "/Pages/Customer/Shared/_Customer_Layout.cshtml";
     ViewData["Title"] = "Order Details";
 }
 
@@ -27,13 +30,13 @@ else
         <dd class="col-sm-10">@Model._order.Location?.Building</dd>
 
         <dt class="col-sm-2">Order Status</dt>
-        <dd class="col-sm-10">@Model._order.Status</dd>
+        <dd class="col-sm-10">
+            @RenderStatusBadge(Model._order.Status)
+        </dd>
 
         <dt class="col-sm-2">Notes</dt>
         <dd class="col-sm-10">@Model._order.Notes</dd>
     </dl>
-
-
 
     <h3>Items in Order</h3>
 
@@ -58,17 +61,107 @@ else
                 <tr>
                     <td>@line.FoodItemName</td>
                     <td>@line.Amount</td>
-                    <td>@line.Price.ToString("C")</td>
-                    <td>@((line.Amount * line.Price).ToString("C"))</td>
+                    @if (Model._order.Status == Status.Cancelled || Model._order.Status == Status.CancelledWithFee)
+                    {
+                        <td style="text-decoration: line-through;">
+                            @line.Price.ToString("C", new CultureInfo("nb-NO"))
+                        </td>
+                        <td><span class="text-danger">0 NOK</span></td>
+                    }
+                    else
+                    {
+                        <td>@line.Price.ToString("C", new CultureInfo("nb-NO"))</td>
+                        <td>@((line.Amount * line.Price).ToString("C", new CultureInfo("nb-NO")))</td>
+                    }
                 </tr>
             }
             </tbody>
-
         </table>
 
-        <div class="text-end mt-3" style="font-size: 1.5rem;">
-            <strong>Total Price: </strong>
-            @Model._order.OrderLines.Sum(line => line.Amount * line.Price).ToString("C")
+        var itemsTotal = Model._order.OrderLines.Sum(line => line.Amount * line.Price);
+        var deliveryFee = Model._order.DeliveryFee;
+        var grandTotal = itemsTotal + deliveryFee;
+
+        <div class="text-end mt-3" style="font-size: 1.2rem;">
+            <strong>Items Total: </strong>
+            @if (Model._order.Status == Status.Cancelled || Model._order.Status == Status.CancelledWithFee)
+            {
+                <span style="text-decoration: line-through;">
+                    @itemsTotal.ToString("C", new CultureInfo("nb-NO"))
+                </span>
+                <span class="text-danger">0 NOK</span>
+            }
+            else
+            {
+                @itemsTotal.ToString("C", new CultureInfo("nb-NO"))
+            }
         </div>
+
+        <div class="text-end mt-1" style="font-size: 1.2rem;">
+            <strong>Delivery Fee: </strong>
+            @if (Model._order.Status == Status.Cancelled)
+            {
+                <span style="text-decoration: line-through;">
+                    @deliveryFee.ToString("C", new CultureInfo("nb-NO"))
+                </span>
+                <span class="text-danger">0 NOK</span>
+            }
+            else
+            {
+                @deliveryFee.ToString("C", new CultureInfo("nb-NO"))
+            }
+        </div>
+
+        <div class="text-end mt-3" style="font-size: 1.5rem;">
+            <strong>Total: </strong>
+            @if (Model._order.Status == Status.Cancelled)
+            {
+                <span style="text-decoration: line-through;">
+                    @grandTotal.ToString("C", new CultureInfo("nb-NO"))
+                </span>
+                <span class="fw-bold text-danger">0 NOK</span>
+            }
+            else if (Model._order.Status == Status.CancelledWithFee)
+            {
+                <span style="text-decoration: line-through;">
+                    @grandTotal.ToString("C", new CultureInfo("nb-NO"))
+                </span>
+                <span class="fw-bold text-danger">@deliveryFee.ToString("C", new CultureInfo("nb-NO"))</span>
+            }
+            else
+            {
+                <span class="fw-bold">@grandTotal.ToString("C", new CultureInfo("nb-NO"))</span>
+            }
+        </div>
+
+    }
+}
+
+@functions {
+    public IHtmlContent RenderStatusBadge(Status status)
+    {
+        var label = status switch
+        {
+            Status.Delivered => "Delivered",
+            Status.On_the_way => "On the way",
+            Status.Being_picked_up => "Being picked up",
+            Status.Submitted => "Submitted",
+            Status.CancelledWithFee => "Cancelled (with fee)",
+            Status.Cancelled => "Cancelled",
+            _ => status.ToString()
+        };
+
+        var cls = status switch
+        {
+            Status.Delivered => "badge bg-success",
+            Status.On_the_way => "badge bg-primary",
+            Status.Being_picked_up => "badge bg-warning text-dark",
+            Status.Submitted => "badge bg-secondary",
+            Status.CancelledWithFee => "badge bg-info text-dark",   // patch fond visible
+            Status.Cancelled => "badge bg-danger",
+            _ => "badge bg-secondary"
+        };
+
+        return new HtmlString($"<span class=\"{cls}\">{label}</span>");
     }
 }

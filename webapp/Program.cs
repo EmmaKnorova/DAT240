@@ -10,8 +10,10 @@ using TarlBreuJacoBaraKnor.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
+using TarlBreuJacoBaraKnor.webapp.Infrastructure.Configuration;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.webapp.Pages.Courier.Helpers;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +58,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
 });
+
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+builder.Services.AddScoped<IPaymentService, StripePaymentService>();
+builder.Services.AddScoped<StripeRefundService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -142,6 +149,17 @@ app.Use(async (context, next) =>
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+app.UseStaticFiles();
+
+var productsPhysicalPath = Path.Combine(app.Environment.WebRootPath, "images", "products");
+Directory.CreateDirectory(productsPhysicalPath);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(productsPhysicalPath),
+    RequestPath = "/images/products"
+});
 
 await DbSeeder.SeedData(app);
 

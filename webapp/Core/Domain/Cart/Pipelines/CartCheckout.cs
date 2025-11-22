@@ -15,7 +15,7 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 
 public class CartCheckout
 {
-    public record Request(Guid CartId, Ordering.Location Location, Guid UserId, string Notes = "") : IRequest<Response>;
+    public record Request(Guid CartId, Ordering.Location Location, Guid UserId, string Notes = "", decimal DeliveryFee = 0, string PaymentIntentId = "") : IRequest<Response>;
 
     public record Response(bool success, Guid OrderId, string[] Errors);
 
@@ -23,15 +23,11 @@ public class CartCheckout
     {
         private readonly ShopContext _db;
         private readonly IOrderingService _orderingService;
-        private readonly IEnumerable<IValidator<ShoppingCart>> _cartValidators;
-        private readonly IEnumerable<IValidator<Ordering.Location>> _locationValidators;
 
-        public Handler(ShopContext db, IOrderingService orderingService, IEnumerable<IValidator<ShoppingCart>> cartValidators, IEnumerable<IValidator<Ordering.Location>> locationValidators)
+        public Handler(ShopContext db, IOrderingService orderingService)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
             _orderingService = orderingService ?? throw new ArgumentNullException(nameof(orderingService));
-            _cartValidators = cartValidators ?? throw new ArgumentNullException(nameof(cartValidators));
-            _locationValidators = locationValidators ?? throw new ArgumentNullException(nameof(locationValidators));
         }
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
@@ -52,32 +48,15 @@ public class CartCheckout
                 return new Response(false, Guid.Empty, new[] { "User not found" });
             }
 
-            var errors = _cartValidators
-                    .Select(v => v.IsValid(cart))
-                    .Where(result => !result.IsValid)
-                    .Select(result => result.Error)
-                    .ToArray();
-
             if (request.Location == null)
             {
                 return new Response(false, Guid.Empty, new[] { "Location cannot be null" });
             }
 
-            errors = errors.Concat(_locationValidators
-                    .Select(v => v.IsValid(request.Location))
-                    .Where(result => !result.IsValid)
-                    .Select(result => result.Error)
-                    .ToArray()).ToArray();
-            
-            if (errors.Any())
-            {
-                return new Response(false, Guid.Empty, errors);
-            }
-
             // Convert cart items to array of order line DTOs
             var orderLines = cart.Items.Select(item => new OrderLineDto(item.Sku, item.Name, item.Count, item.Price)).ToArray();
 
-            var orderId = await _orderingService.PlaceOrder(request.Location, user, orderLines, request.Notes);
+            var orderId = await _orderingService.PlaceOrder(request.Location, user, orderLines, request.Notes, request.DeliveryFee, request.PaymentIntentId);
 
             _db.ShoppingCarts.Remove(cart);
 

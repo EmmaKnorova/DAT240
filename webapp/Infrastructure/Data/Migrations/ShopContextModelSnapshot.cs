@@ -324,9 +324,17 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<Guid?>("CourierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("courier_id");
+
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid")
                         .HasColumnName("customer_id");
+
+                    b.Property<decimal>("DeliveryFee")
+                        .HasColumnType("numeric")
+                        .HasColumnName("delivery_fee");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -337,12 +345,20 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("order_date");
 
+                    b.Property<string>("PaymentIntentId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("payment_intent_id");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
                     b.HasKey("Id")
                         .HasName("pk_orders");
+
+                    b.HasIndex("CourierId")
+                        .HasDatabaseName("ix_orders_courier_id");
 
                     b.HasIndex("CustomerId")
                         .HasDatabaseName("ix_orders_customer_id");
@@ -405,6 +421,11 @@ namespace TarlBreuJacoBaraKnor.Migrations
                         .HasMaxLength(2048)
                         .HasColumnType("character varying(2048)")
                         .HasColumnName("description");
+
+                    b.Property<string>("ImagePath")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("image_path");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -607,6 +628,11 @@ namespace TarlBreuJacoBaraKnor.Migrations
 
             modelBuilder.Entity("TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order", b =>
                 {
+                    b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", "Courier")
+                        .WithMany()
+                        .HasForeignKey("CourierId")
+                        .HasConstraintName("fk_orders_user_courier_id");
+
                     b.HasOne("TarlBreuJacoBaraKnor.webapp.Core.Domain.Users.User", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
@@ -642,6 +668,8 @@ namespace TarlBreuJacoBaraKnor.Migrations
                                 .HasForeignKey("OrderId")
                                 .HasConstraintName("fk_orders_orders_id");
                         });
+
+                    b.Navigation("Courier");
 
                     b.Navigation("Customer");
 

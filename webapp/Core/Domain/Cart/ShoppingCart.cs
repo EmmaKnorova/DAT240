@@ -32,4 +32,38 @@ public class ShoppingCart : BaseEntity
 		item.AddOne();
 	}
 
+	public void RemoveItem(int itemId)
+    {
+        var item = _items.SingleOrDefault(item => item.Sku == itemId);
+        if (item == null)
+        {
+            throw new InvalidOperationException($"Item with SKU {itemId} not found in cart");
+        }
+
+        if (item.Count > 1)
+        {
+            item.RemoveOne();
+        }
+        else
+        {
+            _items.Remove(item);
+        }
+    }
+
+	public void RemoveItemCompletely(int itemId)
+    {
+        var item = _items.SingleOrDefault(item => item.Sku == itemId);
+        if (item == null)
+        {
+            throw new InvalidOperationException($"Item with SKU {itemId} not found in cart");
+        }
+
+        _items.Remove(item);
+    }
+
+    public void ClearCart()
+    {
+        _items.Clear();
+    }
+
 }
