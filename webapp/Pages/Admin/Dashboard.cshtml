@@ -54,10 +54,10 @@
         </div>
     </form>
 
-    <!-- Row 1: Order-based KPIs (from your own DB) -->
+    <!-- Order-based KPIs -->
     <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Total orders (current month)</h6>
                     <p class="fs-3 fw-bold mb-1">@Model.TotalOrdersThisMonth</p>
@@ -69,7 +69,7 @@
         </div>
 
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Total revenue (orders)</h6>
                     <p class="fs-3 fw-bold mb-1">
@@ -83,7 +83,7 @@
         </div>
 
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Stripe payments (successful)</h6>
                     <p class="fs-3 fw-bold mb-1">
@@ -97,10 +97,9 @@
         </div>
     </div>
 
-    <!-- Row 1bis: Orders by stage (Open / Being delivered / Delivered) -->
     <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Open orders</h6>
                     <p class="fs-3 fw-bold mb-1">
@@ -117,7 +116,7 @@
         </div>
 
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Being delivered</h6>
                     <p class="fs-3 fw-bold mb-1 text-primary">
@@ -134,7 +133,7 @@
         </div>
 
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Delivered</h6>
                     <p class="fs-3 fw-bold mb-1 text-success">
@@ -151,10 +150,10 @@
         </div>
     </div>
 
-    <!-- Row 2: Global financials from Stripe -->
+    <!-- Global financials from Stripe -->
     <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Total earnings (Stripe)</h6>
                     <p class="fs-3 fw-bold mb-1">
@@ -168,7 +167,7 @@
         </div>
 
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Stripe fees</h6>
                     <p class="fs-3 fw-bold mb-1 text-danger">
@@ -182,7 +181,7 @@
         </div>
 
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Net after fees</h6>
                     <p class="fs-3 fw-bold mb-1">
@@ -196,10 +195,10 @@
         </div>
     </div>
 
-    <!-- Row 3: Split 80% / 20% + tips -->
+    <!-- Split 80% / 20% + tips -->
     <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Courier share (80%)</h6>
                     <p class="fs-3 fw-bold mb-1 text-success">
@@ -213,7 +212,7 @@
         </div>
 
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Service share (20%)</h6>
                     <p class="fs-3 fw-bold mb-1">
@@ -227,7 +226,7 @@
         </div>
 
         <div class="col">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="text-muted text-uppercase mb-2">Tips</h6>
                     <p class="fs-3 fw-bold mb-1">
@@ -241,10 +240,10 @@
         </div>
     </div>
 
-    <!-- Row 4: Charts -->
+    <!-- Charts -->
     <div class="row g-3 mb-4">
         <div class="col-12 col-lg-8">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Revenue (gross vs net per day)</h5>
                     <canvas id="revenueChart" height="120"></canvas>
@@ -256,7 +255,7 @@
         </div>
 
         <div class="col-12 col-lg-4">
-            <div class="card shadow-sm h-100">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Payments & new customers</h5>
                     <canvas id="activityChart" height="120"></canvas>
