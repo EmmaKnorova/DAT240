@@ -26,7 +26,6 @@ public class AdminLoginModel(
     public string? ReturnUrl { get; set; }
     public void OnGet()
     {
-        // Si déjà connecté en admin, on va direct au dashboard
         if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Admin.ToString()))
         {
             Response.Redirect("/Admin/Dashboard");
@@ -56,11 +55,9 @@ public class AdminLoginModel(
         {
             _logger.LogInformation("Admin user logged in: {Email}", user.Email);
 
-            // Première connexion → on force la page de changement de mot de passe
             if (user.ChangePasswordOnFirstLogin)
                 return RedirectToPage("/Admin/Identity/ChangeDefaultPassword");
 
-            // Sinon, on va au dashboard
             return Redirect("/Admin/Dashboard");
         }
 

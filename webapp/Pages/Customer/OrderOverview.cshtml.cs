@@ -18,14 +18,20 @@ public class OrderOverviewModel : PageModel
     private readonly IMediator _mediator;
     private readonly UserManager<User> _userManager;
     private readonly StripeRefundService _refundService;
+    private readonly StripePaymentService _paymentService;
+
     private User User;
 
-    public OrderOverviewModel(IMediator mediator, UserManager<User> userManager, StripeRefundService refundService)
+    public OrderOverviewModel(IMediator mediator, UserManager<User> userManager, 
+                          StripeRefundService refundService, 
+                          StripePaymentService paymentService)
     {
         _mediator = mediator;
         _userManager = userManager;
         _refundService = refundService;
+        _paymentService = paymentService;
     }
+
 
     public async Task OnGetAsync()
     {
@@ -56,7 +62,6 @@ public class OrderOverviewModel : PageModel
             var fullAmount = order.OrderLines.Sum(l => l.Amount * l.Price) + order.DeliveryFee;
             await _refundService.Refund(order.PaymentIntentId, fullAmount);
 
-            // ✅ Mise à jour des montants en base
             foreach (var line in order.OrderLines)
             {
                 line.Price = 0;
@@ -74,12 +79,10 @@ public class OrderOverviewModel : PageModel
             var itemsAmount = order.OrderLines.Sum(l => l.Amount * l.Price);
             await _refundService.Refund(order.PaymentIntentId, itemsAmount);
 
-            // ✅ Mise à jour des montants en base
             foreach (var line in order.OrderLines)
             {
                 line.Price = 0;
             }
-            // DeliveryFee reste inchangé
             order.Status = Status.CancelledWithFee;
 
             await _mediator.Send(new UpdateOrder.Request(order));
@@ -100,9 +103,30 @@ public class OrderOverviewModel : PageModel
         return RedirectToPage("/Customer/OrderDetail", new { id = orderId });
     }
 
-    public IActionResult OnPostTip(Guid orderId)
+    public async Task<IActionResult> OnPostTipAsync(Guid orderId, int tipAmount)
     {
-        Console.WriteLine("Im tipping!");
-        return RedirectToPage();    
+        User = await _userManager.GetUserAsync(HttpContext.User);
+        var order = (await _mediator.Send(new Get.Request(User.Id)))
+            .FirstOrDefault(o => o.Id == orderId);
+
+        if (order == null || order.Status != Status.Delivered)
+        {
+            TempData["ErrorMessage"] = "Tips can only be added to delivered orders.";
+            return RedirectToPage();
+        }
+
+        // ✅ Guard: empêcher un second tip
+        if (!string.IsNullOrEmpty(order.TipPaymentIntentId))
+        {
+            TempData["ErrorMessage"] = "Tip already given for this order.";
+            return RedirectToPage();
+        }
+
+        var (url, paymentIntentId) = _paymentService.CreateTipSession(tipAmount, orderId);
+
+        // On ne stocke pas encore ici → on stockera dans TipSuccess après confirmation
+        return Redirect(url);
     }
+
+
 }
