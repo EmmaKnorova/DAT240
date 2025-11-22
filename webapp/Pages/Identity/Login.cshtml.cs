@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.DTOs;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
 using TarlBreuJacoBaraKnor.Pages.Shared;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
@@ -13,15 +13,14 @@ public class LoginModel(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
     ILogger<LoginModel> logger,
-    RoleManager<IdentityRole<Guid>> roleManager) : BasePageModel(userManager, signInManager)
+    IExternalAuthService authService) : BasePageModel(userManager, signInManager)
 {
     private readonly ILogger<LoginModel> _logger = logger;
-    private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
     [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
     public List<string> PermittedRoles { get; set; } = [Roles.Customer.ToString(), Roles.Courier.ToString()];
-
+    private readonly IExternalAuthService _authService = authService;
     public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
         ReturnUrl = returnUrl ?? Url.Content("~/");
@@ -33,6 +32,13 @@ public class LoginModel(
         else if (User.IsInRole(Roles.Courier.ToString()))
             return Redirect("/Courier/OrderOverview");
         return Redirect("/");
+    }
+
+    public IActionResult OnPostExternalLogin(string provider, string returnUrl = null)
+    {
+        var redirectUrl = Url.Page("/Identity/ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+        var properties = _authService.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        return new ChallengeResult(provider, properties);
     }
 
     public async Task<IActionResult> OnPostAsync()

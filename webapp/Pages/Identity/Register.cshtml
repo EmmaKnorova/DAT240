@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TarlBreuJacoBaraKnor.styles.css" asp-append-version="true" />
+    @await Html.PartialAsync("_Favicons")
     <title>@ViewData["Title"]</title>
 </head>
 
@@ -103,9 +104,7 @@
                                     <button type="submit" class="btn btn-primary btn-block mb-4 btn-lg">
                                         Register
                                     </button>
-
-                                    <p>or register with:</p>
-
+                                    
                                     <p class="text-muted">
                                         Already have an account? 
                                         <a href="/Identity/Login" class="text-primary text-decoration-none">Log In here</a>

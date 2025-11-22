@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages.Courier.Helpers;

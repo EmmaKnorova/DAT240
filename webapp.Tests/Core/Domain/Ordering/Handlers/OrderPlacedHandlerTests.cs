@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Handlers;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
-using TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
 using TarlBreuJacoBaraKnor.webapp.Tests.Helpers;
 using Xunit;
 using Microsoft.EntityFrameworkCore;

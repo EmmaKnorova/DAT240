@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TarlBreuJacoBaraKnor.Core.Domain.Identity.DTOs;
+namespace TarlBreuJacoBaraKnor.Core.Domain.Users.DTOs;
 
 public class LoginInputModel
 {

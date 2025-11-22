@@ -1,4 +1,4 @@
-namespace TarlBreuJacoBaraKnor.Core.Domain.Identity.Entities;
+namespace TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
 
 public enum AccountStates
 {

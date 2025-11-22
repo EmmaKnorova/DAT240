@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TarlBreuJacoBaraKnor.styles.css" asp-append-version="true" />
 
+    @await Html.PartialAsync("_Favicons")
+
     @RenderSection("Styles", required: false)
 </head>
 <body>

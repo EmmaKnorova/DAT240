@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
 using TarlBreuJacoBaraKnor.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.Pages.Admin.Helpers;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
@@ -32,17 +35,28 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddScoped<RequireChangingPasswordFilter>();
 builder.Services.AddScoped<RequireAccountApprovalFilter>();
 
+
 // Register the OrderingService
 builder.Services.AddScoped<IOrderingService, OrderingService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 
-builder.Services.AddIdentity<User, IdentityRole<Guid>>()
-                .AddEntityFrameworkStores<ShopContext>()
-                .AddDefaultTokenProviders();
+builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+    })
+    .AddEntityFrameworkStores<ShopContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
     options.Password.RequiredLength = 12;
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
 });
 
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
@@ -56,7 +70,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Identity/Login";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
     options.SlidingExpiration = true;
-    options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
+    options.Events = new CookieAuthenticationEvents
     {
         OnRedirectToLogin = context =>
         {
@@ -71,15 +85,27 @@ builder.Services.ConfigureApplicationCookie(options =>
                 context.Response.Redirect("/Identity/Login?ReturnUrl=" +
                     Uri.EscapeDataString(context.Request.Path + context.Request.QueryString));
             }
-
             return Task.CompletedTask;
         }
     };
 });
 
+builder.Services.AddAuthentication()
+.AddGoogle("Google", googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("Google ClientId is missing in configuration");;
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret is missing in configuration");;
+    googleOptions.CallbackPath = "/signin-google";
+})
+.AddMicrosoftAccount("Microsoft", microsoftOptions => 
+{
+    microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Microsoft ClientSecret is missing in configuration");;
+    microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Microsoft ClientSecret is missing in configuration");;
+    microsoftOptions.CallbackPath = "/signin-microsoft";
+});
 
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/keys"))
+    .PersistKeysToFileSystem(new DirectoryInfo(@"/keys"))
     .SetApplicationName("CampusEats")
     .UseCryptographicAlgorithms(
         new AuthenticatedEncryptorConfiguration
@@ -90,26 +116,35 @@ builder.Services.AddDataProtection()
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHttpsRedirection();
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseStaticFiles();
+app.UseRouting();
+
+app.UseCookiePolicy();
+app.UseAuthentication();
+app.UseAuthorization();
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ShopContext>();
     db.Database.Migrate();
 }
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+app.Use(async (context, next) =>
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseAuthorization();
+    context.Response.Headers.Append("Referrer-Policy", "no-referrer-when-downgrade");
+    await next();
+});
 
 app.MapStaticAssets();
 app.MapRazorPages()
