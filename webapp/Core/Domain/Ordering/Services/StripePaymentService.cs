@@ -59,7 +59,6 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
                 CancelUrl = "http://localhost:8080/PaymentCancelled"
             };
 
-
             // Create the session using Stripe's API
             var service = new SessionService();
             var session = service.Create(options);
@@ -67,7 +66,42 @@ namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
 
             // Return the URL where the user will be redirected to pay
             return (session.Url, paymentIntentId);
+        }
 
+        // Create a Stripe Checkout session for a tip (courier gratuity)
+        public (string Url, string PaymentIntentId) CreateTipSession(decimal tipAmount, Guid orderId, string currency = "nok")
+        {
+            var lineItems = new List<SessionLineItemOptions>
+            {
+                new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(tipAmount * 100),
+                        Currency = currency,
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = "Courier Tip"
+                        }
+                    },
+                    Quantity = 1
+                }
+            };
+
+            var options = new SessionCreateOptions
+            {
+                Locale = "en",
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = lineItems,
+                Mode = "payment",
+                SuccessUrl = $"http://localhost:8080/TipSuccess?session_id={{CHECKOUT_SESSION_ID}}&orderId={orderId}",
+                CancelUrl = "http://localhost:8080/TipCancelled"
+            };
+
+            var service = new SessionService();
+            var session = service.Create(options);
+
+            return (session.Url, session.PaymentIntentId);
+        }
     }
 }
-}   

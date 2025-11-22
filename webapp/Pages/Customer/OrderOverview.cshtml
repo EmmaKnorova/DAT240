@@ -161,14 +161,48 @@
                                 </button>
                             </form>
 
-                            <form method="post" asp-page-handler="Tip" class="m-0">
-                                <input type="hidden" name="orderId" value="@order.Id" />
-                                <button type="submit" class="btn btn-success btn-sm rounded-pill shadow-sm d-flex align-items-center text-white">
-                                    <span class="me-2"><i class="bi bi-cash-coin"></i></span> Tip Courier
-                                </button>
-                            </form>
+                            @if (order.Status == Status.Delivered)
+                            {
+                                if (!string.IsNullOrEmpty(order.TipPaymentIntentId))
+                                {
+                                    <button type="button" class="btn btn-secondary btn-sm rounded-pill shadow-sm d-flex align-items-center" disabled>
+                                        <span class="me-2"><i class="bi bi-cash-coin"></i></span> Tip already given
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-success btn-sm rounded-pill shadow-sm d-flex align-items-center text-white"
+                                            data-bs-toggle="modal" data-bs-target="#tipModal-@order.Id">
+                                        <span class="me-2"><i class="bi bi-cash-coin"></i></span> Tip Courier
+                                    </button>
+                                }
+                            }
                         </div>
                     </li>
+
+                    <!-- Modal pour choisir le montant -->
+                    <div class="modal fade" id="tipModal-@order.Id" tabindex="-1" aria-labelledby="tipModalLabel-@order.Id" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="post" asp-page-handler="Tip">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="tipModalLabel-@order.Id">Choose a tip amount</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="orderId" value="@order.Id" />
+                                        <div class="mb-3">
+                                            <label for="tipAmount-@order.Id" class="form-label">Tip Amount (NOK)</label>
+                                            <input type="number" class="form-control" id="tipAmount-@order.Id" name="tipAmount" min="10" step="10" required />
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Confirm Tip</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 }
             </ul>
         }
