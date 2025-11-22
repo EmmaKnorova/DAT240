@@ -1,5 +1,9 @@
 # Start the project
 
+To run the project, go to the webapp directory, and execute: `docker compose up --build`.
+
+## Open the webpage
+
 ## Access the Admin Overview
 
 To access the admin interface, please visint `http://127.0.0.1:8080/Admin/Identity/Login`.
@@ -10,12 +14,6 @@ You will be prompted to change the password after the first login.
 ## For Developers
 
 ### Docker
-
-To build the project:
-
-```bash
-docker compose up --build
-```
 
 To rebuild after every change during development
 
