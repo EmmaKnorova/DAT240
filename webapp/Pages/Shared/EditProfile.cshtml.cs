@@ -7,7 +7,7 @@ using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages.Shared;
 
-[Authorize(Roles = "Courier,Customer")]
+[Authorize(Roles = "Admin,Courier,Customer")]
 public class EditProfileModel : PageModel
 {
     public User CurrentUser { get; set; }

@@ -2,6 +2,16 @@
 @model TarlBreuJacoBaraKnor.webapp.Pages.Shared.ProfileModel
 @{
     ViewData["Title"] = "Profile";
+
+    if (User.Identity.IsAuthenticated)
+    {
+        if (User.IsInRole("Admin"))
+            Layout = "/Pages/Admin/Shared/_Admin_Layout.cshtml";
+        else if (User.IsInRole("Courier"))
+            Layout = "/Pages/Courier/Shared/_Courier_Layout.cshtml";
+        else if (User.IsInRole("Customer"))
+            Layout = "/Pages/Customer/Shared/_Customer_Layout.cshtml";
+    }
 }
 
 <h2 class="mb-4">@ViewData["Title"]</h2>
@@ -17,7 +27,6 @@ else
     <div class="card shadow-sm">
         <div class="card-body">
             <dl class="row mb-0">
-
                 <dt class="col-sm-3 fw-bold">Email</dt>
                 <dd class="col-sm-9">@Model.CurrentUser.Email</dd>
 
@@ -38,7 +47,6 @@ else
 
                 <dt class="col-sm-3 fw-bold">Postal Code</dt>
                 <dd class="col-sm-9">@Model.CurrentUser.PostalCode</dd>
-
             </dl>
         </div>
     </div>
