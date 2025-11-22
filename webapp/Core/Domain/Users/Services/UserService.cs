@@ -37,22 +37,12 @@ public class UserService(UserManager<User> userManager,
         }
     }
 
-    public Task<bool> CreateExternalUserAsync(string email, List<Claim> claims, string loginProvider, string providerKey)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<User?> GetUserByEmail(string email)
     {
         return await _userManager.FindByEmailAsync(email);
     }
 
-    public Task<bool> LoginWithExternalProvider(HttpContext httpContext)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> LoginInternalUser()
+    public Task<bool> LogInInternalUser()
     {
         throw new NotImplementedException();
     }
