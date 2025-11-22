@@ -64,6 +64,8 @@ Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 builder.Services.AddScoped<StripePaymentService>();
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 builder.Services.AddScoped<StripeRefundService>();
+builder.Services.AddScoped<IFinancialReportingService, StripeFinancialReportingService>();
+builder.Services.AddScoped<IFinancialAnalyticsService, StripeFinancialAnalyticsService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -124,7 +126,6 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHttpsRedirection();
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
