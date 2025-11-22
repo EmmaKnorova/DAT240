@@ -65,16 +65,16 @@
                                 <p>or log in with:</p>
 
                                 <div class="d-flex justify-content-center gap-3 mt-4 mb-2">
-                                    <form method="post" asp-page-handler="Google">
-                                        <button type="submit"
+                                    <form method="post" asp-page-handler="ExternalLogin">
+                                        <button type="submit" name="provider" value="Google"
                                             class="btn btn-light border d-flex align-items-center px-3">
                                             <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg"
                                                 width="22" height="22" class="me-2" />
                                             Google
                                         </button>
                                     </form>
-                                    <form method="post" asp-page-handler="Microsoft">
-                                        <button type="submit"
+                                    <form method="post" asp-page-handler="ExternalLogin">
+                                        <button type="submit" name="provider" value="Microsoft"
                                             class="btn btn-light border d-flex align-items-center px-3">
                                             <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoft.svg"
                                                 width="22" height="22" class="me-2" />

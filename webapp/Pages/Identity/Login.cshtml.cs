@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TarlBreuJacoBaraKnor.Core.Domain.Users.DTOs;
+using TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
 using TarlBreuJacoBaraKnor.Pages.Shared;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 
@@ -11,14 +12,15 @@ namespace TarlBreuJacoBaraKnor.Pages.Identity;
 public class LoginModel(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
-    ILogger<LoginModel> logger) : BasePageModel(userManager, signInManager)
+    ILogger<LoginModel> logger,
+    IExternalAuthService authService) : BasePageModel(userManager, signInManager)
 {
     private readonly ILogger<LoginModel> _logger = logger;
     [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
     [BindProperty] public required LoginInputModel Input { get; set; }
     public List<string> PermittedRoles { get; set; } = [Roles.Customer.ToString(), Roles.Courier.ToString()];
-
+    private readonly IExternalAuthService _authService = authService;
     public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
         ReturnUrl = returnUrl ?? Url.Content("~/");
@@ -31,18 +33,12 @@ public class LoginModel(
             return Redirect("/Customer/OrderOverview");
         return Redirect("/");
     }
-    public IActionResult OnPostGoogle()
-    {
-        var redirectUrl = Url.Page("/Identity/ExternalLogin", pageHandler: "Callback");
-        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-        return new ChallengeResult("Google", properties);
-    }
 
-    public IActionResult OnPostMicrosoft()
+    public IActionResult OnPostExternalLogin(string provider, string returnUrl = null)
     {
-        var redirectUrl = Url.Page("/Identity/ExternalLogin", pageHandler: "Callback");
-        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Microsoft", redirectUrl);
-        return new ChallengeResult("Microsoft", properties);
+        var redirectUrl = Url.Page("/Identity/ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+        var properties = _authService.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        return new ChallengeResult(provider, properties);
     }
 
     public async Task<IActionResult> OnPostAsync()

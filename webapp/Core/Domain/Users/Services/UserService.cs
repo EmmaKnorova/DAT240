@@ -9,14 +9,14 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 namespace TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
 
-public class UserService(UserManager<User> userManager, 
+public class UserService(UserManager<User> userManager,
  ShopContext db, ILogger<UserService> logger, RoleManager<IdentityRole<Guid>> roleManager) : IUserService
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly ShopContext _db = db;
     private readonly ILogger<UserService> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
-    
+
     public async Task ApproveUserState(string userId, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -42,12 +42,7 @@ public class UserService(UserManager<User> userManager,
         throw new NotImplementedException();
     }
 
-    public Task<List<User>> GetUsersByRole(string role)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<User> GetUserByEmail(string email)
+    public async Task<User?> GetUserByEmail(string email)
     {
         return await _userManager.FindByEmailAsync(email);
     }
@@ -57,7 +52,7 @@ public class UserService(UserManager<User> userManager,
         throw new NotImplementedException();
     }
 
-    public Task<IActionResult> RegisterExternalUser()
+    public Task<bool> LoginInternalUser()
     {
         throw new NotImplementedException();
     }

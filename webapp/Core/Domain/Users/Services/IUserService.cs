@@ -9,9 +9,9 @@ namespace TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
 public interface IUserService
 {
     public Task<Result> RegisterInternalUser(RegisterInputModel registerInputModel);
-    public Task<IActionResult> RegisterExternalUser();
-    public Task<List<User>> GetUsersByRole(string role);
+    public Task<User?> GetUserByEmail(string email);
     public Task<bool> LoginWithExternalProvider(HttpContext httpContext);
+    public Task<bool> LoginInternalUser();
     public Task<bool> CreateExternalUserAsync(string email, List<Claim> claims, string loginProvider, string providerKey);
     public Task ApproveUserState(string userId, CancellationToken cancellationToken);
     public Task DeclineUserState(string userId, CancellationToken cancellationToken);

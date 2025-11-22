@@ -37,10 +37,14 @@ builder.Services.AddScoped<RequireAccountApprovalFilter>();
 // Register the OrderingService
 builder.Services.AddScoped<IOrderingService, OrderingService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 
-builder.Services.AddIdentity<User, IdentityRole<Guid>>()
-                .AddEntityFrameworkStores<ShopContext>()
-                .AddDefaultTokenProviders();
+builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+    })
+    .AddEntityFrameworkStores<ShopContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -50,19 +54,13 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.ForwardedHeaders =
-        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-
-    options.KnownNetworks.Clear();
-    options.KnownProxies.Clear();
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.AccessDeniedPath = "/Identity/AccessDenied";
     options.LoginPath = "/Identity/Login";
-    options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
     options.SlidingExpiration = true;
     options.Events = new CookieAuthenticationEvents
@@ -85,37 +83,16 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-})
+builder.Services.AddAuthentication()
 .AddGoogle("Google", googleOptions =>
 {
     googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("Google ClientId is missing in configuration");;
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret is missing in configuration");;
-    googleOptions.CallbackPath = "/signin-google";
-    googleOptions.CorrelationCookie.SameSite = SameSiteMode.Lax;
-    googleOptions.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-    googleOptions.Scope.Add("profile");
-    googleOptions.Scope.Add("email");
-    googleOptions.SaveTokens = true;
 })
 .AddMicrosoftAccount("Microsoft", microsoftOptions => 
 {
     microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Microsoft ClientSecret is missing in configuration");;
     microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Microsoft ClientSecret is missing in configuration");;
-    microsoftOptions.CallbackPath = "/signin-microsoft";
-    microsoftOptions.CorrelationCookie.SameSite = SameSiteMode.Lax;
-    microsoftOptions.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-    microsoftOptions.SaveTokens = true;
-});
-
-builder.Services.ConfigureExternalCookie(options =>
-{
-    options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
 
 builder.Services.AddDataProtection()

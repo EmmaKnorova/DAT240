@@ -1,34 +1,50 @@
 @page
-@using TarlBreuJacoBaraKnor.webapp.Pages.Identity
-@model ExternalLoginCallbackModel
+@model ExternalLoginModel
 @{
-    ViewData["Title"] = "External Login";
+    ViewData["Title"] = "External Login Failure";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Login Failed</h4>
+                </div>
+                
+                <div class="card-body">
+                    @* 1. Display specific errors from the Service/Backend *@
+                    @if (!ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@modelError.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        @* 2. Fallback if user navigates here manually or without errors *@
+                        <div class="alert alert-warning">
+                            <p>
+                                An error occurred while processing your request with Google. 
+                                This usually happens if the operation was cancelled.
+                            </p>
+                        </div>
+                    }
 
-@if (Model.ErrorMessage != null)
-{
-    <div class="alert alert-danger">@Model.ErrorMessage</div>
-}
+                    <p class="text-muted">
+                        Please return to the login page and try again.
+                    </p>
+                </div>
 
-@if (Model.ShowConfirmAccountForm)
-{
-    <div class="card p-4 shadow-sm">
-        <h4>Confirm your account</h4>
-        <p>Please confirm your email to finish signing in.</p>
-
-        <form method="post">
-            <div class="form-group">
-                <label>Email</label>
-                <input asp-for="Input.Email" class="form-control" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                <div class="card-footer">
+                    <a asp-page="./Login" class="btn btn-secondary w-100">Back to Login</a>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary mt-3">Confirm</button>
-        </form>
+        </div>
     </div>
-}
-else
-{
-    <p>Processing external login...</p>
-}
+</div>
