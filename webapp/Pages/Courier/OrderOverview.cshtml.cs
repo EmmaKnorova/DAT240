@@ -31,11 +31,13 @@ public class OrderOverviewModel : PageModel
         var orders = await _mediator.Send(new Get.Request(Courier.Id));
         
         ActiveOrders = orders
-        .Where(o=> o.Status == Status.Being_picked_up || o.Status == Status.On_the_way)
+        .Where(o => o.Status == Status.Being_picked_up || o.Status == Status.On_the_way)
+        .OrderByDescending(o => o.OrderDate)
         .ToList();
 
         PastOrders = orders
         .Where(o => o.Status == Status.Delivered || o.Status == Status.Cancelled)
+        .OrderByDescending(o => o.OrderDate)
         .ToList();
     }
     public async Task<IActionResult> OnPostCancelAsync(Guid orderId)

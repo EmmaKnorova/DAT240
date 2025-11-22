@@ -1,0 +1,134 @@
+@page
+@using System.Globalization
+@using TarlBreuJacoBaraKnor.webapp.Pages.Courier
+@model EarningsOverviewModel
+@{
+    Layout = "/Pages/Courier/Shared/_Courier_Layout.cshtml";
+    ViewData["Title"] = "Earnings Overview";
+}
+
+<div class="container mt-5">
+    @{
+    var TotalRevenue = Model.RevenueDelivery + Model.RevenueTips;
+    }
+    <h2 class="mb-4 text-center">Courier Dashboard</h2>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Orders</h5>
+                    <p class="card-text display-6">@Model.TotalOrders</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Revenue From Delivery</h5>
+                    <p class="card-text display-6">
+                        @Model.RevenueDelivery.ToString("C", new CultureInfo("nb-NO"))
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Revenue From Tips</h5>
+                    <p class="card-text display-6">
+                        @Model.RevenueTips.ToString("C", new CultureInfo("nb-NO"))
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <p class="card-text display-6">
+                        @TotalRevenue.ToString("C", new CultureInfo("nb-NO"))
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-5 text-center">Monthly Earnings</h3>
+<canvas id="earningsChart" height="90"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('earningsChart').getContext('2d');
+
+    const months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.MonthlyEarnings.Select(x => x.Month)
+    ));
+
+    const revenueDelivery = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.MonthlyEarnings.Select(x => x.RevenueDelivery)
+    ));
+
+    const revenueTips = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.MonthlyEarnings.Select(x => x.RevenueTips)
+    ));
+
+    const ordersCount = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.MonthlyEarnings.Select(x => x.NumberOfOrders)
+    ));
+
+    // compute total revenue per month
+    const totalRevenue = revenueDelivery.map((d, i) => d + revenueTips[i]);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months.map(m =>
+                new Date(2000, m - 1, 1).toLocaleString('default', { month: 'short' })
+            ),
+            datasets: [
+                {
+                    label: 'Total Revenue (NOK)',
+                    data: totalRevenue,
+                    backgroundColor: 'rgba(107, 208, 109, 0.8)'
+                }
+            ]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const idx = tooltipItem.dataIndex;
+                            return [
+                                `Delivery: ${revenueDelivery[idx]} NOK`,
+                                `Tips: ${revenueTips[idx]} NOK`,
+                                `Total: ${totalRevenue[idx]} NOK`
+                            ];
+                        },
+                        footer: function(tooltipItems) {
+                            const idx = tooltipItems[0].dataIndex;
+                            return `Orders: ${ordersCount[idx]}`;
+                        }
+                    }
+                }
+            },
+            responsive: true,
+            scales: {
+                x: {
+                    stacked: false
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
