@@ -10,8 +10,6 @@ public class StripeFinancialReportingService : IFinancialReportingService
         DateTimeOffset from,
         DateTimeOffset to)
     {
-        // Uses PaymentIntents as the source of truth for successful payments.
-        // Assumes StripeConfiguration.ApiKey is already set in Program.cs.
         var service = new PaymentIntentService();
 
         var options = new PaymentIntentListOptions
@@ -39,10 +37,8 @@ public class StripeFinancialReportingService : IFinancialReportingService
 
             successfulCount++;
 
-            // Stripe amounts are in the smallest currency unit (e.g. cents)
             totalAmountCents += pi.Amount;
 
-            // Optional: tip stored as metadata "tip_amount" in cents
             if (pi.Metadata != null &&
                 pi.Metadata.TryGetValue("tip_amount", out var tipRaw) &&
                 long.TryParse(tipRaw, out var tipCents))
@@ -54,8 +50,6 @@ public class StripeFinancialReportingService : IFinancialReportingService
         decimal gross = totalAmountCents / 100m;
         decimal tips = totalTipsCents / 100m;
 
-        // If you want exact Stripe fees, you can later use BalanceTransactionService.
-        // For now, we keep fees at 0 and treat gross = net.
         decimal fees = 0m;
         decimal net = gross - fees;
 

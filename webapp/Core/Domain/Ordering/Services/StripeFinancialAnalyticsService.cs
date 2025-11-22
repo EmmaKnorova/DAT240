@@ -13,7 +13,6 @@ public class StripeFinancialAnalyticsService : IFinancialAnalyticsService
 
     public StripeFinancialAnalyticsService()
     {
-        // StripeConfiguration.ApiKey is set in Program.cs
         _chargeService = new ChargeService();
         _customerService = new CustomerService();
     }
@@ -25,13 +24,11 @@ public class StripeFinancialAnalyticsService : IFinancialAnalyticsService
         var fromUtc = from.UtcDateTime;
         var toUtc = to.UtcDateTime;
 
-        // We aggregate metrics per calendar day (UTC-based).
         var dailyBuckets = new SortedDictionary<DateTime, DailyAccumulator>();
 
-        // 1) Charges = payments (gross, net, success/fail)
         var chargeOptions = new ChargeListOptions
         {
-            Limit = 100, // increase or add paging if needed
+            Limit = 100,
             Created = new DateRangeOptions
             {
                 GreaterThanOrEqual = fromUtc,
@@ -43,7 +40,6 @@ public class StripeFinancialAnalyticsService : IFinancialAnalyticsService
 
         foreach (var charge in charges.Data)
         {
-            // In this Stripe SDK version, Created is a non-nullable DateTime
             var created = charge.Created;
             var day = created.Date;
 
@@ -53,10 +49,8 @@ public class StripeFinancialAnalyticsService : IFinancialAnalyticsService
                 dailyBuckets[day] = acc;
             }
 
-            // Stripe amounts are in the smallest currency unit (e.g. cents)
             long amountCents = charge.Amount;
 
-            // For now, we treat net = gross (you can later refine with BalanceTransaction)
             acc.GrossCents += amountCents;
             acc.NetCents += amountCents;
 
@@ -75,7 +69,6 @@ public class StripeFinancialAnalyticsService : IFinancialAnalyticsService
             }
         }
 
-        // 2) Customers = "new customers" per day
         var customerOptions = new CustomerListOptions
         {
             Limit = 100,
@@ -102,7 +95,6 @@ public class StripeFinancialAnalyticsService : IFinancialAnalyticsService
             acc.NewCustomers++;
         }
 
-        // 3) Map aggregates -> FinancialTimePoint list
         var points = dailyBuckets
             .Select(kvp =>
             {
@@ -123,7 +115,6 @@ public class StripeFinancialAnalyticsService : IFinancialAnalyticsService
         return new FinancialDashboardData(points);
     }
 
-    // Internal accumulator per day
     private sealed class DailyAccumulator
     {
         public long GrossCents { get; set; }
