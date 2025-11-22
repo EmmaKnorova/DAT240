@@ -1,0 +1,48 @@
+@page
+@model TarlBreuJacoBaraKnor.webapp.Pages.TipSuccessModel
+@{
+    ViewData["Title"] = "Tip Success";
+}
+
+<style>
+    .success-container {
+        text-align: center;
+        margin-top: 100px;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .success-icon {
+        font-size: 80px;
+        color: #28a745;
+        margin-bottom: 20px;
+    }
+
+    .success-message {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .redirect-message {
+        margin-top: 10px;
+        font-size: 16px;
+        color: #666;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="success-container">
+    <div class="success-icon">💚</div>
+    <div class="success-message">Tip successful!</div>
+    <div class="redirect-message">Redirecting to your order overview...</div>
+</div>
+
+<script>
+    setTimeout(function () {
+        window.location.href = "/Customer/OrderOverview";
+    }, 3000);
+</script>

@@ -19,6 +19,7 @@ public class Order : BaseEntity
     public Status Status { get; set; } = Status.Submitted;
     public decimal DeliveryFee { get; set; }
     public string PaymentIntentId { get; set; } = string.Empty;
+    public string? TipPaymentIntentId { get; set; } = string.Empty;
 
 
     public Order()

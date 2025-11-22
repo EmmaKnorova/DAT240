@@ -25,7 +25,6 @@ public class UpdateOrder
             if (existingOrder == null)
                 return new Response(false, new[] { "Order not found." });
 
-            // Met à jour les champs nécessaires (ici juste le statut)
             existingOrder.Status = request.order.Status;
 
             _db.Orders.Update(existingOrder);
