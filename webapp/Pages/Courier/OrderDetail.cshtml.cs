@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Stripe;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Events;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using webapp.Core.Domain.Ordering.Pipelines;
@@ -48,6 +49,8 @@ public class OrderDetailModel : PageModel
         if (_order.Courier == null)
             _order.Courier = Courier;
 
+        var previousStatus = _order.Status;
+
         _order.Status = _order.Status switch
         {
             Status.Submitted => Status.Being_picked_up,
@@ -57,6 +60,19 @@ public class OrderDetailModel : PageModel
         };
 
         await _mediator.Send(new UpdateOrder.Request(_order));
+
+        if (previousStatus == Status.Submitted && _order.Status == Status.Being_picked_up)
+        {
+            await _mediator.Publish(new OrderAccepted(OrderId));
+        }
+        else if (previousStatus == Status.Being_picked_up && _order.Status == Status.On_the_way)
+        {
+            await _mediator.Publish(new OrderSent(OrderId));
+        }
+        else if (previousStatus == Status.On_the_way && _order.Status == Status.Delivered)
+        {
+            await _mediator.Publish(new OrderDelivered(OrderId));
+        }
 
         return RedirectToPage("/Courier/OrderOverview");
     }
