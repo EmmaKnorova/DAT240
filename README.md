@@ -1,17 +1,27 @@
 # Start the project
 
-To run the project, go to the webapp directory, and execute: `docker compose up --build`.
+To run the project execute: `docker compose up`.
 
-## Open the webpage
+## Acces the Page as a user
+
+Go to `http://localhost:8080/`. Make sure to use `localhost` and not `127.0.0.1` when opening the website. The third party login from Microsoft does not support the IP equivalent of `localhost`.
 
 ## Access the Admin Overview
 
-To access the admin interface, please visint `http://127.0.0.1:8080/Admin/Identity/Login`.
+To access the admin interface, please visint `http://localhost:8080/Admin/Identity/Login`.
 
 The default credentials for the admin user are: `admin@gmail.com:Admin123456789!`.
 You will be prompted to change the password after the first login.
 
 ## For Developers
+
+### Run Tests
+
+Go to `webapp.Tests` and type:
+
+```bash
+dotnet test
+```
 
 ### Docker
 
