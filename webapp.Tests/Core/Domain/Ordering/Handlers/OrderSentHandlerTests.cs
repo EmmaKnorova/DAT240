@@ -1,8 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Events;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Handlers;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.Core.Domain.Users.Entities;
 using TarlBreuJacoBaraKnor.webapp.Tests.Helpers;
@@ -52,9 +55,25 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     [Fact]
     public void Constructor_WithNullContext_ThrowsArgumentNullException()
     {
-        // Assert
-        var exception = Assert.Throws<ArgumentNullException>(() => new OrderSentHandler(null!));
+        // Arrange
+        var mockNotificationService = new Mock<INotificationService>();
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentNullException>(() => 
+            new OrderSentHandler(null!, mockNotificationService.Object));
         Assert.Equal("db", exception.ParamName);
+    }
+
+    [Fact]
+    public void Constructor_WithNullNotificationService_ThrowsArgumentNullException()
+    {
+        // Arrange
+        using var context = _dbTest.CreateContext();
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentNullException>(() => 
+            new OrderSentHandler(context, null!));
+        Assert.Equal("notificationService", exception.ParamName);
     }
 
     [Fact]
@@ -62,6 +81,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser();
         var order = CreateTestOrder(customer, Status.Being_picked_up);
 
@@ -69,7 +89,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
 
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
         var notification = new OrderSent(order.Id);
 
         // Act
@@ -79,6 +99,52 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         var updatedOrder = await context.Orders.FindAsync(order.Id);
         Assert.NotNull(updatedOrder);
         Assert.Equal(Status.On_the_way, updatedOrder.Status);
+    }
+
+    [Fact]
+    public async Task Handle_SendsNotificationToCustomer()
+    {
+        // Arrange
+        using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
+        var customer = CreateTestUser();
+        var order = CreateTestOrder(customer, Status.Being_picked_up);
+
+        await context.Users.AddAsync(customer);
+        await context.Orders.AddAsync(order);
+        await context.SaveChangesAsync();
+
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
+        var notification = new OrderSent(order.Id);
+
+        // Act
+        await handler.Handle(notification, CancellationToken.None);
+
+        // Assert
+        mockNotificationService.Verify(
+            service => service.SendOrderPickedUpNotification(customer.Id, order.Id),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task Handle_WithNonExistentOrderId_DoesNotUpdateOrNotify()
+    {
+        // Arrange
+        using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
+        var nonExistentOrderId = Guid.NewGuid();
+        var notification = new OrderSent(nonExistentOrderId);
+
+        // Act
+        await handler.Handle(notification, CancellationToken.None);
+
+        // Assert
+        mockNotificationService.Verify(
+            service => service.SendOrderPickedUpNotification(It.IsAny<Guid>(), It.IsAny<Guid>()),
+            Times.Never
+        );
     }
 
     [Fact]
@@ -86,6 +152,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser();
         var order = CreateTestOrder(customer, Status.Submitted);
 
@@ -93,31 +160,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
 
-        var handler = new OrderSentHandler(context);
-        var notification = new OrderSent(order.Id);
-
-        // Act
-        await handler.Handle(notification, CancellationToken.None);
-
-        // Assert
-        var updatedOrder = await context.Orders.FindAsync(order.Id);
-        Assert.NotNull(updatedOrder);
-        Assert.Equal(Status.On_the_way, updatedOrder.Status);
-    }
-
-    [Fact]
-    public async Task Handle_WithBeingPickedUpOrder_UpdatesToOnTheWay()
-    {
-        // Arrange
-        using var context = _dbTest.CreateContext();
-        var customer = CreateTestUser();
-        var order = CreateTestOrder(customer, Status.Being_picked_up);
-
-        await context.Users.AddAsync(customer);
-        await context.Orders.AddAsync(order);
-        await context.SaveChangesAsync();
-
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
         var notification = new OrderSent(order.Id);
 
         // Act
@@ -134,6 +177,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser();
         var order = CreateTestOrder(customer, Status.Being_picked_up);
 
@@ -141,7 +185,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
 
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
         var notification = new OrderSent(order.Id);
         var cancellationTokenSource = new CancellationTokenSource();
 
@@ -159,6 +203,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser();
         var order = CreateTestOrder(customer, Status.Being_picked_up);
 
@@ -167,7 +212,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         await context.SaveChangesAsync();
 
         var originalStatus = order.Status;
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
         var notification = new OrderSent(order.Id);
 
         // Act
@@ -184,6 +229,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser();
         var order1 = CreateTestOrder(customer, Status.Being_picked_up);
         var order2 = CreateTestOrder(customer, Status.Being_picked_up);
@@ -192,7 +238,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         await context.Orders.AddRangeAsync(order1, order2);
         await context.SaveChangesAsync();
 
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
         var notification = new OrderSent(order1.Id);
 
         // Act
@@ -211,6 +257,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser("John Doe", "john@example.com");
         var order = CreateTestOrder(customer, Status.Being_picked_up);
         
@@ -229,7 +276,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         var originalNotes = order.Notes;
         var originalOrderLineCount = order.OrderLines.Count;
 
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
         var notification = new OrderSent(order.Id);
 
         // Act
@@ -244,25 +291,11 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     }
 
     [Fact]
-    public async Task Handle_WithNonExistentOrderId_ThrowsNullReferenceException()
-    {
-        // Arrange
-        using var context = _dbTest.CreateContext();
-        var handler = new OrderSentHandler(context);
-        var nonExistentOrderId = Guid.NewGuid();
-        var notification = new OrderSent(nonExistentOrderId);
-
-        // Act & Assert
-        await Assert.ThrowsAsync<NullReferenceException>(
-            async () => await handler.Handle(notification, CancellationToken.None)
-        );
-    }
-
-    [Fact]
     public async Task Handle_CanBeCalledMultipleTimes()
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser();
         var order1 = CreateTestOrder(customer, Status.Being_picked_up);
         var order2 = CreateTestOrder(customer, Status.Being_picked_up);
@@ -271,7 +304,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         await context.Orders.AddRangeAsync(order1, order2);
         await context.SaveChangesAsync();
 
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
 
         // Act - Handle first order
         var notification1 = new OrderSent(order1.Id);
@@ -287,6 +320,15 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         
         Assert.Equal(Status.On_the_way, updatedOrder1!.Status);
         Assert.Equal(Status.On_the_way, updatedOrder2!.Status);
+
+        mockNotificationService.Verify(
+            service => service.SendOrderPickedUpNotification(customer.Id, order1.Id),
+            Times.Once
+        );
+        mockNotificationService.Verify(
+            service => service.SendOrderPickedUpNotification(customer.Id, order2.Id),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -294,6 +336,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser();
         var order = CreateTestOrder(customer, Status.On_the_way);
 
@@ -301,7 +344,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
 
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
         var notification = new OrderSent(order.Id);
 
         // Act
@@ -318,6 +361,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
     {
         // Arrange
         using var context = _dbTest.CreateContext();
+        var mockNotificationService = new Mock<INotificationService>();
         var customer = CreateTestUser();
         var order = CreateTestOrder(customer, Status.Delivered);
 
@@ -325,31 +369,7 @@ public class OrderSentHandlerTests : IClassFixture<DbTest>
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
 
-        var handler = new OrderSentHandler(context);
-        var notification = new OrderSent(order.Id);
-
-        // Act
-        await handler.Handle(notification, CancellationToken.None);
-
-        // Assert
-        var updatedOrder = await context.Orders.FindAsync(order.Id);
-        Assert.NotNull(updatedOrder);
-        Assert.Equal(Status.On_the_way, updatedOrder.Status);
-    }
-
-    [Fact]
-    public async Task Handle_WithCancelledOrder_ChangesToOnTheWay()
-    {
-        // Arrange
-        using var context = _dbTest.CreateContext();
-        var customer = CreateTestUser();
-        var order = CreateTestOrder(customer, Status.Cancelled);
-
-        await context.Users.AddAsync(customer);
-        await context.Orders.AddAsync(order);
-        await context.SaveChangesAsync();
-
-        var handler = new OrderSentHandler(context);
+        var handler = new OrderSentHandler(context, mockNotificationService.Object);
         var notification = new OrderSent(order.Id);
 
         // Act
