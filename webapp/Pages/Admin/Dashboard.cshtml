@@ -1,81 +1,328 @@
 @page
-@model AdminDashboardModel
+@model TarlBreuJacoBaraKnor.Pages.Admin.AdminDashboardModel
+@using System.Globalization
+@using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
+
 @{
     Layout = "/Pages/Admin/Shared/_Admin_Layout.cshtml";
     ViewData["Title"] = "Admin Dashboard";
+
+    var daily = Model.FinancialAnalytics.Daily ?? Array.Empty<FinancialTimePoint>();
+
+    var labels = string.Join(",", daily.Select(p => $"'{p.Date.ToString("yyyy-MM-dd")}'"));
+    var grossData = string.Join(",", daily.Select(p => p.Gross.ToString(CultureInfo.InvariantCulture)));
+    var netData = string.Join(",", daily.Select(p => p.Net.ToString(CultureInfo.InvariantCulture)));
+    var newCustomersData = string.Join(",", daily.Select(p => p.NewCustomers.ToString(CultureInfo.InvariantCulture)));
+    var successData = string.Join(",", daily.Select(p => p.SuccessfulPayments.ToString(CultureInfo.InvariantCulture)));
+    var failedData = string.Join(",", daily.Select(p => p.FailedPayments.ToString(CultureInfo.InvariantCulture)));
+
+    var rangeDisplayStart = Model.CurrentRangeStart.ToString("yyyy-MM-dd");
+    var rangeDisplayEnd = Model.CurrentRangeEnd.AddDays(-1).ToString("yyyy-MM-dd");
 }
 
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">Admin Dashboard</h2>
+<div class="container mt-4">
+    <h1 class="mb-3">Admin Dashboard</h1>
 
-    <!-- KPI Cards -->
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-primary shadow-sm">
+    <h5 class="text-muted mb-3">
+        Date range:
+        @rangeDisplayStart – @rangeDisplayEnd
+    </h5>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-auto">
+            <label for="from" class="form-label">From</label>
+            <input type="date"
+                   id="from"
+                   name="From"
+                   class="form-control"
+                   value="@(Model.From?.ToString("yyyy-MM-dd") ?? rangeDisplayStart)" />
+        </div>
+
+        <div class="col-auto">
+            <label for="to" class="form-label">To</label>
+            <input type="date"
+                   id="to"
+                   name="To"
+                   class="form-control"
+                   value="@(Model.To?.ToString("yyyy-MM-dd") ?? rangeDisplayEnd)" />
+        </div>
+
+        <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-primary">
+                Apply
+            </button>
+        </div>
+    </form>
+
+    <!-- Order-based KPIs -->
+    <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Orders this month</h5>
-                    <p class="card-text display-6">@Model.TotalOrdersThisMonth</p>
+                    <h6 class="text-muted text-uppercase mb-2">Total orders (current month)</h6>
+                    <p class="fs-3 fw-bold mb-1">@Model.TotalOrdersThisMonth</p>
+                    <small class="text-muted">
+                        Orders created in the selected month (application database)
+                    </small>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-success shadow-sm">
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Revenue this month</h5>
-                    <p class="card-text display-6">
-                        @Model.TotalRevenueThisMonth.ToString("C")
+                    <h6 class="text-muted text-uppercase mb-2">Total revenue (orders)</h6>
+                    <p class="fs-3 fw-bold mb-1">
+                        @Model.TotalRevenueThisMonth.ToString("0.00") kr
                     </p>
+                    <small class="text-muted">
+                        Sum of order totals in the selected month (before Stripe fees)
+                    </small>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-secondary shadow-sm">
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Unique statuses this month</h5>
-                    <p class="card-text display-6">
-                        @Model.OrdersByStatusThisMonth.Count
+                    <h6 class="text-muted text-uppercase mb-2">Stripe payments (successful)</h6>
+                    <p class="fs-3 fw-bold mb-1">
+                        @Model.FinancialSummary.SuccessfulPaymentsCount
                     </p>
+                    <small class="text-muted">
+                        Number of successful Stripe charges in the selected range
+                    </small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Orders by status -->
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0">Orders by status (current month)</h5>
-                </div>
+    <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
-                    @if (!Model.OrdersByStatusThisMonth.Any())
-                    {
-                        <p class="text-muted mb-0">No orders for the current month.</p>
-                    }
-                    else
-                    {
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Status</th>
-                                    <th class="text-end">Count</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var s in Model.OrdersByStatusThisMonth)
-                            {
-                                <tr>
-                                    <td>@s.Status</td>
-                                    <td class="text-end">@s.Count</td>
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                    }
+                    <h6 class="text-muted text-uppercase mb-2">Open orders</h6>
+                    <p class="fs-3 fw-bold mb-1">
+                        @Model.OpenOrdersMonthToDate
+                    </p>
+                    <small class="text-muted d-block">
+                        Month-to-date
+                    </small>
+                    <small class="text-muted d-block">
+                        All time: @Model.OpenOrdersTotal
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase mb-2">Being delivered</h6>
+                    <p class="fs-3 fw-bold mb-1 text-primary">
+                        @Model.BeingDeliveredOrdersMonthToDate
+                    </p>
+                    <small class="text-muted d-block">
+                        Month-to-date
+                    </small>
+                    <small class="text-muted d-block">
+                        All time: @Model.BeingDeliveredOrdersTotal
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase mb-2">Delivered</h6>
+                    <p class="fs-3 fw-bold mb-1 text-success">
+                        @Model.DeliveredOrdersMonthToDate
+                    </p>
+                    <small class="text-muted d-block">
+                        Month-to-date
+                    </small>
+                    <small class="text-muted d-block">
+                        All time: @Model.DeliveredOrdersTotal
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global financials from Stripe -->
+    <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase mb-2">Total earnings (Stripe)</h6>
+                    <p class="fs-3 fw-bold mb-1">
+                        @Model.FinancialSummary.TotalGross.ToString("0.00") kr
+                    </p>
+                    <small class="text-muted">
+                        Sum of successful Stripe payments in the selected range
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase mb-2">Stripe fees</h6>
+                    <p class="fs-3 fw-bold mb-1 text-danger">
+                        -@Model.FinancialSummary.StripeFees.ToString("0.00") kr
+                    </p>
+                    <small class="text-muted">
+                        Estimated processing fees (from Stripe balance transactions)
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase mb-2">Net after fees</h6>
+                    <p class="fs-3 fw-bold mb-1">
+                        @Model.FinancialSummary.NetAfterFees.ToString("0.00") kr
+                    </p>
+                    <small class="text-muted">
+                        Total earnings minus Stripe fees
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Split 80% / 20% + tips -->
+    <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase mb-2">Courier share (80%)</h6>
+                    <p class="fs-3 fw-bold mb-1 text-success">
+                        @Model.FinancialSummary.CourierShare.ToString("0.00") kr
+                    </p>
+                    <small class="text-muted">
+                        80% of net revenue after Stripe fees
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase mb-2">Service share (20%)</h6>
+                    <p class="fs-3 fw-bold mb-1">
+                        @Model.FinancialSummary.ServiceShare.ToString("0.00") kr
+                    </p>
+                    <small class="text-muted">
+                        20% of net revenue after Stripe fees
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase mb-2">Tips</h6>
+                    <p class="fs-3 fw-bold mb-1">
+                        @Model.FinancialSummary.TotalTips.ToString("0.00") kr
+                    </p>
+                    <small class="text-muted">
+                        Tipping included in Stripe payments (from metadata)
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-8">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Revenue (gross vs net per day)</h5>
+                    <canvas id="revenueChart" height="120"></canvas>
+                    <small class="text-muted d-block mt-2">
+                        Based on Stripe charges in the selected date range.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card admin-dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Payments & new customers</h5>
+                    <canvas id="activityChart" height="120"></canvas>
+                    <small class="text-muted d-block mt-2">
+                        Successful vs failed payments, and new customers per day.
+                    </small>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = [@Html.Raw(labels)];
+        const grossData = [@Html.Raw(grossData)];
+        const netData = [@Html.Raw(netData)];
+        const newCustomersData = [@Html.Raw(newCustomersData)];
+        const successData = [@Html.Raw(successData)];
+        const failedData = [@Html.Raw(failedData)];
+
+        const revenueCtx = document.getElementById('revenueChart');
+        const activityCtx = document.getElementById('activityChart');
+
+        if (revenueCtx && labels.length > 0) {
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Gross volume',
+                            data: grossData,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Net volume',
+                            data: netData,
+                            tension: 0.3
+                        }
+                    ]
+                }
+            });
+        }
+
+        if (activityCtx && labels.length > 0) {
+            new Chart(activityCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Successful payments',
+                            data: successData
+                        },
+                        {
+                            label: 'Failed payments',
+                            data: failedData
+                        },
+                        {
+                            label: 'New customers',
+                            data: newCustomersData
+                        }
+                    ]
+                }
+            });
+        }
+    </script>
+}
