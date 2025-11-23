@@ -8,7 +8,7 @@ using Moq;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
-using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Dto;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.DTOs;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.SharedKernel;
