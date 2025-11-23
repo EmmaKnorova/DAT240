@@ -1,5 +1,5 @@
 
-namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Dto;
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.DTOs;
 
 public record OrderLineDto
 (

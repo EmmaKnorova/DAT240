@@ -1,0 +1,145 @@
+@page
+@model TarlBreuJacoBaraKnor.webapp.Pages.Admin.UserManagementModel
+
+@{
+    Layout = "/Pages/Admin/Shared/_Admin_Layout.cshtml";
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">User Management</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="roleFilter" class="form-label">Filter by Role</label>
+                    <select name="roleFilter" id="roleFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Users</option>
+                        <option value="Customer" selected="@(Model.RoleFilter == "Customer")">Customers</option>
+                        <option value="Courier" selected="@(Model.RoleFilter == "Courier")">Couriers</option>
+                        <option value="Admin" selected="@(Model.RoleFilter == "Admin")">Admins</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Users.Any())
+    {
+        <div class="alert alert-info">No users found.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td><strong>@user.Name</strong></td>
+                        <td>@user.Email</td>
+                        <td>
+                            <span class="badge bg-@(user.Role == "Admin" ? "danger" : user.Role == "Courier" ? "warning" : "primary")">
+                                @user.Role
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            @if (user.Role != "Admin")
+                            {
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#promoteModal"
+                                        data-user-id="@user.Id"
+                                        data-user-name="@user.Name"
+                                        data-user-role="@user.Role">
+                                    <i class="bi bi-shield-check"></i> Promote to Admin
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="text-muted"><i class="bi bi-shield-fill-check"></i> Administrator</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="promoteModal" tabindex="-1" aria-labelledby="promoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="promoteModalLabel">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Promotion
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to promote <strong id="userNameToPromote"></strong> (<span id="userRoleToPromote"></span>) to Administrator?</p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i> This will grant full administrative privileges, including:
+                    <ul class="mb-0 mt-2">
+                        <li>Access to admin dashboard</li>
+                        <li>Ability to manage products</li>
+                        <li>Ability to manage other users</li>
+                        <li>Access to all orders and reports</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" id="promoteForm" style="display: inline;">
+                    <input type="hidden" name="userId" id="userIdToPromote" />
+                    <button type="submit" asp-page-handler="PromoteToAdmin" class="btn btn-danger">
+                        <i class="bi bi-shield-check"></i> Promote to Admin
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const promoteModal = document.getElementById('promoteModal');
+        promoteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+            const userRole = button.getAttribute('data-user-role');
+            
+            document.getElementById('userIdToPromote').value = userId;
+            document.getElementById('userNameToPromote').textContent = userName;
+            document.getElementById('userRoleToPromote').textContent = userRole;
+        });
+    </script>
+}

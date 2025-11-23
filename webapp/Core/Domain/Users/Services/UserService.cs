@@ -9,13 +9,20 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 
 namespace TarlBreuJacoBaraKnor.Core.Domain.Users.Services;
 
-public class UserService(UserManager<User> userManager,
- ShopContext db, ILogger<UserService> logger, RoleManager<IdentityRole<Guid>> roleManager) : IUserService
+public class UserService(
+    UserManager<User> userManager,
+    SignInManager<User> signInManager,
+    ShopContext db, 
+    ILogger<UserService> logger, 
+    RoleManager<IdentityRole<Guid>> roleManager) : IUserService
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly ShopContext _db = db;
     private readonly ILogger<UserService> _logger = logger;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
+    private readonly SignInManager<User> _signInManager = signInManager;
+
+        public List<string> PermittedLoginRoles { get; set; } = [Roles.Customer.ToString(), Roles.Courier.ToString()];
 
     public async Task ApproveUserState(string userId, CancellationToken cancellationToken)
     {
@@ -37,24 +44,48 @@ public class UserService(UserManager<User> userManager,
         }
     }
 
-    public Task<bool> CreateExternalUserAsync(string email, List<Claim> claims, string loginProvider, string providerKey)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<User?> GetUserByEmail(string email)
     {
         return await _userManager.FindByEmailAsync(email);
     }
 
-    public Task<bool> LoginWithExternalProvider(HttpContext httpContext)
+    public async Task<Result<string>> LogInInternalUser(LoginInputModel loginDto)
     {
-        throw new NotImplementedException();
-    }
+        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+        
+        if (user == null)
+            return Result<string>.Failure("Invalid email or password.");
 
-    public Task<bool> LoginInternalUser()
-    {
-        throw new NotImplementedException();
+        var userRoles = await _userManager.GetRolesAsync(user);
+        if (!userRoles.Any(PermittedLoginRoles.Contains))
+            return Result<string>.Failure("User is not a Courier or Customer.");
+        
+        var result = await _signInManager.CheckPasswordSignInAsync(
+            user,
+            loginDto.Password,
+            lockoutOnFailure: false
+        );
+
+        if (result.Succeeded)
+        {
+            _logger.LogInformation($"User logged in: {user.Email}");
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            string defaultRedirectPath;
+            if (userRoles.Contains(Roles.Customer.ToString()))
+                defaultRedirectPath = "/Customer/Menu";
+            else if (userRoles.Contains(Roles.Courier.ToString()))
+                defaultRedirectPath = "/Courier/Dashboard";
+            else
+                defaultRedirectPath = "/";
+
+            return Result<string>.Success(defaultRedirectPath);
+        }
+
+        if (result.IsLockedOut)
+            return Result<string>.Failure("Account is locked. Try again later.");
+
+        return Result<string>.Failure("Invalid email or password.");
     }
 
     public async Task<Result> RegisterInternalUser(RegisterInputModel registerInputModel)

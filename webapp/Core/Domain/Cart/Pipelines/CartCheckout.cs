@@ -1,13 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Dto;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.DTOs;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
-using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;

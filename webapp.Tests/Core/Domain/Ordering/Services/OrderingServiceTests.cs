@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
-using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Dto;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.DTOs;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
