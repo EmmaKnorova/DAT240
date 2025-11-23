@@ -79,7 +79,7 @@ else
         </table>
 
         var itemsTotal = Model._order.OrderLines.Sum(line => line.Amount * line.Price);
-        var deliveryFee = Model._order.DeliveryFee;
+        var deliveryFee = Order.DeliveryFee;
         var grandTotal = itemsTotal + deliveryFee;
 
         <div class="text-end mt-3" style="font-size: 1.2rem;">

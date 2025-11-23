@@ -17,7 +17,7 @@
     Func<TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Order, string> totalDisplay = o =>
     {
         var itemsTotal = o.OrderLines.Sum(l => l.Amount * l.Price);
-        var deliveryFee = o.DeliveryFee;
+        var deliveryFee = Order.DeliveryFee;
         var grandTotal = itemsTotal + deliveryFee;
 
         if (o.Status == Status.Cancelled)
@@ -42,7 +42,7 @@
                 @foreach (var order in Model.ActiveOrders)
                 {
                     var itemsTotal = order.OrderLines.Sum(line => line.Amount * line.Price);
-                    var deliveryFee = order.DeliveryFee;
+                    var deliveryFee = Order.DeliveryFee;
                     var payment = deliveryFee * 0.8m;
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">

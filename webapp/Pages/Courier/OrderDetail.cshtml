@@ -16,7 +16,7 @@
 }
 else
 {
-    var payment = Model._order.DeliveryFee * 0.8m;
+    var payment = Order.DeliveryFee * 0.8m;
     <dl class="row">
         <dt class="col-sm-2">Order ID</dt>
         <dd class="col-sm-10">@Model._order.Id</dd>
@@ -87,7 +87,7 @@ else
         </table>
 
         var itemsTotal = Model._order.OrderLines.Sum(line => line.Amount * line.Price);
-        var deliveryFee = Model._order.DeliveryFee;
+        var deliveryFee = Order.DeliveryFee;
         var grandTotal = itemsTotal + deliveryFee;
 
         <div class="text-end mt-3" style="font-size: 1.2rem;">

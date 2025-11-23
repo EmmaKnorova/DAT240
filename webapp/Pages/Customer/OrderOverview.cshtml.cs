@@ -57,16 +57,16 @@ public class OrderOverviewModel : PageModel
             return RedirectToPage();
 
         // Cancel before courier accepts → full refund
-        if (order.Status == Status.Submitted)
+        if (order.Status == Status.Submitted) 
         {
-            var fullAmount = order.OrderLines.Sum(l => l.Amount * l.Price) + order.DeliveryFee;
+            var fullAmount = order.OrderLines.Sum(l => l.Amount * l.Price) + Order.DeliveryFee;
             await _refundService.Refund(order.PaymentIntentId, fullAmount);
 
             foreach (var line in order.OrderLines)
             {
                 line.Price = 0;
             }
-            order.DeliveryFee = 0;
+            Order.DeliveryFee = 0;
             order.Status = Status.Cancelled;
 
             await _mediator.Send(new UpdateOrder.Request(order));

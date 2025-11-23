@@ -1,6 +1,7 @@
 @page
 @model TarlBreuJacoBaraKnor.Pages.Admin.AdminDashboardModel
 @using System.Globalization
+@using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering
 @using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services
 
 @{
@@ -46,10 +47,21 @@
                    class="form-control"
                    value="@(Model.To?.ToString("yyyy-MM-dd") ?? rangeDisplayEnd)" />
         </div>
+    </form>
+
+    <form method="post" class="row g-3 mb-4">
+        <div class="col-auto">
+            <label asp-for="NewDeliveryFee" class="form-label">Delivery Fee (kr)</label>
+            <input asp-for="NewDeliveryFee"
+                type="number"
+                step="0.01"
+                class="form-control"
+                value="@Model.CurrentDeliveryFee.ToString("0.00")" />
+        </div>
 
         <div class="col-auto align-self-end">
-            <button type="submit" class="btn btn-primary">
-                Apply
+            <button type="submit" name="action" value="set-fee" class="btn btn-success">
+                Set Delivery Fee
             </button>
         </div>
     </form>
