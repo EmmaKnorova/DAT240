@@ -31,7 +31,7 @@ public class GetCourierEarningsByMonth
                     .Where(o => o.Status == Status.Delivered)
                     .ToListAsync(cancellationToken);
 
-                var RevenueDelivery = orders.Sum(o => o.DeliveryFee) * 0.8m;
+                var RevenueDelivery = orders.Sum(o => Order.DeliveryFee) * 0.8m;
                 var RevenueTips = 0m;
                 foreach(var order in orders)
                 {

@@ -51,6 +51,10 @@ public class AdminDashboardModel : PageModel
     public int OpenOrdersTotal { get; private set; }
     public int BeingDeliveredOrdersTotal { get; private set; }
     public int DeliveredOrdersTotal { get; private set; }
+    [BindProperty(SupportsGet = true)]
+    public decimal NewDeliveryFee { get; set; }
+
+    public decimal CurrentDeliveryFee { get; set; }
 
     public int OpenOrdersMonthToDate { get; private set; }
     public int BeingDeliveredOrdersMonthToDate { get; private set; }
@@ -63,6 +67,7 @@ public class AdminDashboardModel : PageModel
     public async Task OnGetAsync()
     {
         var now = DateTimeOffset.UtcNow;
+        CurrentDeliveryFee = Order.DeliveryFee;
 
         var rangeStartDate = From?.Date ?? new DateTime(now.Year, now.Month, 1);
         var rangeEndDate = To?.Date.AddDays(1) ?? rangeStartDate.AddMonths(1);
@@ -137,5 +142,14 @@ public class AdminDashboardModel : PageModel
     {
         return statusName.Contains("Delivered", StringComparison.OrdinalIgnoreCase)
                || statusName.Contains("Completed", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public async Task<ActionResult> OnPostAsync(string action)
+    {
+        if (action == "apply")
+            return RedirectToPage();
+
+        Order.DeliveryFee = NewDeliveryFee;
+        return RedirectToPage();
     }
 }

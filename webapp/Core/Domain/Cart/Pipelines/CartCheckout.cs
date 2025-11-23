@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.DTOs;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
+using TarlBreuJacoBaraKnor.webapp.SharedKernel;
+using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 
 namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Cart.Pipelines;
 

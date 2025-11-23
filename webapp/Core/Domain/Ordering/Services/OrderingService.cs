@@ -21,7 +21,6 @@ public class OrderingService : IOrderingService
         {
             OrderDate = DateTimeOffset.UtcNow,
             Status = Status.Submitted,
-            DeliveryFee = deliveryFee,
             PaymentIntentId = paymentIntentId
         };
 

@@ -112,7 +112,7 @@ public class CartCheckoutModel : PageModel
         }
 
         // Define delivery fee (fixed or calculated)
-        decimal deliveryFee = 50m; // example: 50 NOK
+        decimal deliveryFee = Order.DeliveryFee; // example: 50 NOK
 
         // Create Stripe checkout session with cart items + delivery fee
         var (checkoutUrl, paymentIntentId) = _paymentService.CreatePaymentSession(cart, deliveryFee, "nok");

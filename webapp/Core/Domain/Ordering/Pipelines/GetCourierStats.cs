@@ -34,7 +34,7 @@ public class GetMonthlyCourierStats
             var startOfMonth = new DateTimeOffset(request.Year, request.Month, 1, 0, 0, 0, TimeSpan.Zero);
             var endOfMonth = startOfMonth.AddMonths(1);
 
-                
+
             var monthlyOrders = await _db.Orders
                 .Where(o => o.OrderDate >= startOfMonth && o.OrderDate < endOfMonth)
                 .Where(o => o.Courier.Id == request.CourierId)
@@ -51,7 +51,7 @@ public class GetMonthlyCourierStats
             var totalRevenue = allOrders
                 .Where(o => o.Status == Status.Delivered)
                 .Sum(o =>
-                o.DeliveryFee)*0.8m;
+                Order.DeliveryFee)*0.8m;
 
             var revenueTips = 0m;
                 foreach(var order in allOrders)
