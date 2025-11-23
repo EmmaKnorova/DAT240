@@ -13,6 +13,24 @@ To access the admin interface, please visint `http://localhost:8080/Admin/Identi
 The default credentials for the admin user are: `admin@gmail.com:Admin123456789!`.
 You will be prompted to change the password after the first login.
 
+## Testing the External Payment System
+
+For testing Stripe's payment system, use the following test parameters:
+
+| Name    | Value |
+| -------- | ------- |
+| Card number  | 4242 4242 4242 4242 |
+| Expiry | any future date (e.g. 12/30)  |
+| CVC    | any 3 digits    |
+
+For cancelled or declined payments, use test card: 4000 0000 0000 0002.
+
+## Testing Thirdy Party Logins (Microsoft & Google)
+
+Make sure to access the website on `localhost` - otherwise Microsoft's login won't work. Microsoft only supports `HTTP` over `localhost`.
+The best way to test the login is by using a private Microsoft account.
+Microsoft accounts from an organization have to be approved by organization's admin user.
+
 ## For Developers
 
 ### Run Tests
