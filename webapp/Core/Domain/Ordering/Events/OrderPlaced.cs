@@ -1,5 +1,7 @@
 using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
+namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Events;
+
 public record OrderPlaced : BaseDomainEvent
 {
 
