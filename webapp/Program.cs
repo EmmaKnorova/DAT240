@@ -14,6 +14,7 @@ using TarlBreuJacoBaraKnor.webapp.Infrastructure.Configuration;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
 using TarlBreuJacoBaraKnor.webapp.Pages.Courier.Helpers;
 using Microsoft.Extensions.FileProviders;
+using TarlBreuJacoBaraKnor.webapp.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -117,6 +118,10 @@ builder.Services.AddDataProtection()
             ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
         });
 
+builder.Services.AddSignalR();
+builder.Services.AddScoped<TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services.INotificationService, 
+                           TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Services.NotificationService>();
+
 var app = builder.Build();
 
 app.UseForwardedHeaders();
@@ -162,6 +167,8 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(productsPhysicalPath),
     RequestPath = "/images/products"
 });
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 await DbSeeder.SeedData(app);
 

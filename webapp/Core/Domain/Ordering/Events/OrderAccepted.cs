@@ -2,13 +2,12 @@ using TarlBreuJacoBaraKnor.webapp.SharedKernel;
 
 namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Events;
 
-public record OrderPlaced : BaseDomainEvent
+public record OrderAccepted : BaseDomainEvent
 {
-
-    public OrderPlaced(Guid id)
+    public OrderAccepted(Guid id)
     {
         orderId = id;
     }
 
     public Guid orderId { get; protected set; }
-}   
+}
