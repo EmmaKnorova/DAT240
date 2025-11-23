@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
+using webapp.Core.Domain.Ordering.Pipelines;
 
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages.Courier;
@@ -18,6 +19,7 @@ public class OrderOverviewModel : PageModel
     public List<Order> PastOrders { get; set; } = new();
     private readonly IMediator _mediator;
     private readonly UserManager<User> _userManager;
+    public Dictionary<Guid, decimal> Tips { get; set; } = new();
     private User Courier;
 
     public OrderOverviewModel(IMediator mediator, UserManager<User> userManager)
@@ -39,6 +41,14 @@ public class OrderOverviewModel : PageModel
         .Where(o => o.Status == Status.Delivered || o.Status == Status.Cancelled)
         .OrderByDescending(o => o.OrderDate)
         .ToList();
+
+        foreach (var o in PastOrders)
+        {
+        
+            var tip = await _mediator.Send(new GetTipAmount.Request(o.Id));
+            Tips[o.Id] = tip;
+ 
+        } 
     }
     public async Task<IActionResult> OnPostCancelAsync(Guid orderId)
     {
@@ -59,5 +69,6 @@ public class OrderOverviewModel : PageModel
     {
         return RedirectToPage("/Courier/OrderDetail", new { id = orderId });
     }
+
 
 }

@@ -23,8 +23,7 @@ public class EarningsOverviewModel(IMediator mediator, ILogger<EarningsOverviewM
     public int TotalOrdersThisMonth { get; private set; }
     public decimal TotalRevenueThisMonth { get; private set; }  
     public decimal RevenueDelivery {get; private set;}
-    //TODO right now RevenutTips is set to 100, will be edited when tips are implemented
-    public decimal RevenueTips {get; private set;} = 100;
+    public decimal RevenueTips {get; private set;}
 
     public int TotalOrders {get; private set;}
     public List<GetCourierEarningsByMonth.MonthlyEarningsDto> MonthlyEarnings { get; private set; } = [];
@@ -45,6 +44,8 @@ public class EarningsOverviewModel(IMediator mediator, ILogger<EarningsOverviewM
 
         TotalOrders = stats.TotalOrders;
         RevenueDelivery = stats.TotalRevenue;
+        RevenueTips = stats.TipRevenue;
+        
 
 
         _logger.LogInformation(

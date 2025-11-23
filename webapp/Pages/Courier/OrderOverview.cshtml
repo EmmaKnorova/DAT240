@@ -145,6 +145,9 @@
                                 @payment.ToString("C", new System.Globalization.CultureInfo("nb-NO"))
                             }
                             <br />
+                            <strong>Tip: </strong>
+                                @Model.Tips[order.Id].ToString("C", new CultureInfo("nb-NO"))
+                            <br />
                             <strong>Total:</strong> @Html.Raw(totalDisplay(order))
                         </div>
                         <form method="post" asp-page-handler="Details" class="m-0">

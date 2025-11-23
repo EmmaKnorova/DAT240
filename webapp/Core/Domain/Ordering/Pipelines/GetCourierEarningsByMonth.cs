@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TarlBreuJacoBaraKnor.webapp.Infrastructure.Data;
+using webapp.Core.Domain.Ordering.Pipelines;
 
 namespace TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 
@@ -10,9 +11,10 @@ public class GetCourierEarningsByMonth
 
     public record MonthlyEarningsDto(int Month, int NumberOfOrders, decimal RevenueDelivery, decimal RevenueTips, decimal TotalRevenue);
 
-    public class Handler(ShopContext db) : IRequestHandler<Request, List<MonthlyEarningsDto>>
+    public class Handler(ShopContext db, IMediator mediator) : IRequestHandler<Request, List<MonthlyEarningsDto>>
     {
         private readonly ShopContext _db = db;
+        private readonly IMediator _mediator = mediator;
 
         public async Task<List<MonthlyEarningsDto>> Handle(Request request, CancellationToken cancellationToken)
         {
@@ -30,8 +32,11 @@ public class GetCourierEarningsByMonth
                     .ToListAsync(cancellationToken);
 
                 var RevenueDelivery = orders.Sum(o => o.DeliveryFee) * 0.8m;
-                //TODO now set to 100, has to be update when tips are implemented
-                var RevenueTips = 100;
+                var RevenueTips = 0m;
+                foreach(var order in orders)
+                {
+                    RevenueTips += await _mediator.Send(new GetTipAmount.Request(order.Id));
+                }
                 var TotalRevenue = RevenueDelivery + RevenueTips;
 
                 result.Add(new MonthlyEarningsDto(month, orders.Count(), RevenueDelivery, RevenueTips, TotalRevenue));
