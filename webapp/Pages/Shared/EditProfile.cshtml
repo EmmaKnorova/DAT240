@@ -2,6 +2,16 @@
 @model TarlBreuJacoBaraKnor.webapp.Pages.Shared.EditProfileModel
 @{
     ViewData["Title"] = "Edit Profile";
+
+    if (User.Identity.IsAuthenticated)
+    {
+        if (User.IsInRole("Admin"))
+            Layout = "/Pages/Admin/Shared/_Admin_Layout.cshtml";
+        else if (User.IsInRole("Courier"))
+            Layout = "/Pages/Courier/Shared/_Courier_Layout.cshtml";
+        else if (User.IsInRole("Customer"))
+            Layout = "/Pages/Customer/Shared/_Customer_Layout.cshtml";
+    }
 }
 
 <h2 class="mb-4">Edit Profile</h2>
