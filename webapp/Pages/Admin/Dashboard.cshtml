@@ -47,16 +47,22 @@
                    class="form-control"
                    value="@(Model.To?.ToString("yyyy-MM-dd") ?? rangeDisplayEnd)" />
         </div>
+
+        <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-outline-primary">
+                Apply
+            </button>
+        </div>
     </form>
 
     <form method="post" class="row g-3 mb-4">
         <div class="col-auto">
             <label asp-for="NewDeliveryFee" class="form-label">Delivery Fee (kr)</label>
             <input asp-for="NewDeliveryFee"
-                type="number"
-                step="0.01"
-                class="form-control"
-                value="@Model.CurrentDeliveryFee.ToString("0.00")" />
+                   type="number"
+                   step="0.01"
+                   class="form-control"
+                   value="@Model.CurrentDeliveryFee.ToString("0.00")" />
         </div>
 
         <div class="col-auto align-self-end">
@@ -245,7 +251,7 @@
                         @Model.FinancialSummary.TotalTips.ToString("0.00") kr
                     </p>
                     <small class="text-muted">
-                        Tipping included in Stripe payments (from metadata)
+                        Tips included in Stripe payments
                     </small>
                 </div>
             </div>
@@ -269,7 +275,7 @@
         <div class="col-12 col-lg-4">
             <div class="card admin-dashboard-card shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Payments & new customers</h5>
+                    <h5 class="card-title mb-3">Payments &amp; new customers</h5>
                     <canvas id="activityChart" height="120"></canvas>
                     <small class="text-muted d-block mt-2">
                         Successful vs failed payments, and new customers per day.

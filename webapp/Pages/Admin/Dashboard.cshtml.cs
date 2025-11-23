@@ -29,10 +29,10 @@ public class AdminDashboardModel : PageModel
         IFinancialReportingService financialReportingService,
         IFinancialAnalyticsService financialAnalyticsService)
     {
-        _mediator = mediator;
-        _logger = logger;
-        _financialReportingService = financialReportingService;
-        _financialAnalyticsService = financialAnalyticsService;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _financialReportingService = financialReportingService ?? throw new ArgumentNullException(nameof(financialReportingService));
+        _financialAnalyticsService = financialAnalyticsService ?? throw new ArgumentNullException(nameof(financialAnalyticsService));
     }
 
     [BindProperty(SupportsGet = true)]
@@ -51,17 +51,15 @@ public class AdminDashboardModel : PageModel
     public int OpenOrdersTotal { get; private set; }
     public int BeingDeliveredOrdersTotal { get; private set; }
     public int DeliveredOrdersTotal { get; private set; }
+    public int OpenOrdersMonthToDate { get; private set; }
+    public int BeingDeliveredOrdersMonthToDate { get; private set; }
+    public int DeliveredOrdersMonthToDate { get; private set; }
     [BindProperty(SupportsGet = true)]
     public decimal NewDeliveryFee { get; set; }
 
     public decimal CurrentDeliveryFee { get; set; }
 
-    public int OpenOrdersMonthToDate { get; private set; }
-    public int BeingDeliveredOrdersMonthToDate { get; private set; }
-    public int DeliveredOrdersMonthToDate { get; private set; }
-
     public MonthlyFinancialSummary FinancialSummary { get; private set; } = default!;
-
     public FinancialDashboardData FinancialAnalytics { get; private set; } = default!;
 
     public async Task OnGetAsync()
@@ -82,7 +80,7 @@ public class AdminDashboardModel : PageModel
 
         TotalOrdersThisMonth = monthlyStats.TotalOrders;
         TotalRevenueThisMonth = monthlyStats.TotalRevenue;
-        OrdersByStatusThisMonth = monthlyStats.OrdersByStatus;
+        OrdersByStatusThisMonth = monthlyStats.OrdersByStatus ?? Array.Empty<GetMonthlyOrderStats.StatusCountDto>();
 
         _logger.LogInformation(
             "Loaded admin dashboard stats for {Year}-{Month}: {TotalOrders} orders, {Revenue} revenue",
@@ -92,10 +90,16 @@ public class AdminDashboardModel : PageModel
         var totalStatusStats = await _mediator.Send(new GetOrderStatusTotals.Request());
 
         (OpenOrdersTotal, BeingDeliveredOrdersTotal, DeliveredOrdersTotal) =
-            AggregateByStage(totalStatusStats.OrdersByStatus.Select(s => (s.Status, s.Count)));
+            AggregateByStage(
+                totalStatusStats.OrdersByStatus
+                    .Select(s => (s.Status.ToString(), s.Count))
+            );
 
         (OpenOrdersMonthToDate, BeingDeliveredOrdersMonthToDate, DeliveredOrdersMonthToDate) =
-            AggregateByStage(OrdersByStatusThisMonth.Select(s => (s.Status, s.Count)));
+            AggregateByStage(
+                OrdersByStatusThisMonth
+                    .Select(s => (s.Status.ToString(), s.Count))
+            );
 
         FinancialSummary = await _financialReportingService.GetMonthlySummaryAsync(
             CurrentRangeStart,
@@ -144,12 +148,13 @@ public class AdminDashboardModel : PageModel
                || statusName.Contains("Completed", StringComparison.OrdinalIgnoreCase);
     }
 
-    public async Task<ActionResult> OnPostAsync(string action)
+    public IActionResult OnPost(string action)
     {
-        if (action == "apply")
-            return RedirectToPage();
+        if (string.Equals(action, "set-fee", StringComparison.OrdinalIgnoreCase))
+        {
+            Order.DeliveryFee = NewDeliveryFee;
+        }
 
-        Order.DeliveryFee = NewDeliveryFee;
-        return RedirectToPage();
+        return RedirectToPage(new { From, To });
     }
 }
