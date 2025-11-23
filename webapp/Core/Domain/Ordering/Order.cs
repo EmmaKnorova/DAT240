@@ -17,7 +17,7 @@ public class Order : BaseEntity
     public User Customer { get; set; }
     public User? Courier { get; set; }
     public Status Status { get; set; } = Status.Submitted;
-    public static decimal DeliveryFee { get; set; }
+    public static decimal DeliveryFee { get; set; } = 50;
     public string PaymentIntentId { get; set; } = string.Empty;
     public string? TipPaymentIntentId { get; set; } = string.Empty;
 
