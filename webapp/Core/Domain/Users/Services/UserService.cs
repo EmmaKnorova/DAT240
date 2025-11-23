@@ -60,7 +60,6 @@ public class UserService(
         if (!userRoles.Any(PermittedLoginRoles.Contains))
             return Result<string>.Failure("User is not a Courier or Customer.");
         
-        // --- Password Check & Sign In ---
         var result = await _signInManager.CheckPasswordSignInAsync(
             user,
             loginDto.Password,

@@ -1,5 +1,3 @@
-using System;
-
 namespace TarlBreuJacoBaraKnor.webapp.Core.Exceptions;
 
 public class BaseException : Exception
