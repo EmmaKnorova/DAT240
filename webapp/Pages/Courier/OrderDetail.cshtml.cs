@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Stripe;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Ordering.Pipelines;
 using TarlBreuJacoBaraKnor.webapp.Core.Domain.Users;
+using webapp.Core.Domain.Ordering.Pipelines;
 
 namespace TarlBreuJacoBaraKnor.webapp.Pages.Courier;
 
@@ -16,6 +18,7 @@ public class OrderDetailModel : PageModel
     private readonly IMediator _mediator;
     private readonly UserManager<User> _userManager;
     public User Courier;
+    public decimal Tip {get; private set;}
 
     [BindProperty]
     public Guid OrderId { get; set; }
@@ -31,6 +34,7 @@ public class OrderDetailModel : PageModel
         OrderId = id;
         Console.WriteLine(OrderId);
         _order = await _mediator.Send(new GetSpecificOrder.Request(id));
+        Tip = await _mediator.Send(new GetTipAmount.Request(id));
     }
 
         public async Task<IActionResult> OnPostAsync()
